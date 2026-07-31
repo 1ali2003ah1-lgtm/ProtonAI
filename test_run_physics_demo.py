@@ -67,8 +67,11 @@ class TestAdaptive:
         assert res["adaptive"]["coverage_drop"] == pytest.approx(0.0)
 
     def test_collapsed_coverage_replan(self):
-        current = (DEPTHS >= 70) & (DEPTHS <= 80)  # برّا الـ SOBP
-        res = run_physics_demo(depths=DEPTHS, current_profile=current)
+        # عتبة تغطية معقولة (30%) → التغطية الاسمية بمنطقة الهدف = 100%
+        # الورم تحرّك لـ [70,80] (برّا المدى) → التغطية الحالية = 0 → انهيار كامل
+        current = (DEPTHS >= 70) & (DEPTHS <= 80)
+        res = run_physics_demo(depths=DEPTHS, current_profile=current,
+                               dose_threshold_frac=0.3)
         assert res["adaptive"]["needs_replan"] is True
         assert res["adaptive"]["coverage_drop"] > 0.1
 
