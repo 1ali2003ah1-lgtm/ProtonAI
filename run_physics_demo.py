@@ -43,9 +43,11 @@ def run_physics_demo(
     output_dir: Optional[str | Path] = None,
     n_peaks: int = 5,
     sigma_mm: float = 2.0,
+    dose_threshold_frac: float = 0.95,
 ) -> Dict[str, Any]:
     """
     تشغيل تحليل المرحلة 5 الكامل، يرجع قاموساً شاملاً + يحفظ التقارير إن طُلب.
+    dose_threshold_frac: عتبة "الجرعة الفعّالة" للتقييم التكيّفي (مرونة للسيناريوهات).
     """
     if target_end_mm <= target_start_mm:
         raise ValueError("target_end_mm يجب أن يكون > target_start_mm")
@@ -91,12 +93,13 @@ def run_physics_demo(
     # 7) المعايير الفيزيائية
     benchmark = PhysicsBenchmark(phys).summary()
 
-    # 8) التكيّف (حركة الورم vs تغطية الجرعة)
+    # 8) التكيّف (حركة الورم vs تغطية الجرعة) — بعتبة تغطية قابلة للضبط
     plan = (np.asarray(plan_profile).astype(bool) if plan_profile is not None
             else (z >= target_start_mm) & (z <= target_end_mm))
     current = (np.asarray(current_profile).astype(bool) if current_profile is not None
                else plan.copy())
-    adaptive = AdaptivePhysics().evaluate(plan, current, nominal)
+    adaptive = AdaptivePhysics().evaluate(
+        plan, current, nominal, dose_threshold_frac=dose_threshold_frac)
     coverage_drop = float(adaptive["coverage_drop"])
 
     # 9) حلقة مراجعة الفيزيائي الطبي
