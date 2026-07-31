@@ -59,10 +59,12 @@ class TestDemoModel:
     def test_heart_restricted_to_left_middle(self, demo):
         # قلب = HU(30..80) ∩ rows[1:3],cols[0:2]
         m = demo.predict(_pixels())["heart"]
-        # (0,2)=50 خارج المنطقة (row 0) → False
+        # (0,2)=50 بس خارج المنطقة (row 0) → False
         assert m[0, 2] is np.False_
-        # (1,0)=50 داخل المنطقة → True
-        assert m[1, 0] is np.True_
+        # (2,0)=50 وداخل المنطقة (rows 1:3, cols 0:2) → True
+        assert m[2, 0] is np.True_
+        # (1,0)=-700 (رئة) مو قلب حتى لو داخل المنطقة → False
+        assert m[1, 0] is np.False_
 
     def test_lung_uses_full_region(self, demo):
         # الرئة بلا region بالـ demo → كل بكسل -700 يُلتقط
