@@ -2,7 +2,7 @@
 ProtonAI - Plan State Machine
 سير عمل الخطة المحروس: مسودة ← فحص فيزياء ← اعتماد طبيب ← جاهزة ← مسلّمة
 كل انتقال محروس بشروط (تواقيع + مؤشرات + بوابة). الحالات النهائية لا تُغادر.
-مفكوك الارتباط: يقرأ الشروط من context dict (build_context يبنيه من الكائنات)
+مفكوك الارتباط: يقرأ الشروط من context dict (build_context يبنيه من الكائنات أو يدوياً)
 """
 
 import logging
@@ -92,12 +92,15 @@ def build_context(
     physician_signed: Optional[bool] = None,
     physics_signed: Optional[bool] = None,
     specialist_decision: Optional[str] = None,
+    overall_status: Optional[str] = None,
+    can_deliver: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """
-    يبني context من الكائنات (اختياري)؛ القيم الصريحة تتجاوز المستخرج.
-    مفكوك: يفحص hasattr، لا يستورد الأنواع.
+    يبني context من الكائنات (اختياري) أو يدوياً بالقيم الصريحة؛ الصريح يتجاوز المستخرج.
+    مفكوك: يفحص hasattr، لا يستورد الأنواع. يقبل كل مفاتيح الـ context يدوياً.
     """
     ctx: Dict[str, Any] = {}
+    # 1) استخراج من الكائنات (إن وُجدت)
     if plan is not None:
         ctx["physics_available"] = bool(getattr(plan, "physics", None))
     if evaluation is not None:
@@ -114,7 +117,7 @@ def build_context(
         sd = getattr(decision, "specialist_decision", None)
         if sd is not None:
             ctx["specialist_decision"] = str(sd)
-    # القيم الصريحة تتجاوز
+    # 2) القيم الصريحة تتجاوز المستخرج (طريقة يدوية كاملة لبناء context)
     if physics_available is not None:
         ctx["physics_available"] = bool(physics_available)
     if physician_signed is not None:
@@ -123,6 +126,10 @@ def build_context(
         ctx["physics_signed"] = bool(physics_signed)
     if specialist_decision is not None:
         ctx["specialist_decision"] = str(specialist_decision)
+    if overall_status is not None:
+        ctx["overall_status"] = str(overall_status)
+    if can_deliver is not None:
+        ctx["can_deliver"] = bool(can_deliver)
     return ctx
 
 
