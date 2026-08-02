@@ -4,6 +4,7 @@ ProtonAI - Plan Orchestrator
 providers (مزوّدو البيانات) محقونون → ملء الخطة ← تقييم ← توصية ← حركة حالة ← لوحة
 منسّق خفيف: لا يستورد الفيزياء/التصوير الثقيلة، ينسّق وحدات المرحلة 6 فقط
 الحركة التلقائية تصل READY؛ التسليم (DELIVERED) يحتاج قرار متخصص صريح
+الرفض (REJECTED) قرار صريح نهائي يُطبّق من أي حالة غير نهائية
 """
 
 import logging
@@ -57,12 +58,19 @@ class PlanOrchestrator:
         return filled
 
     def _auto_advance(self, sm: PlanStateMachine, ctx: Dict[str, Any]) -> None:
-        """يمشي الخطة لأقصى حالة مسموحة؛ يتوقف عند أول حرس فاشل"""
+        """
+        يمشي الخطة لأقصى حالة مسموحة؛ يتوقف عند أول حرس فاشل.
+        ثم يطبّق الرفض الصريح (قرار نهائي) من أي حالة غير نهائية إن طُلب.
+        """
         for target in _AUTO_PATH:
             if sm.can_transition(target, ctx):
                 sm.transition(target, ctx)
             else:
                 break
+        # الرفض قرار صريح نهائي: يُحسم الحالة بغض النظر عن توقف المسار
+        if ctx.get("specialist_decision") == "reject" and not sm.is_terminal:
+            if sm.can_transition(PlanState.REJECTED, ctx):
+                sm.transition(PlanState.REJECTED, ctx)
 
     def run(
         self,
@@ -94,7 +102,7 @@ class PlanOrchestrator:
             evaluation, physician_signed=physician_signed,
             physics_signed=physics_signed)
 
-        # 4) قرار المتخصص الصريح (اختياري؛ التسليم يحتاجه)
+        # 4) قرار المتخصص الصريح (اختياري؛ التسليم/الرفض يحتاجه)
         if specialist_decision is not None:
             if not str(specialist_id or "").strip():
                 raise ValueError("specialist_id مطلوب عند تمرير specialist_decision")
@@ -129,4 +137,4 @@ class PlanOrchestrator:
             "providers_used": list(providers.keys()),
             "report_markdown": markdown,
             "report_html": html,
-}
+  }
