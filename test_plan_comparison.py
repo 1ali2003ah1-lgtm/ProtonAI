@@ -163,9 +163,12 @@ class TestPerPlan:
         assert res["per_plan"]["A"]["n_red"] == 0
         assert res["per_plan"]["A"]["overall"] == "GREEN"
 
-    def test_bad_all_red(self, cmp):
+    def test_bad_red_except_completeness(self, cmp):
+        # الخطة السيئة مكتملة الأقسام (imaging+ai+physics+reviews ممتلئة)
+        # → completeness أخضر (مكتملة البيانات ≠ بيانات جيدة).
+        # فالأحمر = 5: gamma + range + coverage + benchmark + reviews
         res = cmp.compare({"A": _good(), "B": _bad()})
-        assert res["per_plan"]["B"]["n_red"] == 6
+        assert res["per_plan"]["B"]["n_red"] == 5
         assert res["per_plan"]["B"]["overall"] == "RED"
 
 
