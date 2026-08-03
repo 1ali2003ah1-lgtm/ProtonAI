@@ -14,7 +14,8 @@ def _synthetic():
     hu = rng.normal(-200, 50, (20, 20))          # خلفية
     labels = np.zeros((20, 20), dtype=int)
     labels[5:10, 5:10] = 1
-    hu[labels == 1] = rng.normal(300, 50, (5, 5))  # ورم عالي HU
+    # فهرسة شرائح (تقبل 2D) بدل القناع المنطقي (1D فقط)
+    hu[5:10, 5:10] = rng.normal(300, 50, (5, 5))  # ورم عالي HU
     return hu, labels
 
 
