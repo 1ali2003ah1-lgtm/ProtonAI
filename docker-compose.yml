@@ -1,0 +1,11 @@
+services:
+  protonai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: protonai
+    restart: unless-stopped
+    environment:
+      PROTONAI_ENV: production
+    volumes:
+      - ./out:/app/out
