@@ -86,18 +86,19 @@ class TestEvaluate:
         assert r["publication_ready"] is False
 
     def test_moderate_ready_when_floor_met(self, ev):
+        # فجوة 0.14 (ضمن moderate) + خارجي 0.76 فوق الحد 0.7 → جاهز للنشر
         it, ip = _lists(50, 45)   # 0.9
-        et, ep = _lists(50, 37)   # 0.74
+        et, ep = _lists(50, 38)   # 0.76
         r = ev.evaluate(it, ip, et, ep)
         assert r["verdict"] == "moderate"
         assert r["external_acceptable"] is True
         assert r["publication_ready"] is True
 
     def test_moderate_not_ready_when_floor_missed(self, ev):
-        # فجوة متوسطة بس الخارجي تحت الحد → غير جاهز للنشر
+        # فجوة متوسطة (0.14) بس الخارجي 0.76 تحت حد 0.8 → غير جاهز للنشر
         e = ExternalTestEvaluator(external_floor=0.8)
         it, ip = _lists(50, 45)   # 0.9
-        et, ep = _lists(50, 37)   # 0.74
+        et, ep = _lists(50, 38)   # 0.76
         r = e.evaluate(it, ip, et, ep)
         assert r["verdict"] == "moderate"
         assert r["external_acceptable"] is False
