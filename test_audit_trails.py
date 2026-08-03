@@ -8,6 +8,8 @@ import csv
 import pytest
 from audit_trails import EnterpriseAuditTrail, _CSV_FIELDS
 from access_control import User, Role, Permission, PermissionDeniedError
+from audit import AuditTrail
+from access_control import AccessControl
 
 
 def _u(role, uid=None):
@@ -142,8 +144,6 @@ class TestInjection:
         assert isinstance(ea.access, AccessControl)
 
     def test_uses_injected(self):
-        from audit import AuditTrail
-        from access_control import AccessControl
         a, c = AuditTrail(), AccessControl()
         ea = EnterpriseAuditTrail(audit=a, access=c)
         assert ea.audit is a
