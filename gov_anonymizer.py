@@ -1,57 +1,9 @@
-"""
-ProtonAI - Governance: DICOM Anonymizer
-إخفاء هوية بمعيار DICOM PS3.15 Annex E (basic profile):
-يزيل وسوم PHI، يستبدل المعرف بـ pseudonym، ويعلّم Dataset كمُخفى هوية
-المنصة لا تحتفظ بأي PHI — تستقبل نسخة مُخفية فقط
-"""
-
-import logging
-
-logger = logging.getLogger("ProtonAI.Governance.Anonymizer")
-
-try:  # استيراد محروس
-    import pydicom
-    from pydicom.dataset import Dataset
-    PYDICOM_AVAILABLE = True
-except Exception:  # pragma: no cover
-    pydicom = None
-    Dataset = object
-    PYDICOM_AVAILABLE = False
-
-
-# وسوم PHI وفق PS3.15 Annex E (basic profile) — تُفرَّغ/تُستبدل
-PHI_TAGS = [
-    "PatientName", "PatientBirthDate", "AccessionNumber", "OtherPatientIDs",
-    "InstitutionName", "InstitutionAddress", "InstitutionalDepartmentName",
-    "ReferringPhysicianName", "PerformingPhysicianName", "OperatorsName",
-    "PatientAddress", "PatientTelephoneNumbers", "PatientMotherBirthName",
-    "StationName", "DeviceSerialNumber",
-]
-
-
-def _require_pydicom():
-    if not PYDICOM_AVAILABLE:
-        raise RuntimeError("pydicom غير مثبت — مطلوب لإخفاء هوية DICOM")
-
-
-def deidentify(ds, pseudonym: str):
-    """إخفاء هوية Dataset بمعيار PS3.15 وإرجاعه مُخفى الهوية"""
-    _require_pydicom()
-    for tag in PHI_TAGS:
-        if hasattr(ds, tag):
-            setattr(ds, tag, "")
-    ds.PatientID = pseudonym
-    ds.PatientName = pseudonym
-    ds.PatientIdentityRemoved = "YES"
-    ds.DeidentificationMethod = "ProtonAI DICOM PS3.15 basic profile"
-    logger.info(f"تم إخفاء هوية الحالة → {pseudonym}")
-    return ds
-
-
 def is_deidentified(ds) -> bool:
     """هل الـ Dataset مُخفى الهوية فعلاً؟ (لا PHI متبقٍ + معلم كمُخفى)"""
     _require_pydicom()
     for tag in PHI_TAGS:
+        if tag == "PatientName":
+            continue  # يحمل الـ pseudonym عمداً — لا نعتبره تسريباً
         if getattr(ds, tag, "") not in ("", None):
             return False
     return getattr(ds, "PatientIdentityRemoved", "") == "YES"
