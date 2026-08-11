@@ -1,0 +1,14 @@
+# ProtonAI - الإعداد الموحّد
+physics:
+  straggle: 0.012
+  gamma_dd: 0.02
+  gamma_dt: 2.0
+ai:
+  dice_target: 0.85
+  ece_target: 0.05
+safety:
+  amber_threshold: 0.02
+  red_threshold: 0.05
+data:
+  hu_min: -1000.0
+  hu_max: 1000.0
