@@ -1,0 +1,41 @@
+# تقرير تقدم — ProtonAI
+## منصة دعم قرار للعلاج بالبروتون بالذكاء الاصطناعي (CDSS)
+
+## الملخص التنفيذي
+منصة Python متكاملة (~100 وحدة، 1620+ اختبار، CI أخضر، تغطية ~95%)
+تغطي الخط الكامل: أمان ← بيانات ← فيزياء ← AI ← دعم قرار ← حوكمة.
+القرار النهائي بشري دائماً؛ كل توصية مرتبطة بتحقق وتدقيق.
+
+## المنجز حسب المرحلة
+### A — الأساس الآمن ✅
+- gov_anonymizer: إخفاء هوية DICOM بمعيار PS3.15 Annex E.
+- gov_audit_log: سجل تدقيق append-only متسلسل بالبصمات (كشف تلاعب).
+- docs/data_security.md + docs/statistical_analysis.md.
+
+### B — الدقة العلمية ✅ (أدوات القياس)
+- hu_rsp_calibration: معايرة stoichiometric HU→RSP لكل سكانر + عدم يقين لكل نسيج.
+- mc_tissue_compare: Monte Carlo لعظم/رئة/نسيج رخو + WEPL.
+- robustness: تقييم 4D/setup/density + worst-case + RAG.
+- uncertainty_aware: ensemble/MC-Dropout + conformal + ECE.
+- seg_metrics: Dice / HD95 / ASSD.
+- (قائم: gamma_index + physics_benchmark + explainability).
+
+### C — جاهزية المستشفيات ✅
+- dicom_parser: CT / RTSTRUCT / RTDOSE / RTPLAN.
+- harmonization: توحيد resampling/spacing + intensity + site metadata.
+
+### بنية وأدوات
+- config_loader (بدون hardcoded) + api_main (FastAPI CDSS).
+- segmentation_train: سقالة تدريب nnU-Net style جاهزة للـ GPU.
+- restructure_for_laptop: أداة هيكلة آمنة (إرجاع تلقائي).
+
+## معايير القبول (أدواتها جاهزة، تُثبت على بيانات/GPU)
+Gamma ≥95% @2%/2mm • Dice ≥0.85 • ECE <0.05.
+
+## الخطة القادمة
+- لابتوب: تنفيذ إعادة الهيكلة + DVC/MLflow.
+- شهر 9: بيانات حقيقية (IRB قبلها) ← تدريب ← تحقق ← shadow mode.
+- تقييم blinded: د. حسام يحيى + د. طارق.
+
+## القيود (بصدق)
+تحقق اصطناعي/استعادي حتى الآن؛ الأرقام السريرية تتطلب دراسات مستقبلية.
