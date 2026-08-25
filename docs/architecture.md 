@@ -1,0 +1,63 @@
+# ProtonAI — خريطة البنية (Architecture Map)
+
+## مبدأ الطبقات
+كل طبقة تعتمد على اللي تحتها فقط — **لا اعتمادات دائرية**.
+
+## 1) طبقة الاستلام والبيانات
+- intake_pipeline — checksum + chain of custody.
+- dicom_parser — CT / RTSTRUCT / RTDOSE / RTPLAN.
+- gov_anonymizer — إخفاء هوية PS3.15 Annex E.
+- harmonization — توحيد resampling/spacing/intensity + site metadata.
+- dry_run_pipeline — عرض حي على اصطناعي (صفر PHI).
+
+## 2) طبقة الفيزياء
+- hu_rsp_calibration — stoichiometric لكل سكانر.
+- mc_tissue_compare — Monte Carlo عظم/رئة/رخو + WEPL.
+- pstar_validation — مقارنة مرجع NIST PSTAR.
+- gamma_index + physics_benchmark — حقول مرجعية @2%/2mm.
+- range_margin — ميزانية عدم يقين ← هامش مقترح.
+
+## 3) طبقة الذكاء الاصطناعي
+- segmentation_train — سقالة nnU‑Net (GPU، لابتوب).
+- seg_metrics — Dice / HD95 / ASSD.
+- uncertainty_aware — ensemble / MC‑Dropout / conformal / ECE.
+- explainability — تفسير القرارات.
+- robustness — 4D / setup / density + worst‑case + RAG.
+
+## 4) طبقة القرار
+- tumor_sites — سجل 19 موقعاً بأولويات وسلوكيات.
+- site_decision — عتبات مخصصة لكل موقع (priority‑1 أشد).
+- safety_gate — PROCEED / REVIEW / STOP + human_ack إجباري.
+- sample_size — حجم العينة لكل موقع/ورم.
+
+## 5) طبقة التحقق والمراقبة
+- agreement — Cohen's kappa + inter‑observer.
+- drift_monitor — z‑score + PSI + حالات RAG (post‑market).
+- fmea — 10 أنماط فشل بـ RPN محسوب.
+
+## 6) طبقة الحوكمة
+- gov_audit_log — append‑only متسلسل بالبصمات.
+- config.yaml + config_loader — صفر hardcoded.
+- samd_classifier — تصنيف FDA / MDR / IEC 62304.
+
+## 7) طبقة الواجهة
+- api_main — FastAPI CDSS (كل استجابة requires_human_ack).
+- dashboard RAG — ⏸️ على اللابتوب.
+
+## تدفق البيانات (خط واحد)
+DICOM خام ← intake(checksum) ← anonymize ← parse ← harmonize ←
+AI(تقسيم + عدم يقين) ← فيزياء(معايرة + مدى + هامش) ←
+قرار(موقع + بوابة) ← تقرير + RAG ← **audit يسجّل كل خطوة**.
+
+## حالة الطبقات
+| الطبقة | الحالة |
+|--------|--------|
+| استلام/بيانات | ✅ جاهزة (تنتظر البيانات) |
+| فيزياء | ✅ جاهزة |
+| AI | ⚠️ سقالة جاهزة، تدريب ينتظر GPU |
+| قرار | ✅ جاهزة |
+| تحقق/مراقبة | ✅ جاهزة |
+| حوكمة | ✅ جاهزة |
+| واجهة | ⚠️ API جاهز، dashboard باللابتوب |
+
+> وثيقة حية — تُحدَّث مع كل وحدة جديدة.
