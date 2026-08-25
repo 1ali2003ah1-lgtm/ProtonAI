@@ -1,0 +1,80 @@
+# SaMD Regulatory Roadmap — ProtonAI
+
+> **تنويه:** هذه خارطة طريق بحثية داخلية، وليست استشارة تنظيمية رسمية.
+> التصنيف النهائي يتطلب مراجعة هيئة مختصة (FDA CDRH / Notified Body EU).
+
+## 1) التصنيف المُحسَب آلياً (`samd_classifier.py`)
+- **FDA 21 CFR:** Class II (CDSS + human_ack — 510(k) متوقع).
+- **EU MDR 2017/745 Annex VIII Rule 11:** Class IIb (خطير لكن CDSS غير مباشر).
+- **IEC 62304:** Class B (أذى غير خطير محتمل، مع إجراءات تخفيف).
+
+## 2) المتطلبات قبل السوق (Pre-market)
+
+### 2.1 Software Description Document
+- وصف وظيفي + واجهات + اعتماديات.
+- SOUP (Software of Unknown Provenance): قائمة بـ Python/PyTorch/MONAI.
+- بنية + واجهات + أمن.
+
+### 2.2 Clinical Evaluation (CER)
+- **State of the art:** مراجعة البروتوكولات الحالية (NCCN/ESMO).
+- **Clinical data:**
+  - أدبية (peer‑reviewed) على معايرة/تقسيم/عدم يقين.
+  - تحقيق على بيانات استعادية (بعد IRB).
+  - prospective shadow mode (`docs/shadow_mode.md`).
+- **Benefit/Risk:** FMEA (`docs/fmea.md`) يغذي تقييم المخاطر.
+
+### 2.3 IEC 62304 Lifecycle Deliverables
+- Software Development Plan.
+- Requirements + Architecture + Detailed Design.
+- Verification (اختبارات) + Validation (سريري).
+- Risk Management File (مرتبط بـ ISO 14971 + FMEA).
+- Problem Resolution Process (GitHub Issues).
+
+### 2.4 Cybersecurity (FDA 2023 Guidance)
+- SBOM (bill of materials) — قابل للتوليد من `pip freeze`.
+- Threat modeling (مُغطّى جزئياً بـ `data_security.md`).
+- Vulnerability disclosure plan.
+- Signed updates + audit log.
+
+### 2.5 Usability / Human Factors (IEC 62366)
+- Formative usability: واجهة RAG + human_ack.
+- Summative usability: تقييم blinded مع أطباء.
+- Use error analysis (مرتبط بـ FM‑10: تحيز الأتمتة).
+
+## 3) المتطلبات بعد السوق (Post-market)
+
+### 3.1 Post-market Surveillance (PMS)
+- مراقبة drift (`drift_monitor.py`) مع عتبات GREEN/AMBER/RED.
+- جمع الأحداث السلبية (adverse events).
+- تقرير دوري (PSUR للـ MDR).
+
+### 3.2 Change Control
+- أي تحديث للنموذج = re‑validation.
+- Semantic versioning + changelog.
+- Branching strategy: `main` = production، `develop` = staging.
+
+### 3.3 Real-world Performance
+- مقارنة مستمرة: AI vs TPS (`agreement.py`).
+- Inter‑observer agreement على عينة دورية.
+- Drift + cohort shift metrics.
+
+## 4) الجدول الزمني التقريبي
+| المرحلة | المدة المتوقعة | المخرج |
+|---|---|---|
+| Design Controls + Risk File | 2‑3 شهور | DHF مكتمل |
+| Clinical Investigation (IRB) | 3‑6 شهور | CER draft |
+| 510(k) / CE Technical File | 3‑4 شهور | Submission package |
+| Regulatory Review | 3‑9 شهور (FDA) / 12‑18 (EU NB) | Clearance/CE mark |
+| Post-market Launch | مستمر | PMS + updates |
+
+## 5) الربط بالوثائق الحالية
+- `docs/fmea.md` → Risk Management.
+- `docs/data_security.md` → Cybersecurity.
+- `docs/irb_checklist.md` → Clinical Investigation.
+- `docs/shadow_mode.md` → Clinical Validation.
+- `docs/one_pager.md` → Intended Use.
+- `docs/paper_draft.md` → State of the art / CER evidence.
+
+## 6) الصدق العلمي
+المنصة حالياً **أداة بحثية** خارج نطاق SaMD المُسوَّق.
+أي استخدام سريري يتطلب Clearance/CE mark + تدريب المستخدمين + إجراءات PMS.
