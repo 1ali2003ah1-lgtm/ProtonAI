@@ -1,82 +1,56 @@
-# 🧬 ProtonAI — منصة العلاج بالبروتون الذكية
+# ProtonAI 🧬
+## منصة دعم قرار سريري (CDSS) لتحسين دقة العلاج بالبروتون بالذكاء الاصطناعي
 
-<div align="center">
-
-![CI/CD](https://github.com/1ali2003ah1-lgtm/ProtonAI/actions/workflows/test.yml/badge.svg)
-![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-96%20passed-brightgreen)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
-
-**منصة ذكاء اصطناعي متكاملة ومختبرة للتنبؤ بجرعات العلاج بالبروتون.**
-
-</div>
+> منصة **بحثية** — ليست جهازاً طبياً معتمداً. القرار النهائي **بشري دائماً**.
 
 ---
 
-## 🎯 نظرة عامة
+## 🛡️ مبادئ الأمان (غير قابلة للتفاوض)
+- **صفر PHI:** لا يدخل المنصة إلا بيانات مُخفية الهوية (DICOM PS3.15 Annex E).
+- **RED = إيقاف + مراجعة إجبارية** — مو مجرد لون.
+- كل توصية تحمل **عدم يقين** + `requires_human_ack = True`.
+- **سجل تدقيق append‑only** متسلسل بالبصمات لكل عملية.
 
-**ProtonAI** منصة تعلم آلي متكاملة مصممة للعلاج بحزمة البروتون في علم الأورام الإشعاعي. تحوّل البيانات السريرية الخام إلى بيانات مُتحقق منها وجاهزة للنماذج، عبر خط معالجة مُختبر بدقة لضمان إعادة الإنتاج وسلامة البيانات والأمان السريري.
+## 🔬 شنو تسوي (الخط الكامل)
+DICOM خام ← intake (checksum/custody) ← anonymize ← parse ← harmonize ←
+AI (تقسيم + ensemble/conformal/ECE) ← فيزياء (معايرة HU→RSP + مدى + هامش) ←
+قرار واعٍ بالموقع (PROCEED/REVIEW/STOP) ← **تقرير سريري موحّد** ← audit.
 
-## ✨ المميزات
+## 🏗️ البنية (7 طبقات — تفاصيلها بـ docs/architecture.md)
+| الطبقة | أبرز الوحدات |
+|--------|--------------|
+| استلام/بيانات | intake_pipeline، dicom_parser، gov_anonymizer، harmonization، dry_run |
+| فيزياء | hu_rsp_calibration، mc_tissue_compare، pstar_validation، gamma_index، range_margin |
+| AI | segmentation_train، seg_metrics، uncertainty_aware، explainability، robustness |
+| قرار | tumor_sites، site_decision، safety_gate، sample_size، clinical_report |
+| تحقق/مراقبة | agreement، drift_monitor، fmea |
+| حوكمة | gov_audit_log، config_loader، samd_classifier |
+| واجهة | api_main (FastAPI) |
 
-- 🔒 عقود بيانات صارمة بمخططات Pydantic V2
-- ✅ تحقق متقاطع بقواعد سريرية ذكية
-- 🔄 تقسيم قابل لإعادة الإنتاج بثلاث استراتيجيات
-- 📊 تطبيع ذكي للميزات والجرعات
-- 🧬 تتبع كامل للنسب بتجزئة SHA-256
-- 🤖 نموذج أساسي بتدرج النزول مع حماية من الفيضان العددي
-- 📈 تقارير آلية بصيغة JSON و Markdown
-- ⚙️ خط CI/CD بـ 96 اختباراً آلياً
+## 🗺️ تغطية الأورام
+19 موقعاً بثلاث موجات توسعة؛ المواقع عالية الأولوية (أطفال/CNS/قاعدة جمجمة)
+بعتبات أشد: Dice ≥ 0.90 و ECE ≤ 0.03.
 
-## 📦 الوحدات البرمجية
+## ✅ التحقق وأهداف القبول
+- مراجع منشورة: NIST PSTAR (انحراف ≤ 3%) + Gamma ≥ 95% @2%/2mm.
+- أهداف: Dice ≥ 0.85 • ECE ≤ 0.05 • inter‑observer kappa ≥ 0.6.
+- FMEA محسوب (10 أنماط) + مراقبة drift بعد النشر.
+- حالياً على بيانات اصطناعية؛ التحقق السريري بعد IRB ووصول البيانات.
 
-| الوحدة | الوظيفة |
-|--------|---------|
-| contracts.py | مخططات بيانات المريض والعلاج والجرعة |
-| validators.py | التحقق المتقاطع والقواعد السريرية |
-| ingestion.py | تحميل البيانات مع التنظيف التلقائي |
-| split.py | تقسيم البيانات بثلاث استراتيجيات |
-| normalizers.py | تطبيع الميزات ومعالجة القيم المفقودة |
-| lineage.py | تتبع التحويلات وسلامة البيانات |
-| reporters.py | توليد التقارير |
-| baseline_model.py | نموذج الانحدار الخطي |
-| pipeline.py | المنسق المتكامل لخط المعالجة |
+## 📚 الوثائق
+architecture • fmea • irb_checklist • shadow_mode • tumor_expansion •
+data_acquisition_plan • samd_roadmap • paper_draft • one_pager •
+data_security • statistical_analysis.
 
-## 🚀 التثبيت
-
+## 🧪 التشغيل
 ```bash
-git clone https://github.com/1ali2003ah1-lgtm/ProtonAI.git
-cd ProtonAI
 pip install -r requirements.txt
+pytest -q
 ```
 
-## 💻 التشغيل
-
-```bash
-python pipeline.py
-```
-
-## 🧪 الاختبارات
-
-```bash
-pytest -v
-```
-
-## 📅 خارطة الطريق
-
-- ✅ المرحلة 1 — خط المعالجة والتحقق و CI/CD (مكتملة)
-- ⏳ المرحلة 2 — التكامل مع البيانات السريرية الحقيقية
-- ⏳ المرحلة 3 — المحرك الفيزيائي والتحقق السريري
-- ⏳ المرحلة 4 — النشر الإنتاجي
-
-## 📜 الترخيص
-
-مرخص تحت رخصة MIT.
+## 🚧 خارطة الطريق
+- ⏸️ لابتوب: هيكلة packages + DVC/MLflow + تدريب nnU‑Net (GPU).
+- ⏸️ بعد العطلة: IRB ← استلام بيانات ← دراسة استعادية + shadow mode.
 
 ---
-
-<div align="center">
-
-**صُنع بـ ❤️ من أجل مستقبل دقة الأورام الإشعاعية.**
-
-</div>
+*ProtonAI — بحث أكاديمي؛ لا يُستخدم سريرياً قبل التحقق والاعتماد.*
