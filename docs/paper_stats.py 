@@ -1,0 +1,54 @@
+"""
+ProtonAI - Paper: Live Statistics Generator
+يولّد إحصائيات حية من الكود للورقة العلمية:
+عدد الوحدات، عدد الاختبارات، عدد المواقع، أعلى RPN، إلخ.
+يستدعى: python docs/paper_stats.py > docs/_stats.md
+"""
+
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).parent.parent
+
+
+def count_units() -> int:
+    return len([p for p in ROOT.glob("*.py") if not p.name.startswith("test_")])
+
+
+def count_tests() -> int:
+    return len([p for p in ROOT.glob("test_*.py")])
+
+
+def count_sites() -> int:
+    from tumor_sites import SITES
+    return len(SITES)
+
+
+def top_risk() -> dict:
+    from fmea import table
+    return max(table(), key=lambda t: t["RPN"])
+
+
+def count_phases() -> int:
+    docs = list((ROOT / "docs").glob("*.md"))
+    return len(docs)
+
+
+def summary() -> dict:
+    return {
+        "units": count_units(),
+        "tests": count_tests(),
+        "sites": count_sites(),
+        "top_risk_id": top_risk()["id"],
+        "top_risk_rpn": top_risk()["RPN"],
+        "docs": count_phases(),
+    }
+
+
+if __name__ == "__main__":
+    s = summary()
+    print(f"- الوحدات البرمجية: **{s['units']}**")
+    print(f"- ملفات الاختبار: **{s['tests']}**")
+    print(f"- مواقع الأورام المغطاة: **{s['sites']}**")
+    print(f"- أعلى خطر (FMEA): **{s['top_risk_id']}** بـ RPN = **{s['top_risk_rpn']}**")
+    print(f"- الوثائق المساعدة: **{s['docs']}**")
