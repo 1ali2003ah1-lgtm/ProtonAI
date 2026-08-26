@@ -1,17 +1,22 @@
 """
 ProtonAI - Web UI (واجهة سريرية آمنة)
-صفحة واحدة RTL عالية التباين (WCAG 2.2 AA):
-لوحة RAG (لون+أيقونة+نص) ← تقرير حالة ← إقرار بشري إجباري.
-تشغيل: uvicorn web_ui:app   (أو على اللابتوب)
+RTL عالية التباين (WCAG 2.2 AA): لوحة RAG + تقرير حالة + إقرار إجباري.
+تعمل إن وُجدت fastapi؛ والـ HTML قابل للاختبار بدونها.
+تشغيل (لابتوب): pip install fastapi uvicorn ثم uvicorn web_ui:app
 """
 
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
+try:
+    from fastapi import FastAPI
+    from fastapi.responses import HTMLResponse
+    from pydantic import BaseModel
+    FASTAPI_AVAILABLE = True
+except Exception:  # pragma: no cover
+    FastAPI = None
+    HTMLResponse = None
+    BaseModel = object
+    FASTAPI_AVAILABLE = False
 
-from clinical_report import build_report, render_text
-
-app = FastAPI(title="ProtonAI UI")
+from clinical_report import build_report
 
 CASES = [
     build_report("P-001", "prostate", 0.92, 0.02),
@@ -27,29 +32,23 @@ UI_HTML = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ProtonAI — دعم قرار البروتون</title>
 <style>
-:root{
- --ink:#0F172A; --sub:#475569; --bg:#FFFFFF; --soft:#F8FAFC; --line:#CBD5E1;
- --act:#0F766E; --green:#15803D; --amber:#B45309; --red:#B91C1C; --focus:#1D4ED8;
-}
+:root{--ink:#0F172A;--sub:#475569;--bg:#FFF;--soft:#F8FAFC;--line:#CBD5E1;
+--act:#0F766E;--green:#15803D;--amber:#B45309;--red:#B91C1C;--focus:#1D4ED8}
 *{box-sizing:border-box}
-body{margin:0;font:16px/1.6 "IBM Plex Sans Arabic",system-ui,sans-serif;
- color:var(--ink);background:var(--bg)}
+body{margin:0;font:16px/1.6 system-ui,sans-serif;color:var(--ink);background:var(--bg)}
 a.skip{position:absolute;right:-999px;top:0;background:var(--act);color:#fff;padding:12px}
 a.skip:focus{right:8px}
-header{display:flex;gap:12px;align-items:center;padding:16px 24px;
- border-bottom:2px solid var(--line);background:var(--soft)}
+header{padding:16px 24px;border-bottom:2px solid var(--line);background:var(--soft)}
 h1{font-size:20px;margin:0}
 main{max-width:960px;margin:0 auto;padding:24px}
 .counters{display:flex;gap:16px;flex-wrap:wrap}
-.counter{flex:1;min-width:140px;border:2px solid var(--line);border-radius:8px;
- padding:16px;text-align:center}
+.counter{flex:1;min-width:140px;border:2px solid var(--line);border-radius:8px;padding:16px;text-align:center}
 .counter .num{font-size:32px;font-variant-numeric:tabular-nums}
-.c-green{border-color:var(--green)} .c-amber{border-color:var(--amber)} .c-red{border-color:var(--red)}
+.c-green{border-color:var(--green)}.c-amber{border-color:var(--amber)}.c-red{border-color:var(--red)}
 table{width:100%;border-collapse:collapse;margin-top:24px}
 th,td{padding:12px;border-bottom:1px solid var(--line);text-align:right}
-button{min-height:44px;min-width:44px;padding:10px 16px;border-radius:6px;
- border:2px solid transparent;background:var(--act);color:#fff;font-size:16px;cursor:pointer}
-button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+button{min-height:44px;min-width:44px;padding:10px 16px;border-radius:6px;border:2px solid transparent;background:var(--act);color:#fff;font-size:16px;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 button.secondary{background:#fff;color:var(--act);border-color:var(--act)}
 .banner{border-radius:8px;padding:16px;margin:16px 0;border:3px solid;font-size:18px}
 .b-PROCEED{border-color:var(--green);background:#F0FDF4}
@@ -60,11 +59,9 @@ button.secondary{background:#fff;color:var(--act);border-color:var(--act)}
 .tile .v{font-size:24px;font-variant-numeric:tabular-nums}
 details{margin:16px 0;border:1px solid var(--line);border-radius:8px;padding:12px}
 dialog{border:3px solid var(--red);border-radius:8px;padding:24px;max-width:480px}
-dialog::backdrop{background:rgba(15,23,42,.6)}
 label{display:block;margin:12px 0}
 input[type=text]{width:100%;min-height:44px;padding:8px;border:2px solid var(--line);border-radius:6px}
 .err{color:var(--red);font-weight:bold}
-.ok{color:var(--green);font-weight:bold}
 footer{padding:16px 24px;color:var(--sub);border-top:1px solid var(--line)}
 </style>
 </head>
@@ -72,9 +69,7 @@ footer{padding:16px 24px;color:var(--sub);border-top:1px solid var(--line)}
 <a class="skip" href="#main">تخطَّ إلى المحتوى</a>
 <header><h1>🧬 ProtonAI — دعم قرار العلاج بالبروتون</h1></header>
 <main id="main">
- <section aria-label="ملخص الحالات">
-  <div class="counters" id="counters"></div>
- </section>
+ <div class="counters" id="counters"></div>
  <table aria-label="قائمة الحالات">
   <thead><tr><th>الحالة</th><th>الموقع</th><th>القرار</th><th></th></tr></thead>
   <tbody id="rows"></tbody>
@@ -91,7 +86,7 @@ footer{padding:16px 24px;color:var(--sub);border-top:1px solid var(--line)}
  <button class="secondary" id="ackNo">إلغاء</button></p>
 </dialog>
 <div aria-live="assertive" id="live"></div>
-<footer>منصة بحثية — ليست جهازاً طبياً معتمداً. RED = إيقاف + مراجعة إجبارية.</footer>
+<footer>منصة بحثية — ليست جهازاً طبياً. RED = إيقاف + مراجعة إجبارية.</footer>
 <script>
 const ICON={PROCEED:"✅",REVIEW:"⚠️",STOP:"⛔"};
 async function load(){
@@ -104,8 +99,7 @@ async function load(){
  document.getElementById("rows").innerHTML=cs.map(c=>
   `<tr><td>${c.case_id}</td><td>${c.site}</td><td>${ICON[c.decision]} ${c.decision}</td>
    <td><button data-id="${c.case_id}">مراجعة</button></td></tr>`).join("");
- document.querySelectorAll("#rows button").forEach(b=>
-  b.onclick=()=>openCase(b.dataset.id));
+ document.querySelectorAll("#rows button").forEach(b=>b.onclick=()=>openCase(b.dataset.id));
 }
 async function openCase(id){
  const r=await (await fetch("/api/case/"+id)).json();
@@ -139,31 +133,29 @@ load();
 </body>
 </html>"""
 
+if FASTAPI_AVAILABLE:
+    app = FastAPI(title="ProtonAI UI")
 
-class Ack(BaseModel):
-    case_id: str
-    name: str
+    class Ack(BaseModel):
+        case_id: str
+        name: str
 
+    @app.get("/", response_class=HTMLResponse)
+    def index():
+        return UI_HTML
 
-@app.get("/", response_class=HTMLResponse)
-def index():
-    return UI_HTML
+    @app.get("/api/cases")
+    def cases():
+        return [{k: c[k] for k in ("case_id", "site", "decision")} for c in CASES]
 
+    @app.get("/api/case/{cid}")
+    def case(cid: str):
+        for c in CASES:
+            if c["case_id"] == cid:
+                return c
+        return {"error": "not found"}
 
-@app.get("/api/cases")
-def cases():
-    return [{k: c[k] for k in ("case_id", "site", "decision")} for c in CASES]
-
-
-@app.get("/api/case/{cid}")
-def case(cid: str):
-    for c in CASES:
-        if c["case_id"] == cid:
-            return c
-    return {"error": "not found"}
-
-
-@app.post("/api/ack")
-def ack(a: Ack):
-    ACKS.append({"case_id": a.case_id, "name": a.name})
-    return {"ok": True, "logged": True}
+    @app.post("/api/ack")
+    def ack(a: Ack):
+        ACKS.append({"case_id": a.case_id, "name": a.name})
+        return {"ok": True, "logged": True}
