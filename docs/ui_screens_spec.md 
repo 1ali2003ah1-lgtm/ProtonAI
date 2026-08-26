@@ -1,0 +1,45 @@
+# UI Screens Spec — تركيب الشاشات الثلاث (للابتوب)
+
+> الهدف: أول جلسة لابتوب = تنفيذ هذه الوثيقة فقط.
+> القاعدة: كل حالة تُعرض بـ **لون + أيقونة + نص** (لا اعتماد على اللون).
+> كل الشاشات RTL، كيبورد‑كاملة، وتستخدم توكنز web_ui الحالية.
+
+## 0) تنقّل عام
+- Tabs علوية: [الطبيب] [الفيزيائي] [المخطط] مع `aria-current="page"`.
+- skip‑link موجود؛ focus‑visible؛ أهداف ≥44px.
+
+## 1) شاشة الطبيب `/` (موجودة — تُكمَّل)
+- المصدر: clinical_report.
+- إضافة: عرض عدم اليقين كـ error‑bar/conformal بجانب Dice.
+- إضافة: زر «سجل التدقيق» يفتح AuditDrawer (من gov_audit_log).
+- القبول: قرار+هامش ظاهران بلمحة؛ Ack إجباري قبل أي متابعة؛ STOP لا يُغلق.
+
+## 2) شاشة الفيزيائي `/physics`
+- المصدر: physics_qa.fleet_qa.
+- Route جديد: GET /physics (HTML) + GET /api/qa (JSON).
+- Layout: banner إجمالي (RAG) ← جدول سكانرات:
+  [الاسم | max_dev | الحالة(أيقونة+نص) | إجراء].
+- flagged: صف مميز + زر «إيقاف الحالات المتأثرة» ⇒ confirmation بسبب مكتوب ⇒ STOP.
+- States: loading skeleton؛ empty «لا سكانرات»؛ error+retry.
+- القبول: سكانر ≥2×tol ⇒ RED؛ الأسوأ يحدد الإجمالي؛ flagged صحيحة.
+
+## 3) شاشة المخطط `/planner`
+- المصدر: dose_stats.plan_metrics.
+- Route: GET /planner + POST /api/plan {doses[], prescription}.
+- Layout: form إدخال (لصق مصفوفة جرعات + وصفة) ← tiles:
+  D95 / D98 / V100 / HI مع حالة لكل منها ضد الهدف:
+  D95≥0.95 • V100≥0.95 • HI≤0.1.
+- Validation inline: مصفوفة غير رقمية أو وصفة ≤0 ⇒ رسالة محددة + مثال.
+- زر «تصدير التقرير» (نص مُخفى الهوية).
+- القبول: خطة مثالية ⇒ كلها GREEN؛ underdose ⇒ V100=0 وREVIEW/STOP.
+
+## 4) حالات مشتركة (لكل شاشة)
+skeleton / empty / error+retry / degraded⇒STOP+«تواصل مع الفيزيائي».
+
+## 5) Microcopy (يُعاد استخدامه من الحزمة السابقة)
+نفس النصوص المعتمدة؛ لا نص جديد بدون مراجعة.
+
+## 6) اختبار قبول سريع (باللابتوب)
+- pip install fastapi uvicorn httpx
+- pytest test_web_ui.py -q (يشمل API الحين)
+- يدوياً: افتح / و /physics و /planner؛ جرّب كيبورد فقط؛ جرّب قارئ شاشة.
