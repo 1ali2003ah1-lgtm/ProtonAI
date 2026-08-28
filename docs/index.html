@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ProtonAI — منصة القرار السريري للعلاج بالبروتون</title>
+<meta name="description" content="منصة ذكاء سريري مؤسسية للعلاج بالبروتون: سلامة أولاً، توثيق hash-chain، وحوكمة ذاتية.">
+<style>
+:root{
+ --bg:#F7F9FC;--surface:#FFFFFF;--ink:#0B1526;--sub:#51607A;--line:#E5EAF2;
+ --accent:#0E7490;--accent2:#4338CA;--green:#15803D;--amber:#B45309;--red:#B91C1C;
+ --focus:#1D4ED8;--r:16px;--shadow:0 10px 30px rgba(16,24,40,.08);
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font:16px/1.7 "IBM Plex Sans Arabic",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink)}
+a.skip{position:absolute;right:-999px;top:0;background:var(--accent);color:#fff;padding:12px 18px;border-radius:0 0 10px 10px;z-index:99}
+a.skip:focus{right:8px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+/* Navbar */
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .in{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-weight:800;font-size:20px;display:flex;gap:8px;align-items:center}
+.logo .dot{width:12px;height:12px;border-radius:4px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.nav nav{display:flex;gap:22px}
+.nav nav a{color:var(--sub);text-decoration:none;font-size:15px}
+.nav nav a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 22px;border-radius:12px;border:0;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.pri{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:var(--shadow)}
+.btn.ghost{background:#fff;color:var(--accent2);border:2px solid var(--line)}
+.btn:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+/* Hero */
+.hero{padding:80px 0 60px;background:
+ radial-gradient(900px 400px at 85% -10%,rgba(14,116,144,.12),transparent),
+ radial-gradient(700px 380px at 10% 110%,rgba(67,56,202,.10),transparent)}
+.overline{display:inline-flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 16px;color:var(--accent2);font-size:13px;font-weight:700;margin-bottom:18px}
+.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.25;font-weight:800;max-width:760px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--sub);font-size:18px;max-width:640px;margin:18px 0 28px}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:34px}
+.badge{background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;color:var(--sub)}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;padding:34px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;text-align:center;box-shadow:var(--shadow)}
+.stat .v{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat .l{color:var(--sub);font-size:14px;margin-top:4px}
+/* Sections */
+section{padding:56px 0}
+.sec-h{font-size:28px;font-weight:800;margin-bottom:8px}
+.sec-s{color:var(--sub);margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.feat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px;box-shadow:var(--shadow);transition:transform .2s}
+.feat:hover{transform:translateY(-3px)}
+.feat .ic{font-size:26px}
+.feat h3{margin:12px 0 6px;font-size:18px}
+.feat p{color:var(--sub);font-size:15px}
+/* Pipeline */
+.pipe{display:flex;gap:10px;flex-wrap:wrap}
+.chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 18px;font-weight:700;font-size:14px}
+.chip.arr{border:0;background:none;color:var(--sub)}
+/* Demo */
+.demo{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:26px;box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:14px;border-bottom:1px solid var(--line);text-align:right;font-size:15px}
+.pill{display:inline-flex;gap:6px;align-items:center;padding:4px 14px;border-radius:999px;font-weight:700;border:2px solid;font-size:14px}
+.p-PROCEED{color:var(--green);border-color:var(--green);background:#F0FDF4}
+.p-REVIEW{color:var(--amber);border-color:var(--amber);background:#FFFBEB}
+.p-STOP{color:var(--red);border-color:var(--red);background:#FEF2F2}
+.detail{margin-top:22px}
+.tiles{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0}
+.tile{border:1px solid var(--line);border-radius:12px;padding:14px;min-width:120px}
+.tile .v{font-size:24px;font-weight:800}
+.tile .l{color:var(--sub);font-size:13px}
+.shield{color:var(--green);font-weight:800}
+.timeline{list-style:none;padding:0;margin:14px 0}
+.timeline li{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+.timeline .h{font-family:ui-monospace,monospace;color:var(--sub);font-size:12px}
+details{border:1px solid var(--line);border-radius:12px;padding:14px;margin:14px 0}
+dialog{border:0;border-radius:var(--r);padding:30px;max-width:500px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(11,21,38,.6)}
+label{display:block;margin:14px 0}
+input[type=text]{width:100%;min-height:46px;padding:10px 14px;border:2px solid var(--line);border-radius:12px;font-size:15px}
+.err{color:var(--red);font-weight:700}
+/* Compliance */
+.comp{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.comp .item{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+/* Footer */
+footer{border-top:1px solid var(--line);padding:34px 0;color:var(--sub);font-size:14px}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s}
+.reveal.on{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">تخطَّ إلى المحتوى</a>
+
+<header class="nav"><div class="wrap in">
+ <div class="logo"><span class="dot"></span> ProtonAI</div>
+ <nav aria-label="التنقل الرئيسي">
+  <a href="#product">المنتج</a><a href="#trust">الموثوقية</a>
+  <a href="#demo">العرض الحي</a><a href="#compliance">الامتثال</a>
+ </nav>
+ <a class="btn pri" href="#demo">جرّب العرض</a>
+</div></header>
+
+<main id="main">
+<section class="hero"><div class="wrap">
+ <span class="overline">🧬 منصة قرار سريري • علاج البروتون</span>
+ <h1>قرارات علاجية أدق،<br><em>موثّقة وآمنة</em> من أول بكسل إلى آخر جراي.</h1>
+ <p>ProtonAI يدمج الفيزياء، الذكاء الاصطناعي، والحوكمة الذاتية بمنصة واحدة —
+ مع إقرار بشري إجباري وسجل تدقيق لا يقبل التلاعب.</p>
+ <div class="cta-row">
+  <a class="btn pri" href="#demo">شاهد العرض الحي</a>
+  <a class="btn ghost" href="#trust">كيف نضمن السلامة؟</a>
+ </div>
+ <div class="badges">
+  <span class="badge">WCAG 2.2 AA</span><span class="badge">RTL كامل</span>
+  <span class="badge">Safety‑first</span><span class="badge">Hash‑chain audit</span>
+  <span class="badge">صفر PHI</span>
+ </div>
+</div></section>
+
+<div class="wrap"><div class="stats">
+ <div class="stat"><div class="v">19</div><div class="l">موقع ورم مدعوم</div></div>
+ <div class="stat"><div class="v">7</div><div class="l">طبقات معمارية</div></div>
+ <div class="stat"><div class="v">100%</div><div class="l">تغطية اختبارات للسلامة</div></div>
+ <div class="stat"><div class="v">0</div><div class="l">بيانات تعريفية تُخزَّن</div></div>
+</div></div>
+
+<section id="product"><div class="wrap">
+ <h2 class="sec-h">المنتج</h2><p class="sec-s">ست قدرات مؤسسية بمنصة واحدة.</p>
+ <div class="grid">
+  <div class="feat"><div class="ic">🧠</div><h3>ذكاء سريري</h3><p>سرد طبي فصيح، 4 وجهات نظر، وسلاسل أدلة لكل توصية.</p></div>
+  <div class="feat"><div class="ic">🏥</div><h3>مجلس ورم</h3><p>إجماع متعدد التخصصات، نقض سلامة، وآراء أقلية موثقة.</p></div>
+  <div class="feat"><div class="ic">⚛️</div><h3>فيزياء البروتون</h3><p>معايرة HU→RSP، مدى، هامش، وRBE متغير — لا 1.1 ثابت.</p></div>
+  <div class="feat"><div class="ic">🛰️</div><h3>حوكمة ذاتية</h3><p>برج مراقبة يفحص الأسطول والانجراف ويصعّد تلقائياً.</p></div>
+  <div class="feat"><div class="ic">🔐</div><h3>Forensics</h3><p>سلسلة بصمات تكشف أي تلاعب بالقرار السريري.</p></div>
+  <div class="feat"><div class="ic">💰</div><h3>اقتصاد صحي</h3><p>QALY/ICER يكمّم ميزة البروتون للجان والتأمين.</p></div>
+ </div>
+</div></section>
+
+<section id="trust"><div class="wrap">
+ <h2 class="sec-h">خط القرار</h2><p class="sec-s">كل حالة تمر بسلسلة موثقة مرحلة‑بمرحلة.</p>
+ <div class="pipe">
+  <span class="chip">DICOM</span><span class="chip arr">←</span>
+  <span class="chip">Anonymize</span><span class="chip arr">←</span>
+  <span class="chip">AI + عدم يقين</span><span class="chip arr">←</span>
+  <span class="chip">فيزياء + هامش</span><span class="chip arr">←</span>
+  <span class="chip">بوابة قرار</span><span class="chip arr">←</span>
+  <span class="chip">مجلس ورم</span><span class="chip arr">←</span>
+  <span class="chip">Dossier مختوم</span>
+ </div>
+</div></section>
+
+<section id="demo"><div class="wrap">
+ <h2 class="sec-h">العرض الحي</h2><p class="sec-s">بيانات توضيحية اصطناعية — جرّبها بحرية.</p>
+ <div class="demo">
+  <table aria-label="قائمة الحالات"><thead><tr>
+   <th>الحالة</th><th>الموقع</th><th>القرار</th><th></th></tr></thead>
+   <tbody id="rows"></tbody></table>
+  <div class="detail" id="detail" hidden aria-live="polite"></div>
+ </div>
+</div></section>
+
+<section id="compliance"><div class="wrap">
+ <h2 class="sec-h">الامتثال والأمان</h2><p class="sec-s">مصمم وفق معايير طبية عالمية.</p>
+ <div class="comp">
+  <div class="item">🔒<div><b>صفر PHI</b><br>إخفاء هوية DICOM PS3.15 قبل أي معالجة.</div></div>
+  <div class="item">⛔<div><b>RED = إيقاف</b><br>أي حالة حرجة توقف الاعتماد إلزامياً.</div></div>
+  <div class="item">✍️<div><b>إقرار بشري</b><br>لا توصية تُعتمد بدون إقرار موثق بالهوية.</div></div>
+  <div class="item">♿<div><b>وصولية AA</b><br>تباين عالٍ، كيبورد كامل، وقارئ شاشة.</div></div>
+ </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+ ProtonAI — منصة بحثية، ليست جهازاً طبياً معتمداً. القرار النهائي بشري دائماً.
+</div></footer>
+
+<dialog id="ack" aria-labelledby="ackT"><h2 id="ackT">إقرار المراجعة</h2>
+<p>هذا دعم قرار فقط؛ القرار السريري مسؤوليتك بعد المراجعة.</p>
+<label><input type="checkbox" id="ackChk"> أُقرّ أنني راجعت التوصية وأتحمل القرار النهائي</label>
+<label>اسم المُقِرّ <input type="text" id="ackName"></label>
+<p class="err" id="ackErr" hidden>فعّل الإقرار وأدخل الاسم أولاً.</p>
+<p><button class="btn pri" id="ackOk">تأكيد الإقرار</button></p></dialog>
+<div aria-live="assertive" id="live"></div>
+
+<script>
+const IC={PROCEED:"✅",REVIEW:"⚠️",STOP:"⛔"};
+const CASES=[
+ {id:"P-001",site:"prostate",final:"PROCEED",agree:.9,ev:6,risk:1,margin:"5.2",
+  nar:"قرار البوابة PROCEED مع هامش 5.2 مم. TCP مرتفع، حدود OAR ضمن الأخضر، البروتون مفضّل ومجدٍ اقتصادياً.",
+  stages:[["decision","PROCEED","a1b2c3d4e5"],["intelligence","OK","f6a7b8c9d0"],["board","PROCEED","1a2b3c4d5e"],["final","PROCEED","9f8e7d6c5b"]]},
+ {id:"P-002",site:"CNS_brain_spine",final:"REVIEW",agree:.7,ev:6,risk:2,margin:"4.1",
+  nar:"قرار البوابة REVIEW — Dice أقل من هدف المواقع عالية الأولوية (0.90). يلزم مراجعة قبل الاعتماد.",
+  stages:[["decision","REVIEW","b2c3d4e5f6"],["intelligence","OK","c7d8e9f0a1"],["board","REVIEW","2b3c4d5e6f"],["final","REVIEW","8e7d6c5b4a"]]},
+ {id:"P-003",site:"lung_pleura",final:"STOP",agree:1,ev:6,risk:3,margin:"6.0",
+  nar:"قرار البوابة STOP — حالة إيقاف إلزامي. لا متابعة قبل مراجعة فيزيائي طبي.",
+  stages:[["decision","STOP","d4e5f6a7b8"],["intelligence","OK","e9f0a1b2c3"],["board","STOP","3c4d5e6f7a"],["final","STOP","7d6c5b4a39"]]}];
+document.getElementById("rows").innerHTML=CASES.map(c=>
+ `<tr><td><b>${c.id}</b></td><td>${c.site}</td>
+  <td><span class="pill p-${c.final}">${IC[c.final]} ${c.final}</span></td>
+  <td><button class="btn ghost" data-id="${c.id}">فتح الملف</button></td></tr>`).join("");
+document.querySelectorAll("#rows button").forEach(b=>b.onclick=()=>{
+ const c=CASES.find(x=>x.id===b.dataset.id);
+ const el=document.getElementById("detail");el.hidden=false;
+ el.innerHTML=`
+  <span class="pill p-${c.final}" style="font-size:17px">${IC[c.final]} القرار: ${c.final}</span>
+  <span class="shield">🔒 سجل سليم</span>
+  <div class="tiles">
+   <div class="tile"><div class="v">${c.agree.toFixed(2)}</div><div class="l">إجماع المجلس</div></div>
+   <div class="tile"><div class="v">${c.ev}</div><div class="l">أدلة موثقة</div></div>
+   <div class="tile"><div class="v">${c.risk}</div><div class="l">مخاطر مُقيّمة</div></div>
+   <div class="tile"><div class="v">${c.margin} مم</div><div class="l">هامش المدى</div></div>
+  </div>
+  <details><summary>السرد السريري الكامل</summary><p>${c.nar}</p></details>
+  <h3>سلسلة البصمات (hash‑chain)</h3>
+  <ul class="timeline">${c.stages.map(s=>
+   `<li><span class="pill p-${s[1]==='OK'?'PROCEED':s[1]}">${s[1]}</span> ${s[0]} <span class="h">${s[2]}…</span></li>`).join("")}</ul>
+  <button class="btn pri" id="ackBtn">أُقرّ بالمراجعة وأتحمل القرار النهائي</button>`;
+ document.getElementById("ackBtn").onclick=()=>{
+  const dlg=document.getElementById("ack");dlg.showModal();
+  document.getElementById("ackChk").focus();
+  document.getElementById("ackOk").onclick=()=>{
+   if(!document.getElementById("ackChk").checked||!document.getElementById("ackName").value.trim()){
+    document.getElementById("ackErr").hidden=false;return;}
+   dlg.close();
+   document.getElementById("live").textContent="تم تسجيل الإقرار في سجل التدقيق.";};};
+ el.scrollIntoView({behavior:"smooth"});});
+/* Scroll reveal */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("on");io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll(".feat,.stat,.comp .item").forEach(x=>{x.classList.add("reveal");io.observe(x);});
+</script>
+</body>
+  </html>
