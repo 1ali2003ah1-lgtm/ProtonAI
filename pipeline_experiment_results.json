@@ -1,0 +1,27 @@
+{
+  "pipeline": "v0.2.0-ingestion",
+  "baseline_mean_dice": 1.0,
+  "experiment_mean_dice": 1.0,
+  "baseline_per_case": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "experiment_per_case": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "delta": 0.0,
+  "verdict": "NO IMPROVEMENT"
+}
