@@ -1,0 +1,26 @@
+{
+  "series": "SYNTH-002",
+  "wilcoxon_statistic": 20.0,
+  "wilcoxon_p_value": 0.03125,
+  "significant_p": true,
+  "bootstrap_ci_lower": 0.0005687350728046936,
+  "bootstrap_ci_upper": 0.010406506947902983,
+  "ci_excludes_zero": true,
+  "multi_seed_verdicts": [
+    "SUPPORTED",
+    "SUPPORTED",
+    "SUPPORTED"
+  ],
+  "robust_across_seeds": true,
+  "final_verdict": "STRONG EVIDENCE: HYPOTHESIS SUPPORTED",
+  "per_case_differences": [
+    -3.319070066443164e-05,
+    0.001285765011493356,
+    0.0,
+    0.0012817918100249681,
+    0.0,
+    0.009371802741968582,
+    0.002019487663052044,
+    0.023099027409372197
+  ]
+}
