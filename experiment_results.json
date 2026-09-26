@@ -1,0 +1,16 @@
+{
+  "baseline_mean_dice": 0.9994182328240262,
+  "experiment_mean_dice": 1.0,
+  "delta": 0.0005817671759738019,
+  "verdict": "HYPOTHESIS SUPPORTED",
+  "baseline_report": {
+    "dice": 0.9990539262062441,
+    "hd95": 0.0,
+    "assd": 0.000945179584120983
+  },
+  "experiment_report": {
+    "dice": 1.0,
+    "hd95": 0.0,
+    "assd": 0.0
+  }
+}
