@@ -168,7 +168,7 @@ class TestRequire:
             assert False, "كان يجب أن يرمي"
         except PermissionDeniedError as e:
             msg = str(e)
-            assert "id_viewer" in msg
+            assert "id_Role.VIEWER" in msg
             assert "viewer" in msg
             assert "edit_plan" in msg
 

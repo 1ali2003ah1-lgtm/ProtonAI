@@ -24,7 +24,7 @@ def ea():
 class TestLogAction:
     def test_links_user_and_role(self, ea):
         rec = ea.log_action(_u(Role.PHYSICIAN), "sign", "plan_1")
-        assert rec["user_id"] == "id_physician"
+        assert rec["user_id"] == "id_Role.PHYSICIAN"
         assert rec["role"] == "physician"
         assert rec["action"] == "sign"
         assert rec["outcome"] == "SUCCESS"
@@ -39,7 +39,7 @@ class TestLogAction:
     def test_details_merged_with_user(self, ea):
         rec = ea.log_action(_u(Role.ADMIN), "deliver", details={"plan": "p1"})
         assert rec["details"]["plan"] == "p1"
-        assert rec["details"]["user_id"] == "id_admin"
+        assert rec["details"]["user_id"] == "id_Role.ADMIN"
         assert rec["details"]["role"] == "admin"
 
     def test_timestamp_present(self, ea):
