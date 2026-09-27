@@ -61,7 +61,7 @@ def full_eval(Cls, data):
     out = {}
     for src in SERIES:
         for tgt in SERIES:
-            key = f"{'in_domain' if src == tgt else f'cross_{src}_to_{tgt}'}"
+            key = f"in_domain_{src}" if src == tgt else f"cross_{src}_to_{tgt}"
             out[key] = {}
             hu_s, m_s = data[src]
             hu_t, m_t = data[tgt]
