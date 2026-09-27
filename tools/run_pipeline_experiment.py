@@ -23,6 +23,8 @@ EPOCHS = 40
 def ingest(series: Path):
     reader = DicomReader(metadata_keys=["PatientID", "Modality"])
     slices = sorted(series.glob("*.dcm"))
+    if not slices:
+        raise FileNotFoundError(f"No .dcm slices in {series}; run tools/make_synthetic_dicom.py first")
     hu = np.stack([np.asarray(reader.read(p)["pixels"], dtype=float) for p in slices])
     masks = np.load(series / "ground_truth" / "masks.npy").astype(float)
     assert hu.shape == masks.shape, f"ingestion/ground-truth mismatch: {hu.shape} vs {masks.shape}"
