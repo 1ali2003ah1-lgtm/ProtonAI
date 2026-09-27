@@ -28,7 +28,10 @@ def phi_series(tmp_path):
         ds = pydicom.dcmread(str(f))
         ds.PatientName = "Smith^John DOB 1980-01-01 MRN 123456"
         ds.PatientID = "MRN-123456"
-        ds.save_as(str(f), write_like_original=False)
+        try:
+            pydicom.dcmwrite(str(f), ds, enforce_file_format=True)
+        except TypeError:  # older pydicom
+            ds.save_as(str(f), write_like_original=False)
     return dst
 
 
