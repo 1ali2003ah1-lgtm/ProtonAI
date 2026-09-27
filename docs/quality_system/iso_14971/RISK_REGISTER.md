@@ -13,6 +13,8 @@ Acceptance: residual RPN <= 6; no S=5 with P >= 2 left unmitigated.
 | R-006 | Use error (wrong case selected) | treatment of wrong plan | patient harm | 5 | 2 | 10 | IEC 62366 usability file; confirmations; patient ID double-check | 5/1 | OPEN |
 | R-007 | Model/weight tampering | corrupted predictions | patient harm | 5 | 1 | 5 | artifact signing; integrity check at load; least privilege | 5/1 | OPEN |
 
+| R-008 | Evaluation ceiling effect | over-easy phantom masks true model differences | false-negative verdict (missed benefit) | 3 | 3 | 9 | difficulty-calibrated phantoms; discriminative-power precondition (ADR-004); reproducibility guard test | 3/1 | OPEN |
+
 ## Risk acceptance rule
 Residual risk accepted only with documented benefit-risk rationale and
 signature of Founder + clinical advisor.
