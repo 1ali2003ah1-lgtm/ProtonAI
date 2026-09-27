@@ -15,6 +15,8 @@ Acceptance: residual RPN <= 6; no S=5 with P >= 2 left unmitigated.
 
 | R-008 | Evaluation ceiling effect | over-easy phantom masks true model differences | false-negative verdict (missed benefit) | 3 | 3 | 9 | difficulty-calibrated phantoms; discriminative-power precondition (ADR-004); reproducibility guard test | 3/1 | OPEN |
 
+| R-009 | Domain-shift overfitting | model performs well in-domain but fails on unseen distributions | false confidence in generalization | 3 | 3 | 9 | two-direction external validation harness (ADR-005); paired permutation test; multi-seed robustness | 3/1 | OPEN |
+
 ## Risk acceptance rule
 Residual risk accepted only with documented benefit-risk rationale and
 signature of Founder + clinical advisor.
