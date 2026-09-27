@@ -63,3 +63,12 @@
 - تدريب nnU‑Net على GPU.
 - dashboard RAG.
 - التحقق على بيانات حقيقية (بعد IRB، بعد العطلة).
+
+## [unreleased]
+- SUPERSEDED: remove legacy `.github/workflows/test.yml` ("ProtonAI CI/CD Pipeline").
+  Rationale: duplicated CI responsibility, unpinned Python, torch-less test env,
+  deprecated Node20-based actions. Coverage responsibility folded into
+  `.github/workflows/ci.yml` (single modern pipeline).
+  Evidence: legacy pytest command reproduced green locally (1888 passed,
+  13 skipped, 90% coverage) while the workflow kept failing on deprecated
+  runtime steps; ci.yml green on branch and main.
