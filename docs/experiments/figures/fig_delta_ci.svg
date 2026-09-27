@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="220">
+<rect width="720" height="220" fill="#0d1117"/>
+<text x="360.0" y="28" fill="#e6edf3" font-family="monospace" font-size="16" text-anchor="middle">Mean Dice difference with bootstrap 95% CI</text>
+<line x1="173.4" y1="50" x2="173.4" y2="170" stroke="#f85149" stroke-width="2" stroke-dasharray="4 3"/>
+<line x1="194.9" y1="110" x2="566.6" y2="110" stroke="#8b949e" stroke-width="3"/>
+<line x1="194.9" y1="96" x2="194.9" y2="124" stroke="#8b949e" stroke-width="3"/>
+<line x1="566.6" y1="96" x2="566.6" y2="124" stroke="#8b949e" stroke-width="3"/>
+<circle cx="348.3" cy="110" r="7" fill="#3fb950"/>
+<text x="173.4" y="188" fill="#f85149" font-family="monospace" font-size="11" text-anchor="middle">0 (no effect)</text>
+<text x="348.3" y="86" fill="#3fb950" font-family="monospace" font-size="12" text-anchor="middle">delta=+0.004628</text>
+<text x="194.9" y="144" fill="#8b949e" font-family="monospace" font-size="11" text-anchor="middle">+0.000569</text>
+<text x="566.6" y="144" fill="#8b949e" font-family="monospace" font-size="11" text-anchor="middle">+0.010407</text>
+</svg>
