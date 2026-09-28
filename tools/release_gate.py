@@ -41,12 +41,18 @@ def git_clean():
 
 def manifest_ok(rel_manifest):
     m = load(ROOT / rel_manifest)
+    series_base = ROOT / "data" / "synth_ct" / m.get("series", "")
     bad = []
     for rel, h in m["hashes"].items():
-        if isinstance(h, dict):
-            bad += [f"{rel}/{n}" for n, hh in h.items()
-                    if not (ROOT / rel / n).exists() or sha(ROOT / rel / n) != hh]
-        elif sha(ROOT / rel) != h:
+        if rel == "slices":
+            for n, hh in h.items():
+                pth = series_base / n
+                if not pth.exists() or sha(pth) != hh:
+                    bad.append(f"slices/{n}")
+            continue
+        base = series_base if rel.startswith("ground_truth/") else ROOT
+        pth = base / rel
+        if not pth.exists() or sha(pth) != h:
             bad.append(rel)
     return not bad, ("ok" if not bad else f"mismatch: {bad}")
 
