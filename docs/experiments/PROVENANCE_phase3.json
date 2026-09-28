@@ -1,0 +1,12 @@
+{
+  "git_commit": "4273b0d",
+  "hashes": {
+    "docs/quality_system/iec_62304/ADR-005_EXTERNAL_VALIDATION.md": "1faaccbdecf1ba9115b5b87db2d75bf29c2afd017c9a2397307a1e8609bdca0b",
+    "docs/quality_system/iec_62304/ADR-006_UQ_METHODOLOGY.md": "d943ae03d66ed5c3bbcbb6f2ec72ba4357f3653606b79e2e63e393b3fc33ab14",
+    "external_validation_results.json": "0e49047c132ddfaf62b469aeb37d8cd487a236c5d630900de16bf4d17c78cbe7",
+    "real_data_adapter.py": "9e7442476525c39a7d22792d36f5ddc190af5ae72deae86d2b8f0fb573565bed",
+    "tools/run_external_validation.py": "25dcaecdf220a3797ce3bcf82783ceea8d1c3e395bd8b6277dacc32c195fc373",
+    "tools/run_uq_analysis.py": "85c1c4b518fa81aef5ff969a41ec0354c84f035cbc5f632850d74def10531437",
+    "uq_analysis_results.json": "0b01ed3268faf93e001657fd1717fbb68a207bad7f0d68ca9c955593f4005fa4"
+  }
+}

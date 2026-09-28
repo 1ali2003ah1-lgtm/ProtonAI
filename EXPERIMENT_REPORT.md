@@ -3,16 +3,22 @@
 ## Document Control
 | ID | Version | Generated | Generator commit | Status |
 |---|---|---|---|---|
-| RPT-001 | 2.0 | 2026-09-27 12:13 UTC | 82de338942db | EFFECTIVE |
+| RPT-001 | 3.0 | 2026-09-28 18:44 UTC | 4273b0d | EFFECTIVE |
 
 ## 1. Executive Summary
 Replacing the Cross-Entropy loss with a combined Dice+CE loss
-improves organ-at-risk segmentation accuracy. Verified through the
-validated DICOM ingestion pipeline (v0.2.0-ingestion) on the
-difficulty-calibrated phantom SYNTH-002, with statistical evidence:
-Wilcoxon one-sided p = 0.031250, bootstrap 95%
-CI excluding 0, and 3/3 seeds concordant.
-**Final verdict: STRONG EVIDENCE: HYPOTHESIS SUPPORTED**
+improves organ-at-risk segmentation accuracy. Phase-2 evidence
+(v0.3.0, calibrated phantom SYNTH-002 through the validated DICOM
+pipeline): Wilcoxon one-sided p = 0.031250,
+bootstrap 95% CI excluding 0, 3/3 seeds concordant.
+Phase-3 evidence (v0.4.0): two-direction external validation shows
+the gain is in-domain, not shift-robustness (MIXED: advantage in one direction only);
+seed-ensemble uncertainty is informative and OOD-sensitive
+(cross-domain failure AUC = 1.0,
+OOD Mann-Whitney p = 0.0001), enabling the
+documented physicist-review flagging policy (CLIN-001).
+**Final verdict: STRONG EVIDENCE in-domain; clinical safety via
+uncertainty flagging.**
 
 ## 2. Hypothesis
 Combined Dice+CE loss yields higher Dice than CE alone for
@@ -76,3 +82,52 @@ pytest test_experiment_reproducibility.py -q
 ADR-001 (synthetic-first), ADR-002 (warning policy),
 ADR-003 (statistical methods), ADR-004 (ceiling effect &
 calibration); RISK_REGISTER R-001..R-008; CAPA_LOG CAPA-001.
+
+## 9. Phase 3: Real-World Readiness Evidence
+
+### 9.1 External validation (ADR-005)
+
+| Model | inS1 | inS2 | cross S1->S2 | cross S2->S1 | gap12 | gap21 |
+|---|---|---|---|---|---|---|
+| baseline | 0.9999 | 0.9763 | 0.9455 | 0.9662 | +0.0308 | +0.0337 |
+| experiment | 1.0000 | 0.9806 | 0.9401 | 0.9681 | +0.0404 | +0.0319 |
+
+Verdict: MIXED: advantage in one direction only. Interpretation: Dice+CE is an in-domain
+accuracy/consistency gain, not a distribution-shift robustness gain;
+clinical safety therefore rests on uncertainty flagging (9.2).
+
+### 9.2 Uncertainty quantification (ADR-006)
+
+| Scope | mean uncertainty | Spearman rho | p | failure AUC |
+|---|---|---|---|---|
+| in-domain | 0.0018 | +0.3810 | 0.3518 | None |
+| cross-domain | 0.0112 | +0.8095 | 0.0149 | 1.0 |
+
+OOD sensitivity: Mann-Whitney p = 0.0001.
+Verdict: UNCERTAINTY INFORMATIVE + OOD-SENSITIVE.
+
+Clinical safety contract: any case whose vote-entropy exceeds the
+documented in-domain maximum is auto-flagged for physicist review
+(CLIN-001). The platform does not fail silently.
+
+### 9.3 Evidence sealing (Phase 3)
+
+| Artifact | sha256 (first 16) |
+|---|---|
+| docs/quality_system/iec_62304/ADR-005_EXTERNAL_VALIDATION.md | 1faaccbdecf1ba91 |
+| docs/quality_system/iec_62304/ADR-006_UQ_METHODOLOGY.md | d943ae03d66ed5c3 |
+| external_validation_results.json | 0e49047c132ddfaf |
+| real_data_adapter.py | 9e7442476525c39a |
+| tools/run_external_validation.py | 25dcaecdf220a379 |
+| tools/run_uq_analysis.py | 85c1c4b518fa81ae |
+| uq_analysis_results.json | 0b01ed3268faf93e |
+
+Manifest: docs/experiments/PROVENANCE_phase3.json.
+
+## 10. Document Revision History
+
+| Version | Date | Commit | Scope |
+|---|---|---|---|
+| 1.0 | v0.2.0 era | - | initial v0.2.0 experiment evidence |
+| 2.0 | Phase 2 | 82de338 | pipeline evidence, figures, gate |
+| 3.0 | 2026-09-28 18:44 UTC | 4273b0d | Phase-3 validation + UQ + sealing |
