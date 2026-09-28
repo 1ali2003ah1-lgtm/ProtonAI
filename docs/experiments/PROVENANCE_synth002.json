@@ -8,20 +8,20 @@
       999
     ]
   },
-  "git_commit": "8fbdadf2034547cddb19679f948ea55c4d4a538e",
+  "git_commit": "1e8cbcda0f1e55b5978edd79210742bc16c2c09c",
   "hashes": {
     "ground_truth/hu.npy": "3bca927214a907e72f3e7b1929929e60339ee7e98703add03d5a0d1bbb65e1b7",
     "ground_truth/masks.npy": "6c6c36c67475915389b8bd9f42a55d31ada6a26a3e90afd5a0fe1cd6394dedd9",
     "pipeline_results": "d497df05e6f36774f430220dd0e0608abc77c08eab9e8dcb9276fb5b60504722",
     "slices": {
-      "slice_000.dcm": "2ca1559db05ecdbdd2e52e3bbb333719067d703fb03b096afff4b5fa53f33910",
-      "slice_001.dcm": "e45616c208c0fbbf308a4dbae42d63934c2b08aa1bcf87a8b68e3c14cace7815",
-      "slice_002.dcm": "1c0d1a76665c0eec454f315b7de38c86bf865972c23c3dd458222dd8a3a68a0d",
-      "slice_003.dcm": "1cd265be60e048448de2e489cd66d478fe2768dce7b901ce7a3551073a11fe77",
-      "slice_004.dcm": "b79bfabfb0fff43b9abc9d8ba1d5da4bfdfbdfb458d8de951d70dedf75ace6ff",
-      "slice_005.dcm": "025b13acd763028d857fa1fefd1b0f1b1d890d511e4a7046d5c147a18c06236e",
-      "slice_006.dcm": "7724a3034de6d19f5e920dc2d6882c2141892165a82e547acf2f29b559894f53",
-      "slice_007.dcm": "4c57c277b4d73521cd671e5c6f0d57f5abbcc98950ec2da215ea5910e347074a"
+      "slice_000.dcm": "6ce8d2e2cd36dda9c6403c6cd25ce3624862060e1956975e55d57fb3839d720e",
+      "slice_001.dcm": "5b50651e97f40447262ada3b83cc229b5fb36691129dda5f746a4ea8d36a13cb",
+      "slice_002.dcm": "fa7f27e0a65dfdb37c87e32f3a40767e2742fce2468ba298a9b47d4823276dbe",
+      "slice_003.dcm": "2adb5e6b9b1c2b757eb4262c387aaba509401c93c0176a5f793e960ea98722c7",
+      "slice_004.dcm": "a2ac07d176b21fb20e95ba9ae5495c1f1d06520e7f0df8d4119e74155d9d9ddb",
+      "slice_005.dcm": "624f679f002ea9d4193978848b24c0c418f1ea2555814d4f5da06a0beac79516",
+      "slice_006.dcm": "50e87a9c1220fc01814cbb2b5383efcc4e48c028d105bf6854643dc49bac03b3",
+      "slice_007.dcm": "f75a005d1c71a2759dcecef9729579cfbfd7226f54927c4f98fa988087010f95"
     },
     "statistics": "5591a77035fbdaa3b4484f6bb9870e4ae87b8cc15cf26c0cb370050c6024b927"
   },
@@ -31,6 +31,6 @@
     "pydicom": "3.0.2",
     "python": "3.14.2",
     "scipy": "1.18.1",
-    "torch": "2.14.0+cpu"
+    "torch": "absent"
   }
 }

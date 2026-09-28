@@ -49,8 +49,14 @@ def manifest_ok(rel_manifest):
         if rel == "slices":
             for n, hh in h.items():
                 pth = series_base / n
-                if not pth.exists() or sha(pth) != hh:
+                if not pth.exists():
                     bad.append(f"slices/{n} (missing? regenerate)")
+                    continue
+                import pydicom
+                cur = hashlib.sha256(
+                    pydicom.dcmread(str(pth)).pixel_array.tobytes()).hexdigest()
+                if cur != hh:
+                    bad.append(f"slices/{n} (content mismatch)")
             continue
         base = series_base if rel.startswith("ground_truth/") else ROOT
         pth = base / logical.get(rel, rel)

@@ -23,6 +23,13 @@ def sha256_file(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
+def sha256_slice_content(p: Path) -> str:
+    """sha256 of decoded pixel content (writer-version independent)."""
+    import pydicom
+    return hashlib.sha256(
+        pydicom.dcmread(str(p)).pixel_array.tobytes()).hexdigest()
+
+
 def git_commit() -> str:
     try:
         return subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
@@ -58,7 +65,7 @@ def main(series: str, out_name: str):
         "hashes": {
             "ground_truth/hu.npy": sha256_file(gt / "hu.npy"),
             "ground_truth/masks.npy": sha256_file(gt / "masks.npy"),
-            "slices": {p.name: sha256_file(p)
+            "slices": {p.name: sha256_slice_content(p)
                        for p in sorted(series_dir.glob("*.dcm"))},
             "pipeline_results": sha256_file(ROOT / "pipeline_experiment_synth002.json"),
             "statistics": sha256_file(ROOT / "experiment_statistics_synth002.json"),
