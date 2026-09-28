@@ -45,3 +45,9 @@ safety policy, and real-data acquisition infrastructure.
 | Release Manager | (pending) | (pending) | (pending) |
 | Medical Physicist | (pending) | (pending) | (pending) |
 | QMS Manager | (pending) | (pending) | (pending) |
+
+## 8. Deviation Record
+| ID | Description | Impact assessment | Disposition |
+|---|---|---|---|
+| DEV-001 | v0.5.0 tag created before release_gate execution | None on evidence: gate verifies immutable sealed artifacts; executed post-hoc all-PASS on tagged commit | Recorded; release chain unified |
+| DEV-002 | Phase-2 slice sealing used container bytes; not reproducible across pydicom writer versions | None on science: pixel content identical; seal redefined on decoded content (schema v2); old byte-seal retained in git history as audit trail | Recorded; manifest re-sealed; gate updated |
