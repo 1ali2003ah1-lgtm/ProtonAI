@@ -43,15 +43,17 @@ def manifest_ok(rel_manifest):
     m = load(ROOT / rel_manifest)
     series_base = ROOT / "data" / "synth_ct" / m.get("series", "")
     bad = []
+    logical = {"pipeline_results": "pipeline_experiment_synth002.json",
+               "statistics": "experiment_statistics_synth002.json"}
     for rel, h in m["hashes"].items():
         if rel == "slices":
             for n, hh in h.items():
                 pth = series_base / n
                 if not pth.exists() or sha(pth) != hh:
-                    bad.append(f"slices/{n}")
+                    bad.append(f"slices/{n} (missing? regenerate)")
             continue
         base = series_base if rel.startswith("ground_truth/") else ROOT
-        pth = base / rel
+        pth = base / logical.get(rel, rel)
         if not pth.exists() or sha(pth) != h:
             bad.append(rel)
     return not bad, ("ok" if not bad else f"mismatch: {bad}")
