@@ -17,7 +17,7 @@ Acceptance: residual RPN <= 6; no S=5 with P >= 2 left unmitigated.
 
 | R-009 | Domain-shift overfitting | model performs well in-domain but fails on unseen distributions | false confidence in generalization | 3 | 3 | 9 | two-direction external validation harness (ADR-005); paired permutation test; multi-seed robustness | 3/1 | OPEN |
 
-| R-010 | Silent segmentation failure under domain shift | confident wrong contour on unseen distribution | unsafe proton plan | 4 | 2 | 8 | seed-ensemble UQ flagging (ADR-006); OOD sensitivity test; physicist review of high-uncertainty cases | 4/1 | OPEN |
+| R-010 | Silent segmentation failure under domain shift | confident wrong contour on unseen distribution | unsafe proton plan | 4 | 2 | 8 | seed-ensemble UQ flagging (ADR-006); OOD sensitivity test; CLIN-001 flagging policy with mandatory physicist review | 4/1 | OPEN |
 
 ## Risk acceptance rule
 Residual risk accepted only with documented benefit-risk rationale and

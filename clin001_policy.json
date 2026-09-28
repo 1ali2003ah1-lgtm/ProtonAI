@@ -1,0 +1,15 @@
+{
+  "cross_flag_rate": [
+    8,
+    8
+  ],
+  "failures_captured": true,
+  "generated": "2026-09-28 19:02 UTC",
+  "generator_commit": "0a6be7c",
+  "id": "CLIN-001",
+  "separation_margin": 0.00593160526443647,
+  "suspend_fraction": 0.2,
+  "theta": 0.0023823482049775994,
+  "uq_artifact_sha256": "0b01ed3268faf93e001657fd1717fbb68a207bad7f0d68ca9c955593f4005fa4",
+  "version": "1.0"
+}
