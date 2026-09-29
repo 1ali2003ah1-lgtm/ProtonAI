@@ -1,0 +1,29 @@
+{
+  "evidence_sha256": {
+    "EXPERIMENT_REPORT.md": "7e4b2f5687ebcf8e49cf762a30bff85053a43d70366255ea410111d395d6b1fc",
+    "clin001_policy.json": "3e3290ee7bf2b1e0afb7e7db8726791bcdaf0d6023ea2441859e0eb0b432e13e",
+    "confidence_analysis_results.json": "7d6585d55542113428886eff0b55ee960316af6f52dd1b924ed66c065aaf3db8",
+    "experiment_statistics_synth002.json": "5591a77035fbdaa3b4484f6bb9870e4ae87b8cc15cf26c0cb370050c6024b927",
+    "external_validation_results.json": "0e49047c132ddfaf62b469aeb37d8cd487a236c5d630900de16bf4d17c78cbe7",
+    "inter_observer_study.json": "5de97979254b91bf9790583030e8cf2c136b829c036ff5317230d2b1a3fa7be9",
+    "models/MODEL_CARD.json": "cc614c344f83a5765cf8c3811cdab7e7954a07572b398bafb485f8cc80dd195e",
+    "pipeline_experiment_synth002.json": "d497df05e6f36774f430220dd0e0608abc77c08eab9e8dcb9276fb5b60504722",
+    "registered_validation_results.json": "436641e2ea5cdcc70770e2f0ecc65ba509950cdb8e0e0a6562ba29564255ae2d",
+    "uq_analysis_results.json": "0b01ed3268faf93e001657fd1717fbb68a207bad7f0d68ca9c955593f4005fa4"
+  },
+  "git_commit": "94a0cda",
+  "libs": {
+    "numpy": "2.5.3",
+    "onnx": "1.23.0",
+    "onnxruntime": "1.30.0",
+    "pydicom": "3.0.2",
+    "scipy": "1.18.1",
+    "sklearn": "1.9.1",
+    "torch": "2.14.0+cpu"
+  },
+  "optional_present": {
+    "clinical_dashboard.json": false,
+    "intake_audit.json": false
+  },
+  "python": "3.14.2"
+}
