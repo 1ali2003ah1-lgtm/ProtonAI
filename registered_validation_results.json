@@ -1,0 +1,21 @@
+{
+  "datasets": [
+    {
+      "id": "DATASET-000-SYNTH-REF",
+      "resident": true,
+      "seal_intact": true,
+      "deid_gate": "PASS",
+      "mean_dice_baseline": 0.9769088639689018,
+      "mean_dice_experiment": 0.9815369494608077,
+      "paired_diff_ci95": [
+        0.0005588408187125437,
+        0.01031793683040802
+      ],
+      "wilcoxon_p": 0.03125,
+      "seed_concordance": 1.0
+    }
+  ],
+  "readiness": true,
+  "generated": "2026-09-29 14:51 UTC",
+  "generator_commit": "438c66e"
+}

@@ -3,7 +3,7 @@
 ## Document Control
 | ID | Version | Generated | Generator commit | Status |
 |---|---|---|---|---|
-| RPT-001 | 3.0 | 2026-09-28 18:44 UTC | 4273b0d | EFFECTIVE |
+| RPT-001 | 4.0 | 2026-09-29 14:51 UTC | 438c66e | EFFECTIVE |
 
 ## 1. Executive Summary
 Replacing the Cross-Entropy loss with a combined Dice+CE loss
@@ -131,3 +131,23 @@ Manifest: docs/experiments/PROVENANCE_phase3.json.
 | 1.0 | v0.2.0 era | - | initial v0.2.0 experiment evidence |
 | 2.0 | Phase 2 | 82de338 | pipeline evidence, figures, gate |
 | 3.0 | 2026-09-28 18:44 UTC | 4273b0d | Phase-3 validation + UQ + sealing |
+
+## 11. Phase 5: Clinical Confidence & Real-Data Readiness
+
+### 11.1 Unified clinical confidence (ADR-007)
+- Physics confidence: 0.963599
+- Threshold C (min in-domain): 0.960288
+- Cross-domain failures captured: True
+- Verdict: CONFIDENCE CALIBRATED
+
+### 11.2 Inter-observer agreement suite (DATA-ACQ-001 s6)
+- Primary mean Dice: 0.8872 (CI95 0.8793-0.8956)
+- Mean HD95: 1.00 mm; verdict: PASS
+
+### 11.3 Intake infrastructure & power progress
+- Manifest-driven intake with selective sealing, audit trail,
+  dry-run (P5-S3). Power: n_min=19, target=30 paired volumes.
+
+### 11.4 Registered validation readiness
+- Readiness: True
+- DATASET-000-SYNTH-REF: resident=True seal=True exp Dice=0.9815 wilcoxon_p=0.0312 concordance=1.00

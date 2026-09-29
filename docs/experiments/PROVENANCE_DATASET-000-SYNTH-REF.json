@@ -1,0 +1,16 @@
+{
+  "dataset_id": "DATASET-000-SYNTH-REF",
+  "hashes": {
+    "ground_truth/masks.npy": "6c6c36c67475915389b8bd9f42a55d31ada6a26a3e90afd5a0fe1cd6394dedd9",
+    "qc_report": "86fc0ef3e7c81a5b98876b97bcd8fb1a80932ad5d0c31b9f8b80b3c7ce8f5d34",
+    "slices/slice_000.dcm": "6ce8d2e2cd36dda9c6403c6cd25ce3624862060e1956975e55d57fb3839d720e",
+    "slices/slice_001.dcm": "5b50651e97f40447262ada3b83cc229b5fb36691129dda5f746a4ea8d36a13cb",
+    "slices/slice_002.dcm": "fa7f27e0a65dfdb37c87e32f3a40767e2742fce2468ba298a9b47d4823276dbe",
+    "slices/slice_003.dcm": "2adb5e6b9b1c2b757eb4262c387aaba509401c93c0176a5f793e960ea98722c7",
+    "slices/slice_004.dcm": "a2ac07d176b21fb20e95ba9ae5495c1f1d06520e7f0df8d4119e74155d9d9ddb",
+    "slices/slice_005.dcm": "624f679f002ea9d4193978848b24c0c418f1ea2555814d4f5da06a0beac79516",
+    "slices/slice_006.dcm": "50e87a9c1220fc01814cbb2b5383efcc4e48c028d105bf6854643dc49bac03b3",
+    "slices/slice_007.dcm": "f75a005d1c71a2759dcecef9729579cfbfd7226f54927c4f98fa988087010f95"
+  },
+  "schema": 2
+}

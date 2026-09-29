@@ -1,7 +1,7 @@
 {
   "dataset_id": "DATASET-000-SYNTH-REF",
-  "source_dir": "data/synth_ct/SYNTH-002",
-  "generated": "2026-09-28 19:23 UTC",
+  "source_dir": "/workspaces/ProtonAI/data/synth_ct/SYNTH-002",
+  "generated": "2026-09-29 14:47 UTC",
   "checks": {
     "deid_gate": "PASS",
     "completeness": "PASS",
