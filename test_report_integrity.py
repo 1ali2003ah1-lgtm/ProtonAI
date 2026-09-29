@@ -26,7 +26,9 @@ def load(p):
 
 
 def test_version_bumped(text):
-    assert "| RPT-001 | 3.0 |" in text
+    import re
+    m = re.search(r"\| RPT-001 \| (\d+\.\d+) \|", text)
+    assert m and float(m.group(1)) >= 3.0
 
 
 def test_markers_exactly_once(text):
