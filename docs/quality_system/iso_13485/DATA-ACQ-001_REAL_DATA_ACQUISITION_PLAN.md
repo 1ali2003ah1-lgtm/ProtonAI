@@ -38,7 +38,7 @@ externally validate ProtonAI segmentation beyond synthetic phantoms.
 ## 6. Acceptance QC
 - HU calibration: air ~ -1000 when air present; soft tissue reported.
 - Inter-observer reliability: 10% of volumes double-contoured
-  independently; inter-observer Dice >= 0.85 else series rejected.
+  independently; inter-observer Dice >= 0.85 AND HD95 <= 5.0 mm else series rejected (tools/inter_observer_study.py).
 
 ## 7. Statistical Power
 - Target effect delta = 0.02 Dice; conservative sigma = 0.03.
