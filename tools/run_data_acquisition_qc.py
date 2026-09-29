@@ -70,26 +70,31 @@ def run_checks(series_dir):
     return checks, decision
 
 
-def main(series_arg, dataset_id):
+def main(series_arg, dataset_id, register: Path = REGISTER,
+         report_dir: Path = ROOT, dry_run: bool = False):
     series_dir = Path(series_arg)
     checks, decision = run_checks(series_dir)
     report = {"dataset_id": dataset_id, "source_dir": str(series_dir),
               "generated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
               "checks": checks, "decision": decision}
-    out = ROOT / f"acquisition_qc_{dataset_id}.json"
-    out.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    reg = REGISTER.read_text(encoding="utf-8") if REGISTER.exists() \
-        else REGISTER_HEADER
-    if f"| {dataset_id} |" not in reg:
-        reg += (f"| {dataset_id} | {report['generated']} | {series_dir.name} | "
-                f"{checks['deid_gate']} | {checks['completeness']} | "
-                f"{checks['hu_air_calibration']} | {checks['contour_presence']} | "
-                f"{decision} |\n")
-        REGISTER.parent.mkdir(parents=True, exist_ok=True)
-        REGISTER.write_text(reg, encoding="utf-8")
+    out = report_dir / f"acquisition_qc_{dataset_id}.json"
+    if not dry_run:
+        out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        reg = register.read_text(encoding="utf-8") if register.exists() \
+            else REGISTER_HEADER
+        if f"| {dataset_id} |" not in reg:
+            reg += (f"| {dataset_id} | {report['generated']} | "
+                    f"{series_dir.name} | {checks['deid_gate']} | "
+                    f"{checks['completeness']} | "
+                    f"{checks['hu_air_calibration']} | "
+                    f"{checks['contour_presence']} | {decision} |\n")
+            register.parent.mkdir(parents=True, exist_ok=True)
+            register.write_text(reg, encoding="utf-8")
     print(f"QC {dataset_id}: {decision} | "
           + "; ".join(f"{k}={v}" for k, v in checks.items()))
-    print(f"Saved -> {out.name}")
+    if not dry_run:
+        print(f"Saved -> {out.name}")
+    return checks, decision
 
 
 if __name__ == "__main__":
