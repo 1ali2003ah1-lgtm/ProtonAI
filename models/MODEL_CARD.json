@@ -1,0 +1,12 @@
+{
+  "epochs": 40,
+  "mask_agreement": 1.0,
+  "onnx_sha256": "66f4b07b2644c63f5430e0169cc4eae8de148964a665bf18790021bbec2dc0bf",
+  "parity_max_diff": 2.980232238769531e-07,
+  "parity_tolerance": 0.0001,
+  "pt_sha256": "720140ae164a51c333273698f7579645b2a7856af40da160c24dca2a199c53cd",
+  "seed": 42,
+  "torch_version": "2.14.0+cpu",
+  "train_slice": "slice_000.dcm",
+  "version": "0.7.0"
+}
