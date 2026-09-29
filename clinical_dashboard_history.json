@@ -1,0 +1,10 @@
+[
+  {
+    "generated": "2026-09-29 16:33 UTC",
+    "cross_flag_rate": 1.0,
+    "batch_states": {
+      "in_domain": "AUTO",
+      "cross_domain": "SUSPEND_AND_CAPA"
+    }
+  }
+]

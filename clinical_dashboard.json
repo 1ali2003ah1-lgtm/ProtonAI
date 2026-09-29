@@ -1,0 +1,155 @@
+{
+  "generated": "2026-09-29 16:33 UTC",
+  "generator_commit": "ca2340b",
+  "kpis": {
+    "physics_confidence": 0.9635994505535974,
+    "threshold_C": 0.9602875573717059,
+    "theta_entropy": 0.0023823482049775994,
+    "separation_margin": 0.00593160526443647,
+    "failures_captured": true,
+    "urgent_entropy": 0.0198191848529466,
+    "cross_flag_rate": 1.0
+  },
+  "scopes": {
+    "in_domain": {
+      "rows": [
+        {
+          "case": "in_domain-0",
+          "vote_entropy": 0.00197797028867626,
+          "confidence": 0.9608497155235277,
+          "flag": false,
+          "triage": "AUTO",
+          "review": "auto"
+        },
+        {
+          "case": "in_domain-1",
+          "vote_entropy": 0.0020579943034606837,
+          "confidence": 0.9607384677267538,
+          "flag": false,
+          "triage": "AUTO",
+          "review": "auto"
+        },
+        {
+          "case": "in_domain-2",
+          "vote_entropy": 0.0020579943034606816,
+          "confidence": 0.9607384677267538,
+          "flag": false,
+          "triage": "AUTO",
+          "review": "auto"
+        },
+        {
+          "case": "in_domain-3",
+          "vote_entropy": 0.0019358293600944413,
+          "confidence": 0.9609082990058906,
+          "flag": false,
+          "triage": "AUTO",
+          "review": "auto"
+        },
+        {
+          "case": "in_domain-4",
+          "vote_entropy": 0.0019358293600944489,
+          "confidence": 0.9609082990058906,
+          "flag": false,
+          "triage": "AUTO",
+          "review": "auto"
+        },
+        {
+          "case": "in_domain-5",
+          "vote_entropy": 0.0023823482049775994,
+          "confidence": 0.9602875573717059,
+          "flag": false,
+          "triage": "AUTO",
+          "review": "auto"
+        },
+        {
+          "case": "in_domain-6",
+          "vote_entropy": 0.001118557842733368,
+          "confidence": 0.9620444536454378,
+          "flag": false,
+          "triage": "AUTO",
+          "review": "auto"
+        },
+        {
+          "case": "in_domain-7",
+          "vote_entropy": 0.0007942039412164382,
+          "confidence": 0.9624953640004855,
+          "flag": false,
+          "triage": "AUTO",
+          "review": "auto"
+        }
+      ],
+      "flagged": 0,
+      "batch_state": "AUTO"
+    },
+    "cross_domain": {
+      "rows": [
+        {
+          "case": "cross_domain-0",
+          "vote_entropy": 0.008642565213310173,
+          "confidence": 0.9515847279600614,
+          "flag": true,
+          "triage": "REVIEW",
+          "review": "physicist"
+        },
+        {
+          "case": "cross_domain-1",
+          "vote_entropy": 0.013137558558796014,
+          "confidence": 0.945335877442552,
+          "flag": true,
+          "triage": "REVIEW",
+          "review": "physicist"
+        },
+        {
+          "case": "cross_domain-2",
+          "vote_entropy": 0.011713720166982905,
+          "confidence": 0.9473152693098318,
+          "flag": true,
+          "triage": "REVIEW",
+          "review": "physicist"
+        },
+        {
+          "case": "cross_domain-3",
+          "vote_entropy": 0.008313953469414069,
+          "confidence": 0.9520415574830612,
+          "flag": true,
+          "triage": "REVIEW",
+          "review": "physicist"
+        },
+        {
+          "case": "cross_domain-4",
+          "vote_entropy": 0.005537785015813964,
+          "confidence": 0.9559009317567504,
+          "flag": true,
+          "triage": "REVIEW",
+          "review": "physicist"
+        },
+        {
+          "case": "cross_domain-5",
+          "vote_entropy": 0.012080214997081628,
+          "confidence": 0.9468057754724211,
+          "flag": true,
+          "triage": "REVIEW",
+          "review": "physicist"
+        },
+        {
+          "case": "cross_domain-6",
+          "vote_entropy": 0.010344358735679213,
+          "confidence": 0.9492189283880489,
+          "flag": true,
+          "triage": "REVIEW",
+          "review": "physicist"
+        },
+        {
+          "case": "cross_domain-7",
+          "vote_entropy": 0.0198191848529466,
+          "confidence": 0.9360472132072784,
+          "flag": true,
+          "triage": "URGENT",
+          "review": "physicist"
+        }
+      ],
+      "flagged": 8,
+      "batch_state": "SUSPEND_AND_CAPA"
+    }
+  }
+}
