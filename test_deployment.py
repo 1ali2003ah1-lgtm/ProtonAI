@@ -55,3 +55,8 @@ def test_contract_confidence_flag(hu):
     from inference_contract import run_inference
     resp = run_inference(hu, ONNX, vote_entropy=0.0)
     assert "confidence" in resp and resp["review_required"] is False
+
+
+def test_inference_image_hardened():
+    t = Path("deploy/Dockerfile.inference").read_text(encoding="utf-8")
+    assert "USER app" in t and "HEALTHCHECK" in t and "python:3.12-slim" in t
