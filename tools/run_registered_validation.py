@@ -99,27 +99,32 @@ def paired_stats(series_dir):
                 [(de - db).mean() > 0 for db, de in per_seed.values()]))}
 
 
-def main():
-    ref_prov = SEAL_DIR / f"PROVENANCE_{REF_ID}.json"
+def run(extra_paths=None, write=True, seal_dir=SEAL_DIR,
+        report_dir=ROOT):
+    extra_paths = extra_paths or {}
+    seal_dir = Path(seal_dir)
+    ref_prov = seal_dir / f"PROVENANCE_{REF_ID}.json"
     if not ref_prov.exists():
-        qc_main(str(REF_DIR), REF_ID)
+        qc_main(str(REF_DIR), REF_ID, report_dir=report_dir)
         seal_dataset(REF_DIR, REF_ID,
-                     ROOT / f"acquisition_qc_{REF_ID}.json", SEAL_DIR)
+                     report_dir / f"acquisition_qc_{REF_ID}.json",
+                     seal_dir)
         print(f"sealed reference -> {ref_prov.name}")
     discovered = []
-    for p in sorted(SEAL_DIR.glob("PROVENANCE_*.json")):
+    for p in sorted(seal_dir.glob("PROVENANCE_*.json")):
         m = json.loads(p.read_text(encoding="utf-8"))
         if m.get("schema") == 2 and m.get("dataset_id"):
             discovered.append((m["dataset_id"], m))
     results = []
     for did, prov in discovered:
-        resident = did == REF_ID and REF_DIR.exists()
-        seal_ok = verify_seal(prov, REF_DIR) if resident else None
+        sdir = extra_paths.get(did) or (REF_DIR if did == REF_ID else None)
+        resident = sdir is not None and Path(sdir).exists()
+        seal_ok = verify_seal(prov, Path(sdir)) if resident else None
         gate = stats = None
         if resident:
-            ingest_real_series(REF_DIR, allow_phi=False)
+            ingest_real_series(Path(sdir), allow_phi=False)
             gate = "PASS"
-            stats = paired_stats(REF_DIR)
+            stats = paired_stats(Path(sdir))
         results.append({"id": did, "resident": resident,
                         "seal_intact": seal_ok, "deid_gate": gate,
                         **(stats or {})})
@@ -134,10 +139,16 @@ def main():
     out = {"datasets": results, "readiness": readiness,
            "generated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
            "generator_commit": git_commit()}
-    (ROOT / "registered_validation_results.json").write_text(
-        json.dumps(out, indent=2), encoding="utf-8")
-    print(f"READINESS: {readiness}")
-    print("Saved -> registered_validation_results.json")
+    if write:
+        (ROOT / "registered_validation_results.json").write_text(
+            json.dumps(out, indent=2), encoding="utf-8")
+        print(f"READINESS: {readiness}")
+        print("Saved -> registered_validation_results.json")
+    return out
+
+
+def main():
+    run()
 
 
 if __name__ == "__main__":
