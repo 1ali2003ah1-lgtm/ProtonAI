@@ -72,9 +72,11 @@ def policy_ok():
 
 
 def report_ok():
+    import re
     t = (ROOT / "EXPERIMENT_REPORT.md").read_text(encoding="utf-8")
-    ok = "| RPT-001 | 3.0 |" in t and "## 9. Phase 3" in t
-    return ok, ("v3.0 + phase-3 section" if ok else "report outdated")
+    ok = bool(re.search(r"\| RPT-001 \| [34]\.0 \|", t)) and \
+         "## 9. Phase 3" in t and "## 11. Phase 5" in t
+    return ok, ("v4.0 with phase-3+5 sections" if ok else "report outdated")
 
 
 def register_ok():
