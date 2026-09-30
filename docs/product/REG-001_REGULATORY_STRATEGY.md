@@ -3,7 +3,7 @@
 ## Document Control
 | ID | Version | Generated | Generator commit | Status |
 |---|---|---|---|---|
-| REG-001 | 2.0 | 2026-09-30 22:32 UTC | 002a889 | EFFECTIVE |
+| REG-001 | 2.0 | 2026-09-30 22:39 UTC | 5ef113a | EFFECTIVE |
 
 ## 1. Classification Justification
 SaMD providing diagnostic/therapeutic suggestions to clinicians (physicists/oncologists) for proton contour review. Does NOT autonomously set dose; final approval is human. Under MDR Rule 11: Class IIa (decisions with diagnostic/therapeutic purpose). FDA: Class II (21 CFR 892.2050 - medical image processing) via 510(k) predicate.
@@ -41,7 +41,7 @@ SaMD providing diagnostic/therapeutic suggestions to clinicians (physicists/onco
 - Authentication (Keycloak) + audit log (immutable)
 
 ## 6. Post-Market Clinical Follow-up (PMCF)
-- Annual review of real-data playbook ledger (PMS-001)
+- Annual review of real-data PLAYBOOK-001 ledger (PMS-001)
 - User feedback aggregation from NEXUS console
 - Post-market clinical follow-up survey (yearly, 30+ users)
 - Re-evaluation of SVP-001 PAP-3 claims as data grows

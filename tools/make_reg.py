@@ -60,7 +60,7 @@ CYBER = ["SBOM (software bill of materials) auto-generated",
          "Encrypted data at rest + in transit (TLS 1.3)",
          "Authentication (Keycloak) + audit log (immutable)"]
 
-PMCF = ["Annual review of real-data playbook ledger (PMS-001)",
+PMCF = ["Annual review of real-data PLAYBOOK-001 ledger (PMS-001)",
         "User feedback aggregation from NEXUS console",
         "Post-market clinical follow-up survey (yearly, 30+ users)",
         "Re-evaluation of SVP-001 PAP-3 claims as data grows",
