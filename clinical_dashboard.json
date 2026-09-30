@@ -1,6 +1,6 @@
 {
-  "generated": "2026-09-29 16:33 UTC",
-  "generator_commit": "ca2340b",
+  "generated": "2026-09-30 03:27 UTC",
+  "generator_commit": "dde1d82",
   "kpis": {
     "physics_confidence": 0.9635994505535974,
     "threshold_C": 0.9602875573717059,

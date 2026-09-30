@@ -1,0 +1,22 @@
+[
+  {
+    "generated": "2026-09-30 03:27 UTC",
+    "generator_commit": "dde1d82",
+    "counts": [
+      [
+        8,
+        8
+      ],
+      [
+        8,
+        8
+      ]
+    ],
+    "drift_verdict": "STABLE (insufficient history)",
+    "drift_p": null,
+    "urgent_count": 1,
+    "io_verdict": "PASS",
+    "state": "SURVEILLANCE: ESCALATE",
+    "action": "urgent cases -> open review per PMS-001"
+  }
+]

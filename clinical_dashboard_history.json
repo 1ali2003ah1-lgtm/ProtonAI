@@ -6,5 +6,16 @@
       "in_domain": "AUTO",
       "cross_domain": "SUSPEND_AND_CAPA"
     }
+  },
+  {
+    "generated": "2026-09-30 03:27 UTC",
+    "cross_flag_rate": 1.0,
+    "cross_flagged": 8,
+    "cross_n": 8,
+    "urgent_count": 1,
+    "batch_states": {
+      "in_domain": "AUTO",
+      "cross_domain": "SUSPEND_AND_CAPA"
+    }
   }
 ]

@@ -3,7 +3,7 @@
 ## Document Control
 | ID | Version | Generated | Generator commit | Status |
 |---|---|---|---|---|
-| CLIN-002 | 2.0 | 2026-09-29 16:33 UTC | ca2340b | EFFECTIVE |
+| CLIN-002 | 2.0 | 2026-09-30 03:27 UTC | dde1d82 | EFFECTIVE |
 
 ## 1. Executive KPIs
 | KPI | Value |

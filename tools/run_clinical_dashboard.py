@@ -81,6 +81,10 @@ def main():
     hist = json.loads(HIST.read_text(encoding="utf-8")) if HIST.exists() else []
     hist.append({"generated": now,
                  "cross_flag_rate": kpis["cross_flag_rate"],
+                 "cross_flagged": scopes["cross_domain"]["flagged"],
+                 "cross_n": len(scopes["cross_domain"]["rows"]),
+                 "urgent_count": sum(1 for r in scopes["cross_domain"]["rows"]
+                                     if r["triage"] == "URGENT"),
                  "batch_states": {s: v["batch_state"]
                                   for s, v in scopes.items()}})
     HIST.write_text(json.dumps(hist[-50:], indent=2), encoding="utf-8")
