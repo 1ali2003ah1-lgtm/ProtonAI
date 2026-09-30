@@ -19,11 +19,13 @@
   threshold governance.
 - Any URGENT case => physicist review within 24h (CLIN-001).
 - Inter-observer failure => suspend intake of that source pending review.
+- Real-data non-inferiority: playbook exp Dice < baseline_ref - 0.05 => BELOW_BASELINE => escalate.
 
 ## 3. Review Cadence
 - Automated surveillance each dashboard run; append-only ledger
   (pms_ledger.json, last 100).
 - Quarterly formal PMS review; annual threshold re-derivation.
+- Real-data feedback: each playbook run appends a performance record (kind=playbook) to the ledger.
 
 ## 4. Traceability
 CLIN-001, CLIN-002, DATA-ACQ-001, CAPA_LOG, ISO 20416.

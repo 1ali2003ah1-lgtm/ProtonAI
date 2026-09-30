@@ -1,6 +1,6 @@
 {
-  "generated": "2026-09-30 03:27 UTC",
-  "generator_commit": "dde1d82",
+  "generated": "2026-09-30 03:33 UTC",
+  "generator_commit": "3736aa0",
   "counts": [
     [
       8,
@@ -15,6 +15,7 @@
   "drift_p": null,
   "urgent_count": 1,
   "io_verdict": "PASS",
+  "below_baseline": false,
   "state": "SURVEILLANCE: ESCALATE",
   "action": "urgent cases -> open review per PMS-001"
 }

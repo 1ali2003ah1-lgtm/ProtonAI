@@ -57,7 +57,7 @@ def z_drift_verdict(counts, alpha=DRIFT_ALPHA, min_delta=DRIFT_MIN_DELTA):
     return "STABLE", round(p, 6)
 
 
-def composite(drift, urgent, io_verdict):
+def composite(drift, urgent, io_verdict, below_baseline=False):
     issues = []
     if drift.startswith("DRIFT"):
         issues.append("flag-rate drift")
@@ -65,6 +65,8 @@ def composite(drift, urgent, io_verdict):
         issues.append("urgent cases")
     if io_verdict == "FAIL":
         issues.append("inter-observer failure")
+    if below_baseline:
+        issues.append("real-data below baseline")
     if not issues:
         return "SURVEILLANCE: STABLE", "routine monitoring"
     return ("SURVEILLANCE: ESCALATE",
@@ -82,13 +84,17 @@ def main():
                  .get("rows", []) if r.get("triage") == "URGENT")
     io = json.loads(IO.read_text(encoding="utf-8")) if IO.exists() else {}
     io_verdict = io.get("verdict", "PASS")
-    state, action = composite(drift, urgent, io_verdict)
+    ledger = json.loads(LEDGER.read_text(encoding="utf-8")) \
+        if LEDGER.exists() else []
+    below = any(r.get("verdict") == "BELOW_BASELINE"
+                for r in ledger[-5:] if r.get("kind") == "playbook")
+    state, action = composite(drift, urgent, io_verdict, below)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     out = {"generated": now, "generator_commit": git_commit(),
            "counts": [list(c) for c in counts],
            "drift_verdict": drift, "drift_p": pval,
            "urgent_count": urgent, "io_verdict": io_verdict,
-           "state": state, "action": action}
+           "below_baseline": below, "state": state, "action": action}
     OUT.write_text(json.dumps(out, indent=2), encoding="utf-8")
     ledger = json.loads(LEDGER.read_text(encoding="utf-8")) \
         if LEDGER.exists() else []

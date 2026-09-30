@@ -57,3 +57,8 @@ def test_traceability():
     t = MD.read_text(encoding="utf-8")
     for ref in ("CLIN-001", "CLIN-002", "DATA-ACQ-001", "ISO 20416"):
         assert ref in t
+
+
+def test_composite_below_baseline():
+    assert composite("STABLE", 0, "PASS", True)[0] == \
+        "SURVEILLANCE: ESCALATE"

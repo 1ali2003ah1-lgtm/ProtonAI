@@ -18,5 +18,59 @@
     "io_verdict": "PASS",
     "state": "SURVEILLANCE: ESCALATE",
     "action": "urgent cases -> open review per PMS-001"
+  },
+  {
+    "generated": "2026-09-30 03:33 UTC",
+    "generator_commit": "3736aa0",
+    "counts": [
+      [
+        8,
+        8
+      ],
+      [
+        8,
+        8
+      ]
+    ],
+    "drift_verdict": "STABLE (insufficient history)",
+    "drift_p": null,
+    "urgent_count": 1,
+    "io_verdict": "PASS",
+    "below_baseline": false,
+    "state": "SURVEILLANCE: ESCALATE",
+    "action": "urgent cases -> open review per PMS-001"
+  },
+  {
+    "kind": "playbook",
+    "generated": "2026-09-30 03:33 UTC",
+    "dataset_id": "PB-CLEAN",
+    "intake_decision": "ACCEPT",
+    "exp_dice": 0.9815369494608077,
+    "wilcoxon_p": 0.03125,
+    "baseline_ref": 0.9815369494608077,
+    "ni_margin": 0.05,
+    "verdict": "WITHIN_BASELINE"
+  },
+  {
+    "kind": "playbook",
+    "generated": "2026-09-30 03:33 UTC",
+    "dataset_id": "PB-PHI",
+    "intake_decision": "REJECT",
+    "exp_dice": null,
+    "wilcoxon_p": null,
+    "baseline_ref": 0.9815369494608077,
+    "ni_margin": 0.05,
+    "verdict": "N/A (rejected at intake)"
+  },
+  {
+    "kind": "playbook",
+    "generated": "2026-09-30 03:33 UTC",
+    "dataset_id": "PB-CONS",
+    "intake_decision": "ACCEPT",
+    "exp_dice": 0.9815369494608077,
+    "wilcoxon_p": 0.03125,
+    "baseline_ref": 0.9815369494608077,
+    "ni_margin": 0.05,
+    "verdict": "WITHIN_BASELINE"
   }
 ]

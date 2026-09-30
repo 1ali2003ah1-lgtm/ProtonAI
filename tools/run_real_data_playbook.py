@@ -19,9 +19,53 @@ from run_registered_validation import run as registered_run  # noqa: E402
 from run_tcia_intake import process_manifest  # noqa: E402
 
 
+NI_MARGIN = 0.05
+
+
+def feedback_verdict(exp_dice, baseline_ref, margin=NI_MARGIN):
+    if exp_dice is None or baseline_ref is None:
+        return "N/A"
+    return ("WITHIN_BASELINE" if exp_dice >= baseline_ref - margin
+            else "BELOW_BASELINE")
+
+
+def _baseline_ref():
+    p = ROOT / "registered_validation_results.json"
+    if not p.exists():
+        return None
+    rv = json.loads(p.read_text(encoding="utf-8"))
+    for r in rv.get("datasets", []):
+        if r.get("id") == "DATASET-000-SYNTH-REF":
+            return r.get("mean_dice_experiment")
+    return None
+
+
+def _append_feedback(dataset_id, decision, validation, ledger_path=None):
+    from datetime import datetime, timezone
+    ledger = Path(ledger_path) if ledger_path else ROOT / "pms_ledger.json"
+    rows = json.loads(ledger.read_text(encoding="utf-8")) \
+        if ledger.exists() else []
+    ref = _baseline_ref()
+    exp = (validation or {}).get("mean_dice_experiment")
+    rows.append({"kind": "playbook",
+                 "generated": datetime.now(timezone.utc)
+                 .strftime("%Y-%m-%d %H:%M UTC"),
+                 "dataset_id": dataset_id,
+                 "intake_decision": decision,
+                 "exp_dice": exp,
+                 "wilcoxon_p": (validation or {}).get("wilcoxon_p"),
+                 "baseline_ref": ref, "ni_margin": NI_MARGIN,
+                 "verdict": ("N/A (rejected at intake)"
+                             if decision != "ACCEPT"
+                             else feedback_verdict(exp, ref))})
+    ledger.write_text(json.dumps(rows[-100:], indent=2),
+                      encoding="utf-8")
+
+
 def run_playbook(series_dir, dataset_id, dry_run=False, register=REGISTER,
                  report_dir=None, seal_dir=None, audit_path=None,
-                 summary_path=None, out_path=None):
+                 summary_path=None, out_path=None,
+                 feedback_ledger=None):
     series_dir = Path(series_dir)
     report_dir = Path(report_dir or ROOT)
     seal_dir = Path(seal_dir or ROOT / "docs" / "experiments")
@@ -46,6 +90,7 @@ def run_playbook(series_dir, dataset_id, dry_run=False, register=REGISTER,
               "intake_decision": decision, "validation": validation}
     if not dry_run:
         out_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
+        _append_feedback(dataset_id, decision, validation, feedback_ledger)
     print(f"PLAYBOOK {dataset_id}: intake={decision}"
           + (f" exp Dice={validation['mean_dice_experiment']:.4f} "
              f"wilcoxon_p={validation['wilcoxon_p']} "

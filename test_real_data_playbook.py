@@ -77,3 +77,30 @@ def test_playbook_artifact_consistent(clean):
     a = json.loads((tmp / "playbook.json").read_text(encoding="utf-8"))
     assert a["intake_decision"] == "ACCEPT"
     assert a["validation"]["seal_intact"] is True
+
+
+def test_feedback_record_schema_and_verdict(clean):
+    tmp, d = clean
+    run_playbook(d, "PB-FB", feedback_ledger=tmp / "ledger.json",
+                 **_paths(tmp))
+    ledger = json.loads((tmp / "ledger.json").read_text(encoding="utf-8"))
+    rows = [r for r in ledger if r.get("kind") == "playbook"
+            and r["dataset_id"] == "PB-FB"]
+    assert rows
+    r = rows[-1]
+    assert r["baseline_ref"] is not None
+    assert r["verdict"] == "WITHIN_BASELINE"
+
+
+def test_feedback_verdict_pure():
+    from run_real_data_playbook import feedback_verdict
+    assert feedback_verdict(0.98, 0.9815) == "WITHIN_BASELINE"
+    assert feedback_verdict(0.90, 0.9815) == "BELOW_BASELINE"
+    assert feedback_verdict(None, 0.98) == "N/A"
+
+
+def test_dry_run_no_feedback(clean):
+    tmp, d = clean
+    run_playbook(d, "PB-NOFB", dry_run=True, feedback_ledger=tmp / "l2.json",
+                 **_paths(tmp))
+    assert not (tmp / "l2.json").exists()
