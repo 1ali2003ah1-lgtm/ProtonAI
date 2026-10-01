@@ -1,0 +1,18 @@
+{
+  "ni_margin": 0.02,
+  "n_cases": 8,
+  "d95": {
+    "mean": 0.06084207442833779,
+    "ci_lo": 0.06084207442833767,
+    "ci_hi": 0.06084207442833792,
+    "wilcoxon_p": 0.00390625,
+    "verdict": "SUPERIOR"
+  },
+  "oar_v20": {
+    "mean": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0,
+    "wilcoxon_p": 1.0,
+    "verdict": "NON_INFERIOR"
+  }
+}
