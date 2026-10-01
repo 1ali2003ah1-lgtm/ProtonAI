@@ -1,0 +1,8 @@
+{
+  "max_diff": 1.027833342552185,
+  "mean_diff": 0.08680115640163422,
+  "correlation": 0.9476305844441173,
+  "speedup": 17.15747155211747,
+  "model_path": "/workspaces/ProtonAI/models/surrogate_dose.pth",
+  "note": "v1: ct=water; ct conditioning in v2"
+}
