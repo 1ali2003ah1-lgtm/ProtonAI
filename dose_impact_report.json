@@ -1,0 +1,23 @@
+{
+  "generated": "2026-10-01 23:53 UTC",
+  "n_cases": 8,
+  "ni_margin": 0.02,
+  "rx_gy": 60.0,
+  "d95": {
+    "mean": 0.06084207442833779,
+    "ci_lo": 0.06084207442833767,
+    "ci_hi": 0.06084207442833792,
+    "wilcoxon_p": 0.00390625,
+    "verdict": "SUPERIOR"
+  },
+  "oar_v20": {
+    "mean": 0.0,
+    "ci_lo": 0.0,
+    "ci_hi": 0.0,
+    "wilcoxon_p": 1.0,
+    "verdict": "NON_INFERIOR"
+  },
+  "tcp_delta_mean": 0.12289507268019484,
+  "ntcp_delta_mean": 0.5636987006386511,
+  "conclusion": "AI contouring preserves/improves target coverage and is non-inferior on OAR sparing over baseline on synthetic phantoms; real-data confirmation pending (Stage D)."
+}
