@@ -1,32 +1,49 @@
-"""
-ProtonAI - Test Dry-run Pipeline
-"""
+"""D3: end-to-end dry-run guard (6 tests, path-safety)."""
+from __future__ import annotations
 
-import pytest
+import json
+from pathlib import Path
 
-pytest.importorskip("pydicom")
+from tools.dry_run_pipeline import (DRAFT, build_synthetic_series, dry_run,
+                                    seal_series)
 
-from dry_run_pipeline import run_dry_run
+ROOT = Path(__file__).resolve().parent
 
 
-class TestDryRun:
-    def test_no_phi_leak(self):
-        r = run_dry_run()
-        assert r["phi_leak"] is False
+def test_good_series_accept(tmp_path):
+    d = build_synthetic_series(tmp_path / "g")
+    r = dry_run(d, tmp_path / "reg.json")
+    assert r["verdict"] == "ACCEPT" and r["seals"] == 4
 
-    def test_deidentified(self):
-        r = run_dry_run()
-        assert r["report"]["deidentified"] is True
 
-    def test_rois_parsed(self):
-        r = run_dry_run()
-        assert "GTV" in r["report"]["rois"]
+def test_phi_aborts_no_draft(tmp_path):
+    d = build_synthetic_series(tmp_path / "b", name="DOE^JOHN")
+    r = dry_run(d, tmp_path / "reg.json")
+    assert r["verdict"] == "REJECT" and not (tmp_path / "reg.json").exists()
 
-    def test_image_normalized(self):
-        r = run_dry_run()
-        lo, hi = r["report"]["image_range"]
-        assert lo >= 0.0 and hi <= 1.0
 
-    def test_geometry(self):
-        r = run_dry_run()
-        assert r["report"]["geometry"]["rows"] == 64
+def test_seal_determinism(tmp_path):
+    d = build_synthetic_series(tmp_path / "s")
+    assert seal_series(d) == seal_series(d)
+
+
+def test_draft_labeled(tmp_path):
+    d = build_synthetic_series(tmp_path / "g2")
+    dry_run(d, tmp_path / "reg.json")
+    t = DRAFT.read_text(encoding="utf-8")
+    assert "DRAFT" in t and "synthetic" in t and "v5.0" in t
+
+
+def test_register_keys(tmp_path):
+    d = build_synthetic_series(tmp_path / "g3")
+    dry_run(d, tmp_path / "reg.json")
+    r = json.loads((tmp_path / "reg.json").read_text(encoding="utf-8"))
+    assert {"verdict", "n_slices", "seals", "mode"} <= set(r)
+
+
+def test_safety_rpt_untouched(tmp_path):
+    rpt = ROOT / "EXPERIMENT_REPORT.md"
+    before = rpt.read_text(encoding="utf-8")
+    d = build_synthetic_series(tmp_path / "g4")
+    dry_run(d, tmp_path / "reg.json")
+    assert rpt.read_text(encoding="utf-8") == before
