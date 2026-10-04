@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta property="og:title" content="ProtonAI"/>
+<meta property="og:description" content="Open, auditable AI contouring for proton therapy with live dose-impact."/>
+<meta property="og:type" content="website"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9889;</text></svg>"/>
+<title>ProtonAI — Auditable AI for Proton Therapy</title>
+<style>:root{--bg:#070b14;--card:rgba(22,27,39,.75);--line:#2a3242;--a:#22d3ee}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;color:#e6edf3;background:var(--bg)}
+.wrap{max-width:960px;margin:0 auto;padding:48px 24px}
+h1{font-size:44px;background:linear-gradient(90deg,var(--a),#a78bfa);-webkit-background-clip:text;color:transparent}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.big{font-size:30px;font-weight:800;color:var(--a)}
+.badge{display:inline-block;margin:2px;padding:4px 10px;border-radius:999px;background:#1b2334;border:1px solid var(--line);font-size:12px}
+button{background:#1b2334;color:#e6edf3;border:1px solid var(--line);border-radius:8px;padding:8px 14px;float:right}
+footer{opacity:.6;margin-top:30px;font-size:13px}</style></head><body><div class="wrap">
+<button onclick="toggle()">ع / EN</button><h1>ProtonAI</h1>
+<p data-en="Open, auditable AI contouring assistance for proton therapy — live dose-impact." data-ar="منصة مفتوحة وقابلة للتدقيق لتجزئة العلاج بالبروتون — أثر جرعة حي.">…</p>
+<div><span class="badge">DOI: 10.5281/zenodo.pending</span><span class="badge">v0.9.0</span></div>
+<div class="grid">
+<div class="card"><div class="big">0.061</div><span data-en="D95 improvement" data-ar="تحسن D95">…</span></div>
+<div class="card"><div class="big">0.0039</div><span>p (Wilcoxon)</span></div>
+<div class="card"><div class="big">SUPERIOR</div><span data-en="Verdict" data-ar="الحكم">…</span></div></div>
+<div class="card">dTCP +0.123 · dNTCP 0.5637</div>
+<div class="card"><b>Cite</b>: [Authors]. ProtonAI v0.9.0. Zenodo. DOI: 10.5281/zenodo.pending.</div>
+<div class="card" data-en="Status: synthetic validation complete; NOT for clinical use." data-ar="الحالة: التحقق الاصطناعي مكتمل؛ ليس للاستخدام السريري.">…</div>
+<footer>github.com/1ali2003ah1-lgtm/ProtonAI · MIT</footer></div>
+<script>let lang="en";function apply(){document.querySelectorAll("[data-en]").forEach(e=>{e.textContent=lang==="en"?e.dataset.en:e.dataset.ar;});document.documentElement.dir=lang==="ar"?"rtl":"ltr";}function toggle(){lang=lang==="en"?"ar":"en";apply();}apply();</script></body></html>

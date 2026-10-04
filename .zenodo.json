@@ -1,0 +1,6 @@
+{"title": "ProtonAI: auditable AI contouring assistance for proton therapy",
+ "upload_type": "software",
+ "description": "Open, auditable AI platform for proton-therapy contouring with dose-impact feedback.",
+ "creators": [{"name": "[Family, Given]"}],
+ "keywords": ["proton therapy", "auto-segmentation", "dose-impact"],
+ "license": "MIT"}

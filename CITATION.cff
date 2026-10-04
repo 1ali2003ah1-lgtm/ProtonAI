@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+title: "ProtonAI: auditable AI contouring assistance for proton therapy"
+version: 0.9.0
+authors:
+  - family-names: "[Family]"
+    given-names: "[Given]"
+license: MIT
