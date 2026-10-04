@@ -46,7 +46,7 @@ def main():
             .replace("__VERDICT__", str(n.get("verdict","pending")))
             .replace("__TCP__", f"{n.get('tcp',0):.3f}")
             .replace("__NTCP__", f"{n.get('ntcp',0):.4f}")
-            .replace("__DOI__", "10.5281/zenodo.pending"))
+            .replace("__DOI__", "10.5281/zenodo.23147530"))
     SITE.parent.mkdir(parents=True, exist_ok=True)
     SITE.write_text(html, encoding="utf-8")
     (ROOT / "docs" / "index.html").write_text(html, encoding="utf-8")

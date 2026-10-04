@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23147530.svg)](https://doi.org/10.5281/zenodo.23147530)
 # ProtonAI 🧬
 ## منصة دعم قرار سريري (CDSS) لتحسين دقة العلاج بالبروتون بالذكاء الاصطناعي
 

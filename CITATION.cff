@@ -4,4 +4,6 @@ version: 0.9.0
 authors:
   - family-names: "[Family]"
     given-names: "[Given]"
+doi: 10.5281/zenodo.23147530
+repository-code: https://github.com/1ali2003ah1-lgtm/ProtonAI
 license: MIT

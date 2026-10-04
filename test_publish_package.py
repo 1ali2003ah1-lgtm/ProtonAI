@@ -53,3 +53,10 @@ def test_docs_index_matches_site():
 
 def test_safety_rpt_exists():
     assert (ROOT / "EXPERIMENT_REPORT.md").exists()
+
+
+def test_doi_real_embedded():
+    d = "10.5281/zenodo.23147530"
+    assert d in SITE.read_text(encoding="utf-8")
+    assert d in CFF.read_text(encoding="utf-8")
+    assert d in (ROOT / "README.md").read_text(encoding="utf-8")
