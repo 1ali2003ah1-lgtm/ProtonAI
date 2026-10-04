@@ -49,6 +49,7 @@ def main():
             .replace("__DOI__", "10.5281/zenodo.pending"))
     SITE.parent.mkdir(parents=True, exist_ok=True)
     SITE.write_text(html, encoding="utf-8")
+    (ROOT / "docs" / "index.html").write_text(html, encoding="utf-8")
     ntests = len(list(ROOT.glob("test_*.py")))
     NOTES.write_text(f"""# RELEASE NOTES v0.9.0\n\nGuarded test modules: {ntests}.\nKey result: D95 {n.get('d95_mean',0):.3f} (p={n.get('p',1):.4f}), {n.get('verdict','pending')}.\nNOT for clinical use; real-patient validation pending.\n""", encoding="utf-8")
     print(f"H2 FINAL: site + release notes ({ntests} test modules)")

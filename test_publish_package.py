@@ -45,5 +45,11 @@ def test_release_notes():
     assert "v0.9.0" in t and "NOT for clinical use" in t
 
 
+def test_docs_index_matches_site():
+    a = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
+    b = SITE.read_text(encoding="utf-8")
+    assert a == b and "og:title" in a
+
+
 def test_safety_rpt_exists():
     assert (ROOT / "EXPERIMENT_REPORT.md").exists()
