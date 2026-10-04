@@ -1,4 +1,4 @@
-"""C2 FINAL: NEXUS Enterprise API guard (8 tests)."""
+"""C2 FINAL: NEXUS Enterprise API guard (10 tests)."""
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
@@ -25,13 +25,22 @@ def test_dose_impact():
     assert client.get("/api/dose-impact").status_code == 200
 
 
+def test_tcp_ntcp():
+    assert client.get("/api/tcp-ntcp").status_code == 200
+
+
+def test_partnership():
+    r = client.get("/api/partnership").json()
+    assert any("HOSPITAL-PARTNERSHIP" in x for x in r)
+
+
 def test_whatif_sensitivity():
     a = client.post("/api/whatif", json={"shift": 0}).json()["d95"]
     b = client.post("/api/whatif", json={"shift": 6}).json()["d95"]
     assert a > 0.9 and a - b > 0.2
 
 
-def test_dvh_shape():
+def test_dvh_aligned():
     r = client.get("/api/dvh?shift=0").json()
     assert len(r["bins"]) == len(r["cum"]) and r["cum"][0] >= r["cum"][-1]
 

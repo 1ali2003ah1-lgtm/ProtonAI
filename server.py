@@ -1,7 +1,8 @@
-"""C2 FINAL: NEXUS Enterprise API + served world-class React SPA.
+"""C2 FINAL: NEXUS Enterprise API + world-class React SPA.
 
-Endpoints: health, summary, presets, dose-impact, whatif, dvh, slice.
-Serves web/index.html (React CDN, zero build, i18n EN/AR + RTL).
+Endpoints: health, summary, presets, dose-impact, whatif, dvh(aligned),
+slice, tcp-ntcp, partnership. Serves web/index.html (React CDN, i18n
+EN/AR + RTL, glassmorphism, canvas viewer, live DVH).
 """
 from __future__ import annotations
 
@@ -19,6 +20,7 @@ from dose_bridge import dvh as calc_dvh
 
 ROOT = Path(__file__).resolve().parent
 WEB = ROOT / "web"
+PART = ROOT / "docs" / "partnership"
 app = FastAPI(title="ProtonAI NEXUS API", version="2.0")
 
 _VOL = _GT = _AI = None
@@ -58,6 +60,17 @@ def dose_impact():
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
 
+@app.get("/api/tcp-ntcp")
+def tcp_ntcp():
+    p = ROOT / "tcp_ntcp_results.json"
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+
+
+@app.get("/api/partnership")
+def partnership():
+    return sorted(x.name for x in PART.glob("*.md")) if PART.exists() else []
+
+
 @app.post("/api/whatif")
 def whatif(payload: dict):
     shift = int(payload.get("shift", 0))
@@ -68,8 +81,7 @@ def whatif(payload: dict):
 @app.get("/api/dvh")
 def dvh(shift: int = 0):
     ct = np.zeros((60, 40)); m = np.zeros((60, 40)); m[25:35, 10:30] = 1
-    dose = compute_dose(ct, m)
-    bins, cum = calc_dvh(dose, np.roll(m, shift, 0))
+    bins, cum = calc_dvh(compute_dose(ct, m), np.roll(m, shift, 0))
     return {"bins": bins[:-1].tolist(), "cum": cum.tolist()}
 
 

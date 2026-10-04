@@ -19,7 +19,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:18p
  padding:18px;backdrop-filter:blur(12px);animation:in .5s ease}
 @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
 h3{margin:0 0 12px;font-size:14px;letter-spacing:.5px;color:#9fb0c8}
-.big{font-size:34px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));
+.big{font-size:32px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));
  -webkit-background-clip:text;color:transparent}
 canvas{width:100%;border-radius:10px;image-rendering:pixelated}
 input[type=range]{width:100%;accent-color:var(--acc)}
@@ -30,47 +30,43 @@ svg{width:100%}
 </style></head><body><div id="root"></div>
 <script type="text/babel">
 const {useEffect,useRef,useState}=React;
-const T={en:{t:"Clinical Cockpit",viewer:"Image Viewer",win:"Window",slice:"Slice",
- gt:"Ground truth",ai:"AI / ONNX",unc:"Uncertainty",whatif:"What-if contour shift",
- d95:"Target D95",dvh:"Dose-Volume Histogram",pms:"PMS State",verdict:"D95 Verdict",
- phys:"Physics Conf.",triage:"Cross-domain Triage",impact:"Dose-Impact (B5)",lang:"ع"},
- ar:{t:"الكوكبيت السريري",viewer:"عارض الشرائح",win:"النافذة",slice:"الشريحة",
- gt:"الحقيقة",ai:"الذكاء الاصطناعي",unc:"عدم اليقين",whatif:"إزاحة الـ contour (ماذا لو)",
- d95:"D95 للهدف",dvh:"منحنى الحجم-الجرعة",pms:"حالة PMS",verdict:"حكم D95",
- phys:"ثقة الفيزياء",triage:"الفرز متعدد النطاقات",impact:"أثر الجرعة (ب5)",lang:"EN"}};
+const T={en:{t:"Clinical Cockpit",viewer:"Image Viewer",gt:"Ground truth",
+ ai:"AI / ONNX",whatif:"What-if contour shift",d95:"Target D95",dvh:"DVH",
+ impact:"Dose-Impact (B5)",tcp:"ΔTCP (control)",ntcp:"ΔNTCP (sparing)",
+ partner:"Partnership readiness",pms:"PMS / Verdict",lang:"ع"},
+ ar:{t:"الكوكبيت السريري",viewer:"عارض الشرائح",gt:"الحقيقة",
+ ai:"الذكاء الاصطناعي",whatif:"إزاحة الـ contour (ماذا لو)",d95:"D95 للهدف",
+ dvh:"منحنى الحجم-الجرعة",impact:"أثر الجرعة (ب5)",tcp:"ΔTCP (تحكم)",
+ ntcp:"ΔNTCP (تجنيب)",partner:"جاهزية الشراكة",pms:"PMS / الحكم",lang:"EN"}};
 function useAPI(u,init){const[s,setS]=useState(init);useEffect(()=>{fetch(u)
  .then(r=>r.json()).then(setS).catch(()=>{});},[u]);return s;}
-function Viewer({lang}){const t=T[lang];const cv=useRef();
- const [z,setZ]=useState(0);const [w,setW]=useState("mediastinum");
- const [gt,setGt]=useState(true);const [ai,setAi]=useState(true);
+function Viewer(){const cv=useRef();const[z,setZ]=useState(0);
+ const[gt,setGt]=useState(true);const[ai,setAi]=useState(true);
  useEffect(()=>{fetch(`/api/slice?z=${z}`).then(r=>r.json()).then(d=>{
-  const c=cv.current;const ctx=c.getContext("2d");
-  const img=ctx.createImageData(60,40); // note w x h
-  for(let y=0;y<60;y++)for(let x=0;x<40;x++){const i=(y*40+x)*4;
-   const g=d.gray[y][x];img.data[i]=g;img.data[i+1]=g;img.data[i+2]=g;img.data[i+3]=255;
+  const ctx=cv.current.getContext("2d");const img=ctx.createImageData(40,60);
+  for(let y=0;y<60;y++)for(let x=0;x<40;x++){const i=(y*40+x)*4;const g=d.gray[y][x];
+   img.data[i]=g;img.data[i+1]=g;img.data[i+2]=g;img.data[i+3]=255;
    if(gt&&d.gt[y][x]){img.data[i]=0;img.data[i+1]=220;img.data[i+2]=90;}
    if(ai&&d.ai[y][x]){img.data[i]=60;img.data[i+1]=140;img.data[i+2]=255;}}
   ctx.putImageData(img,0,0);});},[z,gt,ai]);
- return <div className="card"><h3>{t.viewer}</h3>
+ return <div className="card"><h3>Viewer</h3>
   <canvas ref={cv} width="40" height="60" style={{height:280}}/>
   <div className="row" style={{marginTop:10}}>
-   <select value={w} onChange={e=>setW(e.target.value)}>
-    {["mediastinum","lung","bone","brain"].map(p=><option key={p}>{p}</option>)}</select>
-   <label><input type="checkbox" checked={gt} onChange={e=>setGt(e.target.checked)}/>{t.gt}</label>
-   <label><input type="checkbox" checked={ai} onChange={e=>setAi(e.target.checked)}/>{t.ai}</label>
+   <label><input type="checkbox" checked={gt} onChange={e=>setGt(e.target.checked)}/>GT</label>
+   <label><input type="checkbox" checked={ai} onChange={e=>setAi(e.target.checked)}/>AI</label>
   </div>
-  <input type="range" min="0" max="7" value={z} onChange={e=>setZ(+e.target.value)}/>
-  {t.slice}: {z}</div>;}
+  <input type="range" min="0" max="7" value={z} onChange={e=>setZ(+e.target.value)}/></div>;}
 function DVH({shift}){const d=useAPI(`/api/dvh?shift=${shift}`,null);
- const base=useAPI(`/api/dvh?shift=0`,null);
- if(!d||!base)return <div className="card"><h3>DVH</h3>…</div>;
- const P=(arr,col)=>{const pts=arr.cum.map((c,i)=>`${(arr.bins[i]/1.1)*300},${120-c*100}`).join(" ");
-  return <polyline points={pts} fill="none" stroke={col} strokeWidth="2.5"/>;};
+ const b=useAPI(`/api/dvh?shift=0`,null);
+ if(!d||!b)return <div className="card"><h3>DVH</h3>…</div>;
+ const P=(a,c)=><polyline points={a.cum.map((v,i)=>`${(a.bins[i]/1.1)*300},${120-v*100}`).join(" ")}
+  fill="none" stroke={c} strokeWidth="2.5"/>;
  return <div className="card"><h3>DVH</h3><svg viewBox="0 0 300 120">
-  {P(base,"#22d3ee")}{shift>0&&P(d,"#f472b6")}</svg></div>;}
-function App(){const [lang,setLang]=useState("en");const t=T[lang];
- const [shift,setShift]=useState(0);const [d95,setD95]=useState(null);
+  {P(b,"#22d3ee")}{shift>0&&P(d,"#f472b6")}</svg></div>;}
+function App(){const[lang,setLang]=useState("en");const t=T[lang];
+ const[shift,setShift]=useState(0);const[d95,setD95]=useState(null);
  const s=useAPI("/api/summary",null);const di=useAPI("/api/dose-impact",null);
+ const tn=useAPI("/api/tcp-ntcp",null);const part=useAPI("/api/partnership",[]);
  useEffect(()=>{document.documentElement.dir=lang==="ar"?"rtl":"ltr";},[lang]);
  useEffect(()=>{fetch("/api/whatif",{method:"POST",headers:{"Content-Type":"application/json"},
   body:JSON.stringify({shift})}).then(r=>r.json()).then(r=>setD95(r.d95));},[shift]);
@@ -79,7 +75,7 @@ function App(){const [lang,setLang]=useState("en");const t=T[lang];
    <span className="row"><span className="pill">{t.t}</span>
    <button onClick={()=>setLang(lang==="en"?"ar":"en")}>{t.lang}</button></span></header>
   <div className="grid">
-   <div><Viewer lang={lang}/><DVH shift={shift}/></div>
+   <div><Viewer/><DVH shift={shift}/></div>
    <div>
     <div className="card"><h3>{t.whatif}</h3>
      <input type="range" min="0" max="10" value={shift} onChange={e=>setShift(+e.target.value)}/>
@@ -87,8 +83,9 @@ function App(){const [lang,setLang]=useState("en");const t=T[lang];
     <div className="card"><h3>{t.impact}</h3>
      <div className="big">{di&&di.d95?di.d95.verdict:"…"}</div>
      <p>{di&&di.conclusion?di.conclusion:""}</p></div>
-    <div className="card"><h3>{t.pms} / {t.verdict}</h3>
-     {s?`${s.pms_state} · ${s.d95_verdict}`:"…"}</div>
+    <div className="card"><h3>{t.tcp} / {t.ntcp}</h3>
+     {tn?`+${(tn.tcp_delta_mean||0).toFixed(3)} / ${(tn.ntcp_delta_mean||0).toFixed(4)}`:"…"}</div>
+    <div className="card"><h3>{t.partner}</h3>{part.length} docs · {t.pms}: {s?s.pms_state:"…"}</div>
    </div>
   </div></div>;}
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
