@@ -85,6 +85,19 @@ def dvh(shift: int = 0):
     return {"bins": bins[:-1].tolist(), "cum": cum.tolist()}
 
 
+@app.get("/api/segment")
+def segment(z: int = 0):
+    from tools import train_seg
+    import numpy as _np
+    model = train_seg.ensure_model()
+    img, gt = train_seg.make_sample(_np.random.default_rng(1000 + z))
+    pred, unc = train_seg.predict_unc(model, img)
+    h = train_seg.hd95(pred, gt)
+    return {"dice": train_seg.dice(pred, gt),
+            "hd95": (0.0 if h != h else h),
+            "uncertainty": float(unc.mean())}
+
+
 @app.get("/api/slice")
 def slice_(z: int = 0):
     vol, gt, ai = _synth()

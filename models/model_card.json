@@ -1,0 +1,20 @@
+{
+  "architecture": "Tiny-CNN + MC-dropout",
+  "params": 2481,
+  "train/val/test": [
+    64,
+    16,
+    16
+  ],
+  "val_dice": 0.9928405156088896,
+  "val_hd95": 0.0625,
+  "test_dice": 0.9899960146401376,
+  "test_hd95": 0.09062499999999929,
+  "cv_dice_mean": 0.9830189217920013,
+  "cv_dice_std": 0.01106251698898958,
+  "uncertainty": "MC-dropout (n=8)",
+  "onnx": false,
+  "weight_sha256": "44a3ae1b375eef4019c0a38555485ba9e17f6038ef05cc016c9aa1a55a0c9827",
+  "framework": "torch",
+  "note": "synthetic pretraining; real-data fine-tune pending"
+}

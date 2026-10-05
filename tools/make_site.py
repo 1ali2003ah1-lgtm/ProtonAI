@@ -32,7 +32,7 @@ footer{opacity:.6;margin-top:30px;font-size:13px}</style></head><body><div class
 <div class="card"><div class="big">__D95__</div><span data-en="D95 improvement" data-ar="تحسن D95">…</span></div>
 <div class="card"><div class="big">__P__</div><span>p (Wilcoxon)</span></div>
 <div class="card"><div class="big">__VERDICT__</div><span data-en="Verdict" data-ar="الحكم">…</span></div></div>
-<div class="card">dTCP +__TCP__ · dNTCP __NTCP__</div>
+<div class="card">dTCP +__TCP__ · ΔNTCP reduction __NTCP__</div>
 <div class="card"><b>Cite</b>: [Authors]. ProtonAI v0.9.0. Zenodo. DOI: __DOI__.</div>
 <div class="card" data-en="Status: synthetic validation complete; NOT for clinical use." data-ar="الحالة: التحقق الاصطناعي مكتمل؛ ليس للاستخدام السريري.">…</div>
 <footer>github.com/1ali2003ah1-lgtm/ProtonAI · MIT</footer></div>
