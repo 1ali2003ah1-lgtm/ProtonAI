@@ -23,6 +23,34 @@ WEB = ROOT / "web"
 PART = ROOT / "docs" / "partnership"
 app = FastAPI(title="ProtonAI NEXUS API", version="2.0")
 
+
+from fastapi.responses import JSONResponse as _JR
+
+
+@app.middleware("http")
+async def _security_middleware(request, call_next):
+    from tools import security
+    st = security.get_settings()
+    client = request.client.host if request.client else "unknown"
+    if not security.get_limiter().allow(client):
+        return _JR(status_code=429, content={"detail": "rate limited"},
+                   headers={"Retry-After": str(int(st.rate_window))})
+    token = request.headers.get("X-API-Token")
+    if (st.auth_enabled and request.url.path.startswith("/api/")
+            and request.url.path != "/api/health"):
+        if not st.token_ok(token):
+            return _JR(status_code=401, content={"detail": "invalid token"})
+    resp = await call_next(request)
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["Referrer-Policy"] = "no-referrer"
+    if st.hsts:
+        resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    security.get_audit().record(method=request.method, path=request.url.path,
+                                status=resp.status_code, client=client,
+                                token=token)
+    return resp
+
 _VOL = _GT = _AI = None
 
 
