@@ -1,22 +1,11 @@
-# ProtonAI - صورة إنتاج خفيفة وآمنة
-FROM python:3.10-slim
-
+FROM python:3.11-slim
 WORKDIR /app
-
-# تثبيت الاعتماديات أولاً (للاستفادة من cache)
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# نسخ الشيفرة
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu \
+ && pip install --no-cache-dir -r requirements.txt
 COPY . .
-
-# مستخدم غير root (أمان مؤسسي)
-RUN useradd -m appuser
-USER appuser
-
-# فحص صحة دوري
+EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD python -c "print('ok')" || exit 1
-
-# نقطة الدخول: الديمو السريري
-CMD ["python", "run_clinical_demo.py"]
+  CMD python -c "import urllib.request;urllib.request.urlopen('http://localhost:8000/api/health')" || exit 1
+USER 1000
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]

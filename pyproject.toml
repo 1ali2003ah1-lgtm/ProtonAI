@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protonai"
+version = "0.9.0"
+description = "Open, auditable AI contouring assistance for proton therapy"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Ali Hussein Thajil" }]
+keywords = ["proton-therapy", "ai", "contouring", "dose-impact"]
+
+[project.urls]
+Homepage = "https://1ali2003ah1-lgtm.github.io/ProtonAI/"
+Repository = "https://github.com/1ali2003ah1-lgtm/ProtonAI"
+
+[project.scripts]
+protonai = "tools.cli:main"
+
+[tool.setuptools]
+packages = ["tools"]

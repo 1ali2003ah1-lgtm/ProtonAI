@@ -122,6 +122,12 @@ def physics():
             "rbe": rbe_statement.RBE, "validation": True}
 
 
+@app.get("/api/health")
+def health():
+    from tools.version import __version__
+    return {"status": "ok", "version": __version__}
+
+
 @app.get("/api/slice")
 def slice_(z: int = 0):
     vol, gt, ai = _synth()

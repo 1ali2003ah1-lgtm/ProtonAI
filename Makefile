@@ -1,25 +1,23 @@
-.PHONY: install test cov run ui dark board gov clean
-
 install:
-	pip install -r requirements.txt fastapi uvicorn httpx
+	pip install -r requirements.txt
 
 test:
 	pytest -q
 
-cov:
-	pytest -q --cov=. --cov-report=term-missing
+coverage:
+	pytest -q --cov=tools --cov-report=term
 
-run:
-	uvicorn web_ui_premium:app --port 8000
+site:
+	python tools/make_site.py
 
-dark:
-	uvicorn web_ui_dark:app --port 8003
+physics:
+	python -m tools.make_physics_report
 
-board:
-	uvicorn web_board:app --port 8002
+qa:
+	python -m tools.physics_qa
 
-gov:
-	uvicorn web_governance:app --port 8001
+docker-build:
+	docker build -t protonai .
 
-clean:
-	find . -name "__pycache__" -type d -exec rm -rf {} +
+docker-run:
+	docker run -p 8000:8000 protonai

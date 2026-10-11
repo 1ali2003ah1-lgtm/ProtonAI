@@ -1,9 +1,5 @@
-__pycache__/
+.git
+__pycache__
 *.pyc
-.pytest_cache/
-.coverage
-htmlcov/
-.git/
-.github/
-out/
-*.md
+.pytest_cache
+*.egg-info
