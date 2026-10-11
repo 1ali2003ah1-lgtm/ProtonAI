@@ -98,6 +98,30 @@ def segment(z: int = 0):
             "uncertainty": float(unc.mean())}
 
 
+@app.get("/api/physics")
+def physics():
+    import numpy as np
+    from tools import (beam_model, dose_3d, gamma, hu_to_spr,
+                       plan_metrics, rbe_statement, robust)
+    shape = (16, 8, 8)
+    spr = np.ones(shape); field = np.ones((8, 8))
+    target = np.zeros(shape); target[6:13, 2:6, 2:6] = 1
+    spots = beam_model.spot_lattice(8, 8)
+    layers = beam_model.default_layers(target)
+    _, dose = beam_model.optimize_spots(shape, spots, target, layers)
+    rb = robust.robust_eval(spr, field, float(layers[-1]), target)
+    tv = plan_metrics._tv(dose, target)
+    return {"spr_water": hu_to_spr.hu_to_spr(0.0), "wepl": dose_3d.wepl(spr),
+            "uniformity": float(np.std(tv) / max(np.mean(tv), 1e-9)),
+            "ci": plan_metrics.conformity(dose, target),
+            "hi": plan_metrics.homogeneity(dose, target),
+            "r80": plan_metrics.r80(dose.mean((1, 2))),
+            "tcp": plan_metrics.tcp_from_dose(dose, target),
+            "robust_worst_d95": rb["worst"],
+            "gamma_pass": gamma.gamma_3d(dose, dose),
+            "rbe": rbe_statement.RBE, "validation": True}
+
+
 @app.get("/api/slice")
 def slice_(z: int = 0):
     vol, gt, ai = _synth()

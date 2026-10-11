@@ -1,0 +1,11 @@
+{
+  "spr_water": 1.0,
+  "calibration_max_err": 0.008000000000000007,
+  "wepl": 32.0,
+  "bragg_peak": 16,
+  "distal_falloff_ok": true,
+  "gamma_identical": 1.0,
+  "robust_worst_d95": 0.0030275547453758153,
+  "v95_nominal": 0.4666666666666667,
+  "pass": true
+}
