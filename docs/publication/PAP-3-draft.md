@@ -51,3 +51,40 @@ Fig 1: DVH paired curves. Fig 2: TCP/NTCP deltas. Table 1: endpoints.
 
 ## Traceability
 RPT-001 v4.0, DOSE-IMPACT-001, SVP-001, NEXUS-PRD-001.
+
+## Ethics Statement
+All current evidence uses synthetic phantoms; no human subjects or
+identifiable data were used. The real-data phase requires IRB/ethics
+approval and a signed data-sharing agreement (see docs/partnership/).
+
+## Data Availability
+Synthetic phantom generators, code, and artifacts are publicly available at
+https://github.com/1ali2003ah1-lgtm/ProtonAI and archived via DOI
+10.5281/zenodo.23147530.
+
+## Conflicts of Interest
+The author declares no conflict of interest.
+
+## Funding
+No external funding was received for this work.
+
+## Author Contributions & ORCID
+Ali Hussein Thajil (CRediT): conceptualization, methodology, software,
+validation, writing. ORCID: [FILL-ORCID].
+
+## Limitations
+Synthetic pretraining; constant RBE=1.1; surrogate-to-clinical transfer
+pending real-data validation; single-institution initial scope.
+
+## Statistical Analysis
+Paired Wilcoxon signed-rank with bootstrap confidence intervals; alpha=0.05;
+power considerations documented in docs/publication/.
+
+## Reporting Guideline Compliance
+Reported per CLAIM 2024 and TRIPOD+AI checklists for AI-based medical
+imaging prediction models.
+
+## Protocol Registration
+Analysis protocol and synthetic phantom generators archived on Zenodo
+(DOI 10.5281/zenodo.23147530); no prospective registration applies to the
+synthetic phase.
