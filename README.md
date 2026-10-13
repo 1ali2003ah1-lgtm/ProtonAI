@@ -55,3 +55,10 @@ pytest -q
 
 ---
 *ProtonAI — بحث أكاديمي؛ لا يُستخدم سريرياً قبل التحقق والاعتماد.*
+
+## Evidence & Benchmarks
+
+See docs/business/BENCHMARK-001.md (pooled n=48).
+- vs atlas: **superior** (Cliff's delta=1.00)
+- vs commercial_sim: **superior** (Cliff's delta=1.00)
+- vs manual_sim: **superior** (Cliff's delta=1.00)

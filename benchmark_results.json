@@ -1,0 +1,58 @@
+{
+  "seeds": [
+    2,
+    3,
+    4
+  ],
+  "n_cases": 16,
+  "pooled_n": 48,
+  "methods": {
+    "protonai": {
+      "dice_mean": 0.9906543048110832,
+      "dice_std": 0.010585830935656081,
+      "hd95_mean": 0.03125,
+      "runtime_ms": 4.357495812485013
+    },
+    "atlas": {
+      "dice_mean": 0.004670848726802336,
+      "dice_std": 0.00933355335959323,
+      "hd95_mean": 13.739491616403896,
+      "runtime_ms": 0.0
+    },
+    "commercial_sim": {
+      "dice_mean": 0.4935479009839807,
+      "dice_std": 0.12455513098533343,
+      "hd95_mean": 2.223035439158831,
+      "runtime_ms": 0.0
+    },
+    "manual_sim": {
+      "dice_mean": 0.7077675831182987,
+      "dice_std": 0.08954784889573664,
+      "hd95_mean": 2.57877070759629,
+      "runtime_ms": 0.0
+    }
+  },
+  "comparisons": {
+    "atlas": {
+      "p": 1.5200708068676562e-09,
+      "ci_low": 0.9817158940534385,
+      "ci_high": 0.9898217958356998,
+      "cliffs_delta": 1.0,
+      "verdict": "superior"
+    },
+    "commercial_sim": {
+      "p": 1.6306098573244595e-09,
+      "ci_low": 0.46294669483621426,
+      "ci_high": 0.5308914429561061,
+      "cliffs_delta": 1.0,
+      "verdict": "superior"
+    },
+    "manual_sim": {
+      "p": 7.105427357601002e-15,
+      "ci_low": 0.25866038744864756,
+      "ci_high": 0.3068558779136417,
+      "cliffs_delta": 1.0,
+      "verdict": "superior"
+    }
+  }
+}
