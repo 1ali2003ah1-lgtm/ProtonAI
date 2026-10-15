@@ -17,11 +17,12 @@
   "weight_sha256": "71f37014264df6601b5ce81277b97b4edd4b8e5d2708d12de27cddc274b7279a",
   "framework": "torch",
   "note": "synthetic pretraining; real-data fine-tune pending",
-  "train_time_seconds": 11.72,
+  "train_time_seconds": 11.89,
   "test_accuracy_mean": 0.9976,
   "test_precision_mean": 0.9827,
   "test_recall_mean": 0.9942,
   "test_f1_mean": 0.9883,
-  "last_trained": "2026-10-15 16:22",
+  "test_dice_mean": 0.9883,
+  "last_trained": "2026-10-15 16:26",
   "status": "Trained per Dr. Tariq's directive"
 }
