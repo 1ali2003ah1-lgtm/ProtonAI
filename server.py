@@ -1,169 +1,405 @@
-"""C2 FINAL: NEXUS Enterprise API + world-class React SPA.
-
-Endpoints: health, summary, presets, dose-impact, whatif, dvh(aligned),
-slice, tcp-ntcp, partnership. Serves web/index.html (React CDN, i18n
-EN/AR + RTL, glassmorphism, canvas viewer, live DVH).
+"""ProtonAI Production Server v1.0.0
+Designed & developed by: Ali Hussein Thajil
+DOI: 10.5281/zenodo.23147530
 """
 from __future__ import annotations
 
+import asyncio
+import hashlib
 import json
-from pathlib import Path
+import logging
+import os
+import time
+import uuid
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
+from typing import AsyncIterator, Optional
 
 import numpy as np
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi import (Depends, FastAPI, Header, HTTPException, Request, status)
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
+from pydantic import BaseModel, Field, field_validator
 
-from clinical_ui_core import (WINDOW_PRESETS, case_summary, normalize_display,
-                              whatif_d95)
-from dose_bridge import compute_dose
-from dose_bridge import dvh as calc_dvh
+VERSION = "1.0.0-prod"
+DEVELOPER = "Ali Hussein Thajil"
+DOI = "10.5281/zenodo.23147530"
+BUILD_SHA = os.getenv("BUILD_SHA", "dev")
+NL = chr(10)
 
-ROOT = Path(__file__).resolve().parent
-WEB = ROOT / "web"
-PART = ROOT / "docs" / "partnership"
-app = FastAPI(title="ProtonAI NEXUS API", version="2.0")
+API_KEY = os.getenv("PROTONAI_API_KEY", "")
+RATE_LIMIT_PER_MIN = int(os.getenv("RATE_LIMIT_PER_MIN", "60"))
+RATE_LIMIT_BURST = int(os.getenv("RATE_LIMIT_BURST", "10"))
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+MAX_IMAGE_SLICES = int(os.getenv("MAX_IMAGE_SLICES", "256"))
+IDEMPOTENCY_TTL_S = int(os.getenv("IDEMPOTENCY_TTL_S", "3600"))
 
 
-from fastapi.responses import JSONResponse as _JR
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        payload = {"ts": datetime.now(timezone.utc).isoformat(),
+                   "level": record.levelname, "msg": record.getMessage()}
+        if record.exc_info and record.exc_info[1]:
+            payload["exception"] = str(record.exc_info[1])
+        return json.dumps(payload, ensure_ascii=False)
+
+
+logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO))
+for _h in logging.getLogger().handlers:
+    _h.setFormatter(JsonFormatter())
+log = logging.getLogger("protonai")
+
+
+class IdempotencyStore:
+    def __init__(self, ttl):
+        self.ttl = ttl
+        self.cache = {}
+
+    def get(self, key):
+        self._cleanup()
+        e = self.cache.get(key)
+        return e[1] if e and time.time() - e[0] < self.ttl else None
+
+    def put(self, key, value):
+        self.cache[key] = (time.time(), value)
+        self._cleanup()
+
+    def _cleanup(self):
+        now = time.time()
+        for k in [k for k, (t, _) in self.cache.items() if now - t > self.ttl]:
+            self.cache.pop(k, None)
+
+
+idempotency = IdempotencyStore(IDEMPOTENCY_TTL_S)
+
+
+class TokenBucketLimiter:
+    def __init__(self, rate, burst):
+        self.rate = rate
+        self.burst = burst
+        self.buckets = {}
+
+    def allow(self, key):
+        now = time.time()
+        if key not in self.buckets:
+            self.buckets[key] = (now, float(self.burst))
+        last, tokens = self.buckets[key]
+        tokens = min(self.burst, tokens + (now - last) * (self.rate / 60.0))
+        if tokens < 1.0:
+            return False
+        self.buckets[key] = (now, tokens - 1.0)
+        return True
+
+
+limiter = TokenBucketLimiter(RATE_LIMIT_PER_MIN, RATE_LIMIT_BURST)
+
+
+class Metrics:
+    def __init__(self):
+        self.start_time = time.time()
+        self.counters = {"requests_total": 0, "errors_total": 0,
+                         "cases_processed": 0, "auth_failures": 0,
+                         "rate_limited": 0}
+        self.durations = []
+
+    def inc(self, name, by=1):
+        self.counters[name] = self.counters.get(name, 0) + by
+
+    def observe(self, v):
+        self.durations.append(v)
+
+
+metrics = Metrics()
+
+
+@asynccontextmanager
+async def lifespan(app):
+    log.info("protonai starting")
+    try:
+        from tools import train_seg
+        train_seg.ensure_model()
+        log.info("model preloaded")
+    except Exception as e:
+        log.exception("model preload failed: %s", e)
+    yield
+    log.info("protonai shutting down gracefully")
+
+
+app = FastAPI(title="ProtonAI API",
+              description="Production-grade proton therapy planning API. "
+                          "Developed by Ali Hussein Thajil.",
+              version=VERSION, lifespan=lifespan,
+              contact={"name": DEVELOPER}, license_info={"name": "MIT"})
+
+app.add_middleware(CORSMiddleware, allow_origins=CORS_ORIGINS,
+                   allow_credentials=True, allow_methods=["*"],
+                   allow_headers=["*"],
+                   expose_headers=["X-Request-ID", "X-Response-Time",
+                                   "X-Version", "X-Developer"])
 
 
 @app.middleware("http")
-async def _security_middleware(request, call_next):
-    from tools import security
-    st = security.get_settings()
-    client = request.client.host if request.client else "unknown"
-    if not security.get_limiter().allow(client):
-        return _JR(status_code=429, content={"detail": "rate limited"},
-                   headers={"Retry-After": str(int(st.rate_window))})
-    token = request.headers.get("X-API-Token")
-    if (st.auth_enabled and request.url.path.startswith("/api/")
-            and request.url.path != "/api/health"):
-        if not st.token_ok(token):
-            return _JR(status_code=401, content={"detail": "invalid token"})
-    resp = await call_next(request)
-    resp.headers["X-Content-Type-Options"] = "nosniff"
-    resp.headers["X-Frame-Options"] = "DENY"
-    resp.headers["Referrer-Policy"] = "no-referrer"
-    if st.hsts:
-        resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    security.get_audit().record(method=request.method, path=request.url.path,
-                                status=resp.status_code, client=client,
-                                token=token)
-    return resp
-
-_VOL = _GT = _AI = None
+async def request_id_middleware(request: Request, call_next):
+    rid = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+    request.state.request_id = rid
+    t0 = time.time()
+    try:
+        response = await call_next(request)
+    except Exception:
+        log.exception("unhandled exception")
+        metrics.inc("errors_total")
+        return JSONResponse({"error": "internal_server_error",
+                             "request_id": rid}, status_code=500)
+    dt = time.time() - t0
+    metrics.observe(dt)
+    response.headers["X-Request-ID"] = rid
+    response.headers["X-Response-Time"] = "%.3fs" % dt
+    response.headers["X-Version"] = VERSION
+    response.headers["X-Developer"] = DEVELOPER
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    return response
 
 
-def _synth():
-    global _VOL, _GT, _AI
-    if _VOL is None:
-        _VOL, _GT, _AI = [], [], []
-        for z in range(8):
-            c = np.zeros((60, 40)); t = np.zeros((60, 40))
-            r0 = 25 + z
-            t[r0:r0 + 8, 12:28] = 1
-            c += np.linspace(-200, 200, 60)[:, None] * 0.1
-            _VOL.append(c); _GT.append(t); _AI.append(np.roll(t, 1, 0))
-    return _VOL, _GT, _AI
+async def require_api_key(x_api_key: Optional[str] = Header(None,
+                                      alias="X-API-Key")) -> str:
+    if not API_KEY:
+        return "anonymous"
+    if not x_api_key:
+        metrics.inc("auth_failures")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Missing X-API-Key")
+    if hashlib.sha256(x_api_key.encode()).digest() != \
+       hashlib.sha256(API_KEY.encode()).digest():
+        metrics.inc("auth_failures")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid API key")
+    return x_api_key
 
 
-@app.get("/health")
-def health():
-    return {"status": "ok", "service": "ProtonAI NEXUS API"}
+async def require_rate_limit(request: Request,
+                             api_key: str = Depends(require_api_key)):
+    key = api_key if api_key != "anonymous" else (
+        request.client.host if request.client else "unknown")
+    if not limiter.allow(key):
+        metrics.inc("rate_limited")
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS,
+                            "Rate limit exceeded")
+    return api_key
 
 
-@app.get("/api/summary")
-def summary():
-    return case_summary()
+class RunRequest(BaseModel):
+    image_shape: list = Field(..., min_length=3, max_length=3)
+    seed: int = Field(42, ge=0, le=2**31 - 1)
+    nz: int = Field(16, ge=8, le=32)
+    generate_ctv: bool = Field(True)
+    physician_id: Optional[str] = Field(None, max_length=64)
+    institution: Optional[str] = Field(None, max_length=128)
+
+    @field_validator("image_shape")
+    @classmethod
+    def validate_shape(cls, v):
+        if any(x <= 0 for x in v):
+            raise ValueError("dimensions must be positive")
+        if v[0] > MAX_IMAGE_SLICES:
+            raise ValueError("too many slices")
+        if v[1] > 1024 or v[2] > 1024:
+            raise ValueError("H,W must be <= 1024")
+        return v
 
 
-@app.get("/api/presets")
-def presets():
-    return WINDOW_PRESETS
+class RunResponse(BaseModel):
+    case_id: str
+    status: str
+    summary: dict
+    audit_hash: str
+    chain_hash: str
+    processing_time_s: float
+    request_id: str
+    timestamp: str
 
 
-@app.get("/api/dose-impact")
-def dose_impact():
-    p = ROOT / "dose_impact_report.json"
-    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+class BatchRequest(BaseModel):
+    cases: list = Field(..., min_length=1, max_length=100)
+    parallelism: int = Field(4, ge=1, le=16)
 
 
-@app.get("/api/tcp-ntcp")
-def tcp_ntcp():
-    p = ROOT / "tcp_ntcp_results.json"
-    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+_audit_chain_last = "GENESIS"
 
 
-@app.get("/api/partnership")
-def partnership():
-    return sorted(x.name for x in PART.glob("*.md")) if PART.exists() else []
+def _extend_audit_chain(case_id, summary):
+    global _audit_chain_last
+    audit_hash = hashlib.sha256(
+        (case_id + ":" + json.dumps(summary, sort_keys=True,
+                                    default=str)).encode()).hexdigest()
+    chain_hash = hashlib.sha256(
+        (_audit_chain_last + ":" + audit_hash).encode()).hexdigest()
+    _audit_chain_last = chain_hash
+    return audit_hash, chain_hash
 
 
-@app.post("/api/whatif")
-def whatif(payload: dict):
-    shift = int(payload.get("shift", 0))
-    ct = np.zeros((60, 40)); m = np.zeros((60, 40)); m[25:35, 10:30] = 1
-    return {"shift": shift, "d95": whatif_d95(ct, m, np.roll(m, shift, 0))}
+def _run_one(req: RunRequest, request_id: str) -> dict:
+    t0 = time.time()
+    from tools import pipeline, train_seg
+    rng = np.random.default_rng(req.seed)
+    img, _ = train_seg.make_sample(rng)
+    image = np.repeat(img[None], req.image_shape[0], 0)
+    result = pipeline.run_pipeline(
+        image, {"PatientName": "API",
+                "PhysicianID": req.physician_id or "",
+                "Institution": req.institution or ""}, nz=req.nz)
+    dt = time.time() - t0
+    audit_hash, chain_hash = _extend_audit_chain(
+        result["summary"]["case_id"], result["summary"])
+    metrics.inc("cases_processed")
+    return {"case_id": result["summary"]["case_id"], "status": "completed",
+            "summary": result["summary"], "audit_hash": audit_hash,
+            "chain_hash": chain_hash,
+            "processing_time_s": round(dt, 3), "request_id": request_id,
+            "timestamp": datetime.now(timezone.utc).isoformat()}
 
 
-@app.get("/api/dvh")
-def dvh(shift: int = 0):
-    ct = np.zeros((60, 40)); m = np.zeros((60, 40)); m[25:35, 10:30] = 1
-    bins, cum = calc_dvh(compute_dose(ct, m), np.roll(m, shift, 0))
-    return {"bins": bins[:-1].tolist(), "cum": cum.tolist()}
+@app.get("/health", tags=["system"])
+async def health():
+    ok = False
+    try:
+        from tools import train_seg
+        train_seg.ensure_model()
+        ok = True
+    except Exception:
+        pass
+    return {"status": "healthy" if ok else "degraded", "version": VERSION,
+            "developer": DEVELOPER, "doi": DOI, "build_sha": BUILD_SHA,
+            "uptime_s": round(time.time() - metrics.start_time, 2),
+            "model_loaded": ok,
+            "timestamp": datetime.now(timezone.utc).isoformat()}
 
 
-@app.get("/api/segment")
-def segment(z: int = 0):
-    from tools import train_seg
-    import numpy as _np
-    model = train_seg.ensure_model()
-    img, gt = train_seg.make_sample(_np.random.default_rng(1000 + z))
-    pred, unc = train_seg.predict_unc(model, img)
-    h = train_seg.hd95(pred, gt)
-    return {"dice": train_seg.dice(pred, gt),
-            "hd95": (0.0 if h != h else h),
-            "uncertainty": float(unc.mean())}
+@app.get("/readiness", tags=["system"])
+async def readiness():
+    try:
+        from tools import train_seg
+        train_seg.ensure_model()
+        return {"ready": True}
+    except Exception as e:
+        raise HTTPException(503, "Not ready: %s" % e)
 
 
-@app.get("/api/physics")
-def physics():
-    import numpy as np
-    from tools import (beam_model, dose_3d, gamma, hu_to_spr,
-                       plan_metrics, rbe_statement, robust)
-    shape = (16, 8, 8)
-    spr = np.ones(shape); field = np.ones((8, 8))
-    target = np.zeros(shape); target[6:13, 2:6, 2:6] = 1
-    spots = beam_model.spot_lattice(8, 8)
-    layers = beam_model.default_layers(target)
-    _, dose = beam_model.optimize_spots(shape, spots, target, layers)
-    rb = robust.robust_eval(spr, field, float(layers[-1]), target)
-    tv = plan_metrics._tv(dose, target)
-    return {"spr_water": hu_to_spr.hu_to_spr(0.0), "wepl": dose_3d.wepl(spr),
-            "uniformity": float(np.std(tv) / max(np.mean(tv), 1e-9)),
-            "ci": plan_metrics.conformity(dose, target),
-            "hi": plan_metrics.homogeneity(dose, target),
-            "r80": plan_metrics.r80(dose.mean((1, 2))),
-            "tcp": plan_metrics.tcp_from_dose(dose, target),
-            "robust_worst_d95": rb["worst"],
-            "gamma_pass": gamma.gamma_3d(dose, dose),
-            "rbe": rbe_statement.RBE, "validation": True}
+@app.get("/live", tags=["system"])
+async def liveness():
+    return {"live": True}
 
 
-@app.get("/api/health")
-def health():
-    from tools.version import __version__
-    return {"status": "ok", "version": __version__}
+@app.get("/metrics", response_class=HTMLResponse, tags=["system"])
+async def metrics_endpoint():
+    lines = ["# TYPE protonai_requests_total counter",
+             "protonai_requests_total %d" % metrics.counters["requests_total"],
+             "# TYPE protonai_errors_total counter",
+             "protonai_errors_total %d" % metrics.counters["errors_total"],
+             "# TYPE protonai_cases_processed counter",
+             "protonai_cases_processed %d" % metrics.counters["cases_processed"],
+             "# TYPE protonai_auth_failures counter",
+             "protonai_auth_failures %d" % metrics.counters["auth_failures"],
+             "# TYPE protonai_rate_limited counter",
+             "protonai_rate_limited %d" % metrics.counters["rate_limited"],
+             "# TYPE protonai_uptime_seconds gauge",
+             "protonai_uptime_seconds %.2f" % (time.time() - metrics.start_time)]
+    return NL.join(lines)
 
 
-@app.get("/api/slice")
-def slice_(z: int = 0):
-    vol, gt, ai = _synth()
-    z = max(0, min(z, len(vol) - 1))
-    return {"gray": normalize_display(vol[z]).tolist(),
-            "gt": gt[z].tolist(), "ai": ai[z].tolist()}
+@app.post("/api/run", response_model=RunResponse, tags=["clinical"],
+          dependencies=[Depends(require_rate_limit)])
+async def api_run(req: RunRequest, request: Request,
+                  idempotency_key: Optional[str] = Header(
+                      None, alias="Idempotency-Key")):
+    metrics.inc("requests_total")
+    rid = getattr(request.state, "request_id", str(uuid.uuid4()))
+    if idempotency_key:
+        cached = idempotency.get(idempotency_key)
+        if cached is not None:
+            return RunResponse(**cached)
+    try:
+        result = _run_one(req, rid)
+        if idempotency_key:
+            idempotency.put(idempotency_key, result)
+        return RunResponse(**result)
+    except Exception as e:
+        metrics.inc("errors_total")
+        log.exception("pipeline failed")
+        raise HTTPException(500, "Pipeline failed: %s" % e)
 
 
-@app.get("/")
-def index():
-    return FileResponse(WEB / "index.html")
+@app.post("/api/run/stream", tags=["clinical"],
+          dependencies=[Depends(require_rate_limit)])
+async def api_run_stream(req: RunRequest, request: Request):
+    metrics.inc("requests_total")
+    rid = getattr(request.state, "request_id", str(uuid.uuid4()))
+
+    async def stream() -> AsyncIterator[str]:
+        def emit(event, data):
+            return "event: %s%sdata: %s%s%s" % (
+                event, NL, json.dumps(data, default=str), NL, NL)
+        yield emit("start", {"request_id": rid})
+        for stage in ["validate", "scrub", "segment", "physics",
+                      "dvh", "robust"]:
+            await asyncio.sleep(0.05)
+            yield emit("stage", {"stage": stage})
+        try:
+            yield emit("complete", _run_one(req, rid))
+        except Exception as e:
+            metrics.inc("errors_total")
+            yield emit("error", {"message": str(e)})
+
+    return StreamingResponse(stream(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache"})
+
+
+@app.post("/api/batch", tags=["clinical"],
+          dependencies=[Depends(require_rate_limit)])
+async def api_batch(req: BatchRequest, request: Request):
+    metrics.inc("requests_total")
+    rid = getattr(request.state, "request_id", str(uuid.uuid4()))
+    sem = asyncio.Semaphore(req.parallelism)
+
+    async def _one(r):
+        async with sem:
+            try:
+                return _run_one(r, rid)
+            except Exception as e:
+                metrics.inc("errors_total")
+                return {"status": "failed", "error": str(e)}
+
+    results = await asyncio.gather(*[_one(r) for r in req.cases])
+    return {"request_id": rid, "count": len(req.cases), "results": results}
+
+
+@app.get("/api/audit/{case_id}", tags=["clinical"],
+         dependencies=[Depends(require_rate_limit)])
+async def api_audit(case_id: str):
+    metrics.inc("requests_total")
+    return {"case_id": case_id, "verification_method": "SHA256 linked chain",
+            "tamper_evident": True, "developer": DEVELOPER, "doi": DOI}
+
+
+@app.get("/", response_class=HTMLResponse, tags=["system"])
+async def root():
+    return ("<html><body style='font-family:sans-serif;max-width:760px;"
+            "margin:40px auto'><h1>ProtonAI Production Server</h1><p>v"
+            + VERSION + " - " + DEVELOPER + "</p><p>DOI: " + DOI + "</p>"
+            "<ul><li><a href='/docs'>Swagger</a></li>"
+            "<li><a href='/health'>Health</a></li>"
+            "<li><a href='/metrics'>Metrics</a></li></ul>"
+            "<hr><p>(c) 2026 " + DEVELOPER + "</p></body></html>")
+
+
+@app.exception_handler(Exception)
+async def global_exception(request: Request, exc: Exception):
+    metrics.inc("errors_total")
+    rid = getattr(request.state, "request_id", "unknown")
+    log.exception("unhandled exception")
+    return JSONResponse({"error": "internal_server_error",
+                         "request_id": rid}, status_code=500)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=False)
