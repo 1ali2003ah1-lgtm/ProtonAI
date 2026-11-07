@@ -125,6 +125,7 @@ function DVH({shift}){const d=useAPI(`/api/dvh?shift=${shift}`,null);
     <div className="card"><h3>{t.tcp} / {t.ntcp}</h3>
      {tn?`+${(tn.tcp_delta_mean||0).toFixed(3)} / ${(tn.ntcp_delta_mean||0).toFixed(4)}`:"…"}</div>
     <div className="card"><h3>{t.partner}</h3>{part.length} docs · {t.pms}: {s?s.pms_state:"…"}</div>
+    <RadiomicClassifier lang={lang}/>
    </div>
   </div></div>;}
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
