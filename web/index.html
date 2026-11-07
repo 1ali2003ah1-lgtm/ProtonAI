@@ -50,6 +50,7 @@ function Viewer(){const cv=useRef();const[z,setZ]=useState(0);
    if(ai&&d.ai[y][x]){img.data[i]=60;img.data[i+1]=140;img.data[i+2]=255;}}
   ctx.putImageData(img,0,0);});},[z,gt,ai]);
  return <div className="card"><h3>Viewer</h3>
+  <RadiomicClassifier lang={lang}/>
   <canvas ref={cv} width="40" height="60" style={{height:280}}/>
   <div className="row" style={{marginTop:10}}>
    <label><input type="checkbox" checked={gt} onChange={e=>setGt(e.target.checked)}/>GT</label>
@@ -63,7 +64,40 @@ function DVH({shift}){const d=useAPI(`/api/dvh?shift=${shift}`,null);
   fill="none" stroke={c} strokeWidth="2.5"/>;
  return <div className="card"><h3>DVH</h3><svg viewBox="0 0 300 120">
   {P(b,"#22d3ee")}{shift>0&&P(d,"#f472b6")}</svg></div>;}
-function App(){const[lang,setLang]=useState("en");const t=T[lang];
+ function App(){const[lang,setLang]=useState("en");const t=T[lang];
+ function RadiomicClassifier({lang}){
+  const data=useAPI("/api/radiomics/classify",null);
+  const groupClass=["group-A","group-B","group-C"];
+  const groupLabels=lang==="ar"?
+    {0:"A — جرعة عالية مركزة",1:"B — تغطية واسعة",2:"C — بروتوكول قياسي"}:
+    {0:"A — Focused High-Dose",1:"B — Wide-Field",2:"C — Standard"};
+  const protocols=lang==="ar"?
+    {0:"74 Gy / 37 جلسة / IMPT",1:"70 Gy / 35 جلسة / PSPT",2:"66 Gy / 33 جلسة / IMPT"}:
+    {0:"74 Gy / 37 fx / IMPT",1:"70 Gy / 35 fx / PSPT",2:"66 Gy / 33 fx / IMPT"};
+  if(!data)return <div className="card"><h3>Radiomic Classifier</h3><p style={{color:"#9fb0c8"}}>Analyzing...</p></div>;
+  return(
+    <div className="card" style={{borderColor:"#22d3ee44",marginTop:16}}>
+      <h3>Radiomic Tumor Classifier</h3>
+      <span style={{padding:"4px 12px",borderRadius:999,background:"#22d3ee22",color:"#22d3ee",fontSize:13,fontWeight:800}}>
+        {groupLabels[data.tumor_group]}
+      </span>
+      <div style={{marginTop:12,fontSize:13}}>
+        <div style={{display:"flex",justifyContent:"space-between",margin:"6px 0"}}>
+          <span style={{color:"#9fb0c8"}}>Protocol</span>
+          <span style={{fontWeight:600}}>{data.protocol_name}</span>
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between",margin:"6px 0"}}>
+          <span style={{color:"#9fb0c8"}}>Dose / Fractions</span>
+          <span style={{fontWeight:600}}>{protocols[data.tumor_group]}</span>
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between",margin:"6px 0"}}>
+          <span style={{color:"#9fb0c8"}}>Confidence</span>
+          <span style={{fontWeight:600}}>{data.confidence_score?`${(data.confidence_score*100).toFixed(1)}%`:"—"}</span>
+        </div>
+      </div>
+    </div>
+  );
+ }
  const[shift,setShift]=useState(0);const[d95,setD95]=useState(null);
  const s=useAPI("/api/summary",null);const di=useAPI("/api/dose-impact",null);
  const tn=useAPI("/api/tcp-ntcp",null);const part=useAPI("/api/partnership",[]);
