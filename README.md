@@ -1,64 +1,32 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23147530.svg)](https://doi.org/10.5281/zenodo.23147530)
-# ProtonAI 🧬
-## منصة دعم قرار سريري (CDSS) لتحسين دقة العلاج بالبروتون بالذكاء الاصطناعي
+# ProtonAI — منصة ذكاء اصطناعي لتحسين دقة العلاج بالبروتون
 
-> منصة **بحثية** — ليست جهازاً طبياً معتمداً. القرار النهائي **بشري دائماً**.
+## نظرة عامة
+ProtonAI هو نظام دعم قرار طبي مبني على الذكاء الاصطناعي، يهدف إلى تحسين دقة تخطيط العلاج الإشعاعي بالبروتون لمرضى سرطان الرئة.
 
----
+## البيانات المستخدمة
+- المصدر: NSCLC-Radiomics من The Cancer Imaging Archive (TCIA)
+- عدد المرضى: 421 مريض
+- نوع البيانات: صور CT بصيغة DICOM + ملفات RTSTRUCT + بيانات سريرية
 
-## 🛡️ مبادئ الأمان (غير قابلة للتفاوض)
-- **صفر PHI:** لا يدخل المنصة إلا بيانات مُخفية الهوية (DICOM PS3.15 Annex E).
-- **RED = إيقاف + مراجعة إجبارية** — مو مجرد لون.
-- كل توصية تحمل **عدم يقين** + `requires_human_ack = True`.
-- **سجل تدقيق append‑only** متسلسل بالبصمات لكل عملية.
+## ما يقوم به النظام
+1. قراءة صور CT واستخراج حدود الورم
+2. استخراج 19 خاصية كمية من منطقة الورم
+3. تصنيف الأورام إلى 3 مجموعات علاجية تلقائياً
 
-## 🔬 شنو تسوي (الخط الكامل)
-DICOM خام ← intake (checksum/custody) ← anonymize ← parse ← harmonize ←
-AI (تقسيم + ensemble/conformal/ECE) ← فيزياء (معايرة HU→RSP + مدى + هامش) ←
-قرار واعٍ بالموقع (PROCEED/REVIEW/STOP) ← **تقرير سريري موحّد** ← audit.
+## مجموعات العلاج
+| المجموعة | عدد المرضى | البروتوكول |
+|----------|------------|------------|
+| A | 173 | جرعة بروتون عالية ومركزة |
+| B | 154 | تغطية واسعة بجرعة عالية |
+| C | 94 | البروتوكول القياسي |
 
-## 🏗️ البنية (7 طبقات — تفاصيلها بـ docs/architecture.md)
-| الطبقة | أبرز الوحدات |
-|--------|--------------|
-| استلام/بيانات | intake_pipeline، dicom_parser، gov_anonymizer، harmonization، dry_run |
-| فيزياء | hu_rsp_calibration، mc_tissue_compare، pstar_validation، gamma_index، range_margin |
-| AI | segmentation_train، seg_metrics، uncertainty_aware، explainability، robustness |
-| قرار | tumor_sites، site_decision، safety_gate، sample_size، clinical_report |
-| تحقق/مراقبة | agreement، drift_monitor، fmea |
-| حوكمة | gov_audit_log، config_loader، samd_classifier |
-| واجهة | api_main (FastAPI) |
+## الملفات
+- tumor_classifier.pkl — نموذج تصنيف الأورام
+- scaler.pkl — معالج البيانات
+- pca.pkl — محول الأبعاد
+- advanced_radiomics_421.csv — الخصائص المستخرجة
+- protonai_final_dataset.csv — الداتا الكاملة
 
-## 🗺️ تغطية الأورام
-19 موقعاً بثلاث موجات توسعة؛ المواقع عالية الأولوية (أطفال/CNS/قاعدة جمجمة)
-بعتبات أشد: Dice ≥ 0.90 و ECE ≤ 0.03.
 
-## ✅ التحقق وأهداف القبول
-- مراجع منشورة: NIST PSTAR (انحراف ≤ 3%) + Gamma ≥ 95% @2%/2mm.
-- أهداف: Dice ≥ 0.85 • ECE ≤ 0.05 • inter‑observer kappa ≥ 0.6.
-- FMEA محسوب (10 أنماط) + مراقبة drift بعد النشر.
-- حالياً على بيانات اصطناعية؛ التحقق السريري بعد IRB ووصول البيانات.
 
-## 📚 الوثائق
-architecture • fmea • irb_checklist • shadow_mode • tumor_expansion •
-data_acquisition_plan • samd_roadmap • paper_draft • one_pager •
-data_security • statistical_analysis.
-
-## 🧪 التشغيل
-```bash
-pip install -r requirements.txt
-pytest -q
-```
-
-## 🚧 خارطة الطريق
-- ⏸️ لابتوب: هيكلة packages + DVC/MLflow + تدريب nnU‑Net (GPU).
-- ⏸️ بعد العطلة: IRB ← استلام بيانات ← دراسة استعادية + shadow mode.
-
----
-*ProtonAI — بحث أكاديمي؛ لا يُستخدم سريرياً قبل التحقق والاعتماد.*
-
-## Evidence & Benchmarks
-
-See docs/business/BENCHMARK-001.md (pooled n=48).
-- vs atlas: **superior** (Cliff's delta=1.00)
-- vs commercial_sim: **superior** (Cliff's delta=1.00)
-- vs manual_sim: **superior** (Cliff's delta=1.00)
+## المهندس: علي حسين ثجيل 
