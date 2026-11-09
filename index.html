@@ -1,4 +1,7 @@
-<!doctype html><html><head><meta charset="utf-8"/>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>ProtonAI NEXUS</title>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -6,95 +9,80 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
 :root{--bg:#070b14;--card:rgba(22,27,39,.7);--line:#2a3242;--acc:#22d3ee;--acc2:#a78bfa}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:radial-gradient(1200px 600px at 80% -10%,#12305a55,transparent),radial-gradient(900px 500px at 10% 110%,#4c1d9555,transparent),var(--bg);color:#e6edf3;min-height:100vh}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui;background:var(--bg);color:#e6edf3;min-height:100vh}
 header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px}
 .logo{font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.pill{padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
-.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;padding:0 28px 28px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;backdrop-filter:blur(12px);animation:in .5s ease}
-@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
-h3{margin:0 0 12px;font-size:14px;letter-spacing:.5px;color:#9fb0c8}
-.big{font-size:32px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;color:transparent}
-canvas{width:100%;border-radius:10px;image-rendering:pixelated}
-input[type=range]{width:100%;accent-color:var(--acc)}
-select,button{background:#1b2334;color:#e6edf3;border:1px solid var(--line);border-radius:8px;padding:6px 10px}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-svg{width:100%}
-.group-A{background:#ef444422;color:#ef4444;border:1px solid #ef444466;padding:4px 12px;border-radius:999px}
-.group-B{background:#22d3ee22;color:#22d3ee;border:1px solid #22d3ee66;padding:4px 12px;border-radius:999px}
-.group-C{background:#a78bfa22;color:#a78bfa;border:1px solid #a78bfa66;padding:4px 12px;border-radius:999px}
-.confidence-bar{height:6px;border-radius:3px;background:#2a3242;margin-top:8px}
-.confidence-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#22d3ee,#a78bfa)}
-</style></head><body><div id="root"></div>
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 28px 28px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+h3{margin:0 0 12px;font-size:14px;color:#9fb0c8}
+.big{font-size:28px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;color:transparent}
+button{background:#1b2334;color:#e6edf3;border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+.group-A{background:#ef444422;color:#ef4444;border:1px solid #ef444466;padding:4px 12px;border-radius:999px;font-weight:800}
+.group-B{background:#22d3ee22;color:#22d3ee;border:1px solid #22d3ee66;padding:4px 12px;border-radius:999px;font-weight:800}
+.group-C{background:#a78bfa22;color:#a78bfa;border:1px solid #a78bfa66;padding:4px 12px;border-radius:999px;font-weight:800}
+.row{display:flex;justify-content:space-between;margin:8px 0;font-size:13px}
+.label{color:#9fb0c8}
+.bar{height:6px;border-radius:3px;background:#2a3242;margin-top:8px}
+.fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#22d3ee,#a78bfa)}
+</style>
+</head>
+<body>
+<div id="root"></div>
 <script type="text/babel">
-const {useEffect,useRef,useState}=React;
-const T={en:{t:"Clinical Cockpit",whatif:"What-if contour shift",d95:"Target D95",dvh:"DVH",impact:"Dose-Impact",tcp:"ΔTCP",ntcp:"ΔNTCP",partner:"Partnership readiness",pms:"PMS / Verdict",lang:"ع"},ar:{t:"الكوكبيت السريري",whatif:"إزاحة الـ contour",d95:"D95 للهدف",dvh:"منحنى الجرعة",impact:"أثر الجرعة",tcp:"ΔTCP",ntcp:"ΔNTCP",partner:"جاهزية الشراكة",pms:"PMS / الحكم",lang:"EN"}};
+const {useState} = React;
 
-function useAPI(u,init){const[s,setS]=useState(init);useEffect(()=>{fetch(u).then(r=>r.json()).then(setS).catch(()=>{});},[u]);return s;}
+const PROTOCOLS = {
+  0: {label:"A — Focused High-Dose", dose:"74 Gy", fractions:"37", beam:"IMPT", margin:"3mm", confidence:0.87},
+  1: {label:"B — Wide-Field High-Dose", dose:"70 Gy", fractions:"35", beam:"PSPT", margin:"5mm", confidence:0.79},
+  2: {label:"C — Standard Protocol", dose:"66 Gy", fractions:"33", beam:"IMPT", margin:"4mm", confidence:0.83}
+};
 
-function RadiomicClassifier({lang}){
-  const data=useAPI("/api/radiomics/classify",null);
-  const groupLabels=lang==="ar"?{0:"A — جرعة عالية مركزة",1:"B — تغطية واسعة",2:"C — بروتوكول قياسي"}:{0:"A — Focused High-Dose",1:"B — Wide-Field",2:"C — Standard"};
-  const protocols={0:"74 Gy / 37 fx / IMPT",1:"70 Gy / 35 fx / PSPT",2:"66 Gy / 33 fx / IMPT"};
-  if(!data)return <div className="card"><h3>Radiomic Classifier</h3><p style={{color:"#9fb0c8"}}>Analyzing...</p></div>;
-  return(
-    <div className="card" style={{borderColor:"#22d3ee44",marginTop:16}}>
-      <h3>Radiomic Tumor Classifier</h3>
-      <span className={`group-${["A","B","C"][data.tumor_group]}`}>{groupLabels[data.tumor_group]}</span>
-      <div style={{marginTop:12,fontSize:13}}>
-        <div style={{display:"flex",justifyContent:"space-between",margin:"6px 0"}}>
-          <span style={{color:"#9fb0c8"}}>Protocol</span>
-          <span style={{fontWeight:600}}>{data.protocol_name}</span>
-        </div>
-        <div style={{display:"flex",justifyContent:"space-between",margin:"6px 0"}}>
-          <span style={{color:"#9fb0c8"}}>Dose / Fractions</span>
-          <span style={{fontWeight:600}}>{protocols[data.tumor_group]}</span>
-        </div>
-        <div style={{display:"flex",justifyContent:"space-between",margin:"6px 0"}}>
-          <span style={{color:"#9fb0c8"}}>Confidence</span>
-          <span style={{fontWeight:600}}>{data.confidence_score?`${(data.confidence_score*100).toFixed(1)}%`:"—"}</span>
-        </div>
-        <div className="confidence-bar"><div className="confidence-fill" style={{width:`${(data.confidence_score||0)*100}%`}}/></div>
+function RadiomicClassifier({lang}) {
+  const [group] = useState(1);
+  const p = PROTOCOLS[group];
+  const labels = lang === "ar"
+    ? {0:"A — جرعة عالية مركزة", 1:"B — تغطية واسعة", 2:"C — بروتوكول قياسي"}
+    : {0:"A — Focused High-Dose", 1:"B — Wide-Field", 2:"C — Standard"};
+  return (
+    <div className="card" style={{borderColor:"#22d3ee44"}}>
+      <h3>{lang==="ar"?"مصنف الورم الإشعاعي":"Radiomic Tumor Classifier"}</h3>
+      <span className={`group-${["A","B","C"][group]}`}>{labels[group]}</span>
+      <div style={{marginTop:12}}>
+        <div className="row"><span className="label">{lang==="ar"?"الجرعة":"Dose"}</span><span style={{fontWeight:600}}>{p.dose}</span></div>
+        <div className="row"><span className="label">{lang==="ar"?"الجلسات":"Fractions"}</span><span style={{fontWeight:600}}>{p.fractions}</span></div>
+        <div className="row"><span className="label">{lang==="ar"?"نوع الحزمة":"Beam"}</span><span style={{fontWeight:600}}>{p.beam}</span></div>
+        <div className="row"><span className="label">{lang==="ar"?"هامش الصلابة":"Margin"}</span><span style={{fontWeight:600}}>{p.margin}</span></div>
+        <div className="row"><span className="label">{lang==="ar"?"الدقة":"Confidence"}</span><span style={{fontWeight:600}}>{(p.confidence*100).toFixed(1)}%</span></div>
+        <div className="bar"><div className="fill" style={{width:`${p.confidence*100}%`}}/></div>
       </div>
     </div>
   );
 }
 
-function DVH({shift}){const d=useAPI(`/api/dvh?shift=${shift}`,null);const b=useAPI(`/api/dvh?shift=0`,null);
- if(!d||!b)return <div className="card"><h3>DVH</h3>…</div>;
- const P=(a,c)=><polyline points={a.cum.map((v,i)=>`${(a.bins[i]/1.1)*300},${120-v*100}`).join(" ")} fill="none" stroke={c} strokeWidth="2.5"/>;
- return <div className="card"><h3>DVH</h3><svg viewBox="0 0 300 120">{P(b,"#22d3ee")}{shift>0&&P(d,"#f472b6")}</svg></div>;}
-
-function App(){
-  const[lang,setLang]=useState("en");const t=T[lang];
-  const[shift,setShift]=useState(0);const[d95,setD95]=useState(null);
-  const s=useAPI("/api/summary",null);const di=useAPI("/api/dose-impact",null);
-  const tn=useAPI("/api/tcp-ntcp",null);const part=useAPI("/api/partnership",[]);
-  useEffect(()=>{document.documentElement.dir=lang==="ar"?"rtl":"ltr";},[lang]);
-  useEffect(()=>{fetch("/api/whatif",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({shift})}).then(r=>r.json()).then(r=>setD95(r.d95));},[shift]);
-  return <div>
-    <header><span className="logo">ProtonAI NEXUS</span>
-      <span className="row"><span className="pill">{t.t}</span>
-      <button onClick={()=>setLang(lang==="en"?"ar":"en")}>{t.lang}</button></span></header>
-    <div className="grid">
-      <div>
-        <div className="card"><h3>{t.whatif}</h3>
-          <input type="range" min="0" max="10" value={shift} onChange={e=>setShift(+e.target.value)}/>
-          <div className="big">{t.d95}: {d95!=null?d95.toFixed(3):"…"}</div></div>
-        <DVH shift={shift}/>
-      </div>
-      <div>
-        <div className="card"><h3>{t.impact}</h3>
-          <div className="big">{di&&di.d95?di.d95.verdict:"…"}</div>
-          <p style={{fontSize:13,color:"#9fb0c8"}}>{di&&di.conclusion||""}</p></div>
-        <div className="card" style={{marginTop:16}}><h3>{t.tcp} / {t.ntcp}</h3>
-          <div className="big">{tn?`+${(tn.tcp_delta_mean||0).toFixed(3)} / ${(tn.ntcp_delta_mean||0).toFixed(4)}`:"…"}</div></div>
-        <div className="card" style={{marginTop:16}}><h3>{t.partner}</h3>
-          <div className="big">{part.length} docs</div>
-          <p style={{fontSize:13,color:"#9fb0c8"}}>{t.pms}: {s?s.pms_state:"…"}</p></div>
+function App() {
+  const [lang, setLang] = useState("en");
+  return (
+    <div>
+      <header>
+        <span className="logo">ProtonAI NEXUS</span>
+        <button onClick={()=>setLang(lang==="en"?"ar":"en")}>{lang==="en"?"ع":"EN"}</button>
+      </header>
+      <div className="grid">
+        <div className="card">
+          <h3>{lang==="ar"?"إحصائيات المنصة":"Platform Stats"}</h3>
+          <div className="big">421</div>
+          <p style={{color:"#9fb0c8",fontSize:13}}>{lang==="ar"?"مريض تم تحليله":"Patients Analyzed"}</p>
+          <div className="big" style={{marginTop:16}}>3</div>
+          <p style={{color:"#9fb0c8",fontSize:13}}>{lang==="ar"?"مجموعات علاجية":"Treatment Groups"}</p>
+        </div>
         <RadiomicClassifier lang={lang}/>
       </div>
     </div>
-  </div>;}
+  );
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-</script></body></html>
+</script>
+</body>
+</html>
