@@ -1,29 +1,168 @@
-<!doctype html><html><head><meta charset="utf-8"/>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta property="og:title" content="ProtonAI"/>
-<meta property="og:description" content="Open, auditable AI contouring for proton therapy with live dose-impact."/>
-<meta property="og:type" content="website"/>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9889;</text></svg>"/>
-<title>ProtonAI — Auditable AI for Proton Therapy</title>
-<style>:root{--bg:#070b14;--card:rgba(22,27,39,.75);--line:#2a3242;--a:#22d3ee}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui;color:#e6edf3;background:var(--bg)}
-.wrap{max-width:960px;margin:0 auto;padding:48px 24px}
-h1{font-size:44px;background:linear-gradient(90deg,var(--a),#a78bfa);-webkit-background-clip:text;color:transparent}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.big{font-size:30px;font-weight:800;color:var(--a)}
-.badge{display:inline-block;margin:2px;padding:4px 10px;border-radius:999px;background:#1b2334;border:1px solid var(--line);font-size:12px}
-button{background:#1b2334;color:#e6edf3;border:1px solid var(--line);border-radius:8px;padding:8px 14px;float:right}
-footer{opacity:.6;margin-top:30px;font-size:13px}</style></head><body><div class="wrap">
-<button onclick="toggle()">ع / EN</button><h1>ProtonAI</h1>
-<p data-en="Open, auditable AI contouring assistance for proton therapy — live dose-impact." data-ar="منصة مفتوحة وقابلة للتدقيق لتجزئة العلاج بالبروتون — أثر جرعة حي.">…</p>
-<div><span class="badge">DOI: 10.5281/zenodo.23147530</span><span class="badge">v0.9.0</span></div>
-<div class="grid">
-<div class="card"><div class="big">0.061</div><span data-en="D95 improvement" data-ar="تحسن D95">…</span></div>
-<div class="card"><div class="big">0.0039</div><span>p (Wilcoxon)</span></div>
-<div class="card"><div class="big">SUPERIOR</div><span data-en="Verdict" data-ar="الحكم">…</span></div></div>
-<div class="card">dTCP +0.123 · ΔNTCP reduction 0.5637</div>
-<div class="card"><b>Cite</b>: [Authors]. ProtonAI v0.9.0. Zenodo. DOI: 10.5281/zenodo.23147530.</div>
-<div class="card" data-en="Status: synthetic validation complete; NOT for clinical use." data-ar="الحالة: التحقق الاصطناعي مكتمل؛ ليس للاستخدام السريري.">…</div>
-<footer>github.com/1ali2003ah1-lgtm/ProtonAI · MIT</footer></div>
-<script>let lang="en";function apply(){document.querySelectorAll("[data-en]").forEach(e=>{e.textContent=lang==="en"?e.dataset.en:e.dataset.ar;});document.documentElement.dir=lang==="ar"?"rtl":"ltr";}function toggle(){lang=lang==="en"?"ar":"en";apply();}apply();</script></body></html>
+<title>ProtonAI NEXUS</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+:root{--bg:#070b14;--card:rgba(22,27,39,.8);--line:#2a3242;--acc:#22d3ee;--acc2:#a78bfa;--success:#22c55e;--warn:#f59e0b;--danger:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,#12305a55,transparent),radial-gradient(900px 500px at 10% 110%,#4c1d9555,transparent),var(--bg);color:#e6edf3;min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--line);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;background:rgba(7,11,20,.8)}
+.logo{font-size:20px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid var(--line);color:#9fb0c8}
+.btn{background:#1b2334;color:#e6edf3;border:1px solid var(--line);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:13px;transition:all .2s}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 24px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+h3{font-size:12px;letter-spacing:.8px;color:#9fb0c8;margin-bottom:14px;text-transform:uppercase}
+.big{font-size:36px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;color:transparent;line-height:1}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #2a324240;font-size:13px}
+.stat-row:last-child{border-bottom:none}
+.stat-label{color:#9fb0c8}
+.stat-value{font-weight:600;color:#e6edf3}
+.group-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-weight:700;font-size:13px;margin-bottom:14px}
+.group-A{background:#ef444415;color:#ef4444;border:1px solid #ef444450}
+.group-B{background:#22d3ee15;color:#22d3ee;border:1px solid #22d3ee50}
+.group-C{background:#a78bfa15;color:#a78bfa;border:1px solid #a78bfa50}
+.bar{height:8px;border-radius:4px;background:#2a3242;margin-top:6px;overflow:hidden}
+.fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .8s ease}
+.patients-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+.patient-stat{background:#0d1420;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+.patient-num{font-size:24px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;color:transparent}
+.patient-label{font-size:11px;color:#9fb0c8;margin-top:4px}
+.selector{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.sel-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:transparent;color:#9fb0c8;cursor:pointer;font-size:12px;transition:all .2s}
+.sel-btn.active{border-color:var(--acc);color:var(--acc);background:#22d3ee10}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.footer{text-align:center;padding:20px;color:#4a5568;font-size:12px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState, useEffect} = React;
+
+const GROUPS = {
+  0: {
+    key:"A", label_en:"A — Focused High-Dose", label_ar:"A — جرعة عالية مركزة",
+    dose:"74 Gy", fractions:37, beam:"IMPT", margin:"3 mm",
+    confidence:0.87, count:173,
+    desc_en:"Small, dense tumors requiring precise targeted radiation",
+    desc_ar:"أورام صغيرة وكثيفة تستوجب تشعيعاً دقيقاً ومركزاً"
+  },
+  1: {
+    key:"B", label_en:"B — Wide-Field High-Dose", label_ar:"B — تغطية واسعة",
+    dose:"70 Gy", fractions:35, beam:"PSPT", margin:"5 mm",
+    confidence:0.79, count:154,
+    desc_en:"Large, solid tumors requiring wide coverage",
+    desc_ar:"أورام كبيرة وصلبة تحتاج تغطية واسعة"
+  },
+  2: {
+    key:"C", label_en:"C — Standard Protocol", label_ar:"C — بروتوكول قياسي",
+    dose:"66 Gy", fractions:33, beam:"IMPT", margin:"4 mm",
+    confidence:0.83, count:94,
+    desc_en:"Moderate soft tumors responding to standard protocol",
+    desc_ar:"أورام متوسطة ولينة تستجيب للبروتوكول القياسي"
+  }
+};
+
+function RadiomicClassifier({lang, selectedGroup, onSelect}) {
+  const ar = lang === "ar";
+  const g = GROUPS[selectedGroup];
+  return (
+    <div className="card" style={{borderColor:"#22d3ee30"}}>
+      <h3>{ar ? "مصنف الورم الإشعاعي" : "Radiomic Tumor Classifier"}</h3>
+      <div className="selector">
+        {[0,1,2].map(i => (
+          <button key={i} className={`sel-btn${selectedGroup===i?" active":""}`}
+            onClick={()=>onSelect(i)}>
+            {ar ? GROUPS[i].label_ar.split("—")[0] : `Group ${GROUPS[i].key}`}
+          </button>
+        ))}
+      </div>
+      <span className={`group-badge group-${g.key}`}>
+        ◆ {ar ? g.label_ar : g.label_en}
+      </span>
+      <p style={{fontSize:12,color:"#9fb0c8",marginBottom:14}}>
+        {ar ? g.desc_ar : g.desc_en}
+      </p>
+      <div className="stat-row"><span className="stat-label">{ar?"الجرعة الكلية":"Total Dose"}</span><span className="stat-value">{g.dose}</span></div>
+      <div className="stat-row"><span className="stat-label">{ar?"عدد الجلسات":"Fractions"}</span><span className="stat-value">{g.fractions} {ar?"جلسة":"sessions"}</span></div>
+      <div className="stat-row"><span className="stat-label">{ar?"نوع الحزمة":"Beam Type"}</span><span className="stat-value">{g.beam}</span></div>
+      <div className="stat-row"><span className="stat-label">{ar?"هامش الصلابة":"Robustness Margin"}</span><span className="stat-value">{g.margin}</span></div>
+      <div className="stat-row" style={{borderBottom:"none"}}>
+        <span className="stat-label">{ar?"دقة التصنيف":"Confidence"}</span>
+        <span className="stat-value">{(g.confidence*100).toFixed(1)}%</span>
+      </div>
+      <div className="bar"><div className="fill" style={{width:`${g.confidence*100}%`}}/></div>
+    </div>
+  );
+}
+
+function PlatformStats({lang}) {
+  const ar = lang === "ar";
+  return (
+    <div className="card">
+      <h3>{ar?"إحصائيات المنصة":"Platform Statistics"}</h3>
+      <div className="patients-grid">
+        <div className="patient-stat">
+          <div className="patient-num">421</div>
+          <div className="patient-label">{ar?"مريض":"Patients"}</div>
+        </div>
+        <div className="patient-stat">
+          <div className="patient-num">19</div>
+          <div className="patient-label">{ar?"خاصية":"Features"}</div>
+        </div>
+        <div className="patient-stat">
+          <div className="patient-num">3</div>
+          <div className="patient-label">{ar?"مجموعات":"Groups"}</div>
+        </div>
+      </div>
+      <div style={{marginTop:16}}>
+        <div className="stat-row"><span className="stat-label">{ar?"المجموعة A":"Group A"}</span><span className="stat-value" style={{color:"#ef4444"}}>173 {ar?"مريض":"patients"}</span></div>
+        <div className="stat-row"><span className="stat-label">{ar?"المجموعة B":"Group B"}</span><span className="stat-value" style={{color:"#22d3ee"}}>154 {ar?"مريض":"patients"}</span></div>
+        <div className="stat-row"><span className="stat-label">{ar?"المجموعة C":"Group C"}</span><span className="stat-value" style={{color:"#a78bfa"}}>94 {ar?"مريض":"patients"}</span></div>
+        <div className="stat-row"><span className="stat-label">{ar?"مصدر البيانات":"Data Source"}</span><span className="stat-value">NSCLC-Radiomics</span></div>
+        <div className="stat-row"><span className="stat-label">{ar?"الحالة":"Status"}</span><span className="stat-value"><span className="status-dot"/>Active</span></div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [lang, setLang] = useState("en");
+  const [group, setGroup] = useState(1);
+  const ar = lang === "ar";
+  useEffect(()=>{document.documentElement.dir=ar?"rtl":"ltr";},[ar]);
+  return (
+    <div>
+      <header>
+        <span className="logo">ProtonAI NEXUS</span>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          <span className="badge">v1.0.0</span>
+          <span className="badge">NSCLC-Radiomics</span>
+          <button className="btn" onClick={()=>setLang(ar?"en":"ar")}>{ar?"EN":"ع"}</button>
+        </div>
+      </header>
+      <div className="grid">
+        <PlatformStats lang={lang}/>
+        <RadiomicClassifier lang={lang} selectedGroup={group} onSelect={setGroup}/>
+      </div>
+      <div className="footer">
+        ProtonAI — {ar?"نظام دعم قرار طبي لتحسين دقة العلاج بالبروتون":"AI-powered clinical decision support for proton therapy"} · 
+        {ar?" هندسة طبية — مشروع تخرج":" Medical Engineering Graduation Project"}
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
