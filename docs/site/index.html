@@ -138,17 +138,7 @@ footer{position:relative;z-index:1;text-align:center;padding:32px;border-top:1px
 <script type="text/babel">
 const {useState, useEffect, useRef} = React;
 
-const PATIENTS = Array.from({length:20}, (_,i) => ({
-  id: `LUNG1-${String(i+1).padStart(3,"0")}`,
-  age: Math.floor(55 + Math.random()*30),
-  gender: Math.random()>.3?"Male":"Female",
-  stage: ["I","II","IIIa","IIIb","IV"][Math.floor(Math.random()*5)],
-  histology: ["Squamous Cell","Large Cell","Adenocarcinoma","NOS"][Math.floor(Math.random()*4)],
-  group: Math.floor(Math.random()*3),
-  volume: Math.floor(5000+Math.random()*60000),
-  meanHU: Math.floor(-200+Math.random()*1200),
-  entropy: (0.1+Math.random()*.5).toFixed(3),
-  survival: Math.floor(100+Math.random()*2000),
+const PATIENTS_DATA = [];
 }));
 
 const GROUPS = {
@@ -203,9 +193,16 @@ function App(){
   const [lang,setLang]=useState("en");
   const [selGroup,setSelGroup]=useState(1);
   const [selPatient,setSelPatient]=useState(0);
+  const [patients,setPatients]=useState([]);
+useEffect(()=>{
+  fetch('patients_data.json')
+    .then(r=>r.json())
+    .then(d=>setPatients(d))
+    .catch(()=>setPatients(PATIENTS_DATA));
+},[]);
+const p=patients[selPatient]||{};
   const ar=lang==="ar";
   const g=GROUPS[selGroup];
-  const p=PATIENTS[selPatient];
 
   useEffect(()=>{
     document.documentElement.dir=ar?"rtl":"ltr";
