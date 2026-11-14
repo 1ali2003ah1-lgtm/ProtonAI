@@ -151,7 +151,7 @@ function App(){
   const gc=["#ef4444","#00d4ff","#a78bfa"];
   useEffect(()=>{
     setTimeout(()=>{const s=document.getElementById("sp");if(s)s.classList.add("out")},3200);
-    fetch("patients_data.json").then(r=>r.json()).then(d=>{setPts(d);setLoading(false);}).catch(()=>setLoading(false));
+    const s=document.createElement("script");s.src="./patients_db.js";s.onload=()=>{if(typeof PATIENTS_DB!=="undefined"){setPts(PATIENTS_DB);}setLoading(false);};s.onerror=()=>setLoading(false);document.head.appendChild(s);
   },[]);
   useEffect(()=>{document.documentElement.dir=ar?"rtl":"ltr";},[ar]);
   const L=(en,a)=>ar?a:en;
@@ -255,8 +255,4 @@ function App(){
         ):(
           <div style={{textAlign:"center",color:"var(--muted)",padding:"28px 0",fontSize:14}}>{loading?L("Loading patient data...","جاري تحميل بيانات المرضى..."):"—"}</div>
         )}
-      </div>
-    </main>
-    <footer>
-      <div className="ft">ProtonAI NEXUS</div>
-      <div className="f
+    
