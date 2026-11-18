@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ProtonAI NEXUS — Proton Therapy CDSS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-family:'Inter',sans-serif;font-size:16px;scroll-behavior:smooth}
+body{background:#030712;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+[dir="rtl"]{font-family:'Inter',sans-serif}
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMATED BACKGROUND
+═══════════════════════════════════════════════════════════ */
+#bg-canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;overflow:hidden;
+}
+.bg-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,.04) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.glow-cyan{
+  position:absolute;top:-20%;right:-10%;
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle, rgba(0,212,255,.12) 0%, transparent 65%);
+  animation:floatGlow 12s ease-in-out infinite;
+}
+.glow-purple{
+  position:absolute;bottom:-20%;left:-10%;
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle, rgba(124,58,237,.12) 0%, transparent 65%);
+  animation:floatGlow 15s ease-in-out infinite reverse;
+}
+@keyframes floatGlow{
+  0%,100%{transform:translate(0,0)}
+  33%{transform:translate(30px,-40px)}
+  66%{transform:translate(-20px,20px)}
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SPLASH SCREEN
+═══════════════════════════════════════════════════════════ */
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  background:#030712;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+  animation:splashFade 0.6s ease-out 3.2s forwards;
+}
+@keyframes splashFade{to{opacity:0;pointer-events:none;visibility:hidden}}
+
+.splash-logo{
+  font-size:72px;font-weight:900;letter-spacing:-2px;line-height:1;
+  background:linear-gradient(135deg,#00d4ff 0%,#7c3aed 50%,#06ffa5 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:splashPulse 2s ease-in-out infinite;
+}
+@keyframes splashPulse{0%,100%{opacity:1}50%{opacity:.75}}
+
+.splash-sub{
+  font-size:17px;font-weight:400;color:#94a3b8;letter-spacing:.5px;
+  text-align:center;max-width:380px;line-height:1.5;
+}
+.splash-author{
+  font-size:13px;font-weight:600;color:#00d4ff;
+  letter-spacing:4px;text-transform:uppercase;
+}
+.splash-bar-wrap{
+  width:260px;height:3px;background:#1a2535;border-radius:2px;overflow:hidden;
+}
+.splash-bar{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,#00d4ff,#7c3aed,#06ffa5);
+  animation:barFill 3s ease-in-out forwards;
+}
+@keyframes barFill{from{width:0}to{width:100%}}
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN APP WRAPPER
+═══════════════════════════════════════════════════════════ */
+#app-root{position:relative;z-index:1;min-height:100vh}
+
+/* ═══════════════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════════════ */
+.site-header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(3,7,18,.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid #1a2535;
+  padding:14px 32px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  flex-wrap:wrap;
+}
+.header-left{display:flex;flex-direction:column;gap:2px}
+.header-logo-text{
+  font-size:22px;font-weight:900;letter-spacing:-0.5px;
+  background:linear-gradient(90deg,#00d4ff,#7c3aed);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.header-sub{font-size:11px;font-weight:400;color:#64748b}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.badge{
+  font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;
+  border:1px solid #1a2535;color:#94a3b8;white-space:nowrap;
+}
+.badge-v{background:#0d1626;border-color:#00d4ff33;color:#00d4ff}
+.btn-lang{
+  font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;
+  padding:6px 14px;border-radius:6px;
+  background:#0d1626;border:1px solid #00d4ff55;color:#00d4ff;
+  transition:all .2s;white-space:nowrap;
+}
+.btn-lang:hover{background:#00d4ff15;border-color:#00d4ff}
+
+/* ═══════════════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════════════ */
+.hero{
+  padding:72px 32px 48px;
+  max-width:1200px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:flex-start;gap:28px;
+}
+[dir="rtl"] .hero{align-items:flex-end;text-align:right}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:20px;
+  background:#00d4ff0d;border:1px solid #00d4ff33;
+  font-size:12px;font-weight:600;color:#00d4ff;
+}
+.hero-pill-dot{
+  width:7px;height:7px;border-radius:50%;background:#00d4ff;
+  animation:blink 1.4s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+.hero-title{
+  font-size:56px;font-weight:900;line-height:1.08;letter-spacing:-2px;
+  color:#f8fafc;max-width:800px;
+}
+.hero-title-grad{
+  background:linear-gradient(135deg,#00d4ff,#7c3aed,#06ffa5);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-desc{
+  font-size:17px;font-weight:400;color:#94a3b8;
+  line-height:1.65;max-width:640px;
+}
+.hero-sig{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:8px 20px;border-radius:30px;
+  border:1px solid #1a2535;
+  font-size:13px;font-weight:500;color:#64748b;
+}
+.hero-sig strong{color:#00d4ff;font-weight:700}
+
+/* ═══════════════════════════════════════════════════════════
+   STATS ROW
+═══════════════════════════════════════════════════════════ */
+.stats-section{
+  padding:0 32px 56px;
+  max-width:1200px;margin:0 auto;
+}
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:16px;
+}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+
+.stat-card{
+  background:#0d1626;border:1px solid #1a2535;border-radius:12px;
+  padding:20px 16px;text-align:center;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+  cursor:default;
+}
+.stat-card:hover{
+  transform:translateY(-4px);
+  border-color:#00d4ff44;
+  box-shadow:0 8px 32px rgba(0,212,255,.08);
+}
+.stat-num{
+  font-size:30px;font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(135deg,#00d4ff,#7c3aed);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  display:block;margin-bottom:4px;
+}
+.stat-label{font-size:12px;font-weight:500;color:#64748b}
+
+/* ═══════════════════════════════════════════════════════════
+   TWO-COLUMN LAYOUT
+═══════════════════════════════════════════════════════════ */
+.two-col{
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;
+  padding:0 32px 32px;max-width:1200px;margin:0 auto;
+}
+@media(max-width:860px){.two-col{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════════════════════════════
+   CARDS (shared)
+═══════════════════════════════════════════════════════════ */
+.card{
+  background:#0d1626;border:1px solid #1a2535;border-radius:16px;
+  padding:28px;overflow:hidden;position:relative;
+}
+.card-title{
+  font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-title-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.dot-cyan{background:#00d4ff;box-shadow:0 0 8px #00d4ff88}
+.dot-purple{background:#7c3aed;box-shadow:0 0 8px #7c3aed88}
+
+/* ═══════════════════════════════════════════════════════════
+   GROUP SELECTOR BUTTONS
+═══════════════════════════════════════════════════════════ */
+.group-btns{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.group-btn{
+  font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;
+  padding:6px 18px;border-radius:6px;border:1px solid #1a2535;
+  background:#030712;color:#64748b;
+  transition:all .2s;
+}
+.group-btn.active-a{background:#00d4ff15;border-color:#00d4ff;color:#00d4ff}
+.group-btn.active-b{background:#7c3aed15;border-color:#7c3aed;color:#a78bfa}
+.group-btn.active-c{background:#06ffa515;border-color:#06ffa5;color:#06ffa5}
+
+/* ═══════════════════════════════════════════════════════════
+   GROUP BADGE
+═══════════════════════════════════════════════════════════ */
+.group-badge{
+  display:inline-block;padding:4px 14px;border-radius:20px;
+  font-size:12px;font-weight:700;margin-bottom:16px;
+}
+.badge-a{background:#00d4ff15;border:1px solid #00d4ff44;color:#00d4ff}
+.badge-b{background:#7c3aed15;border:1px solid #7c3aed44;color:#a78bfa}
+.badge-c{background:#06ffa515;border:1px solid #06ffa544;color:#06ffa5}
+
+/* ═══════════════════════════════════════════════════════════
+   INFO ROWS
+═══════════════════════════════════════════════════════════ */
+.info-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid #1a253566;font-size:13px;
+}
+.info-row:last-of-type{border-bottom:none}
+.info-label{color:#64748b;font-weight:500}
+.info-val{color:#e2e8f0;font-weight:600}
+
+/* ═══════════════════════════════════════════════════════════
+   CONFIDENCE BAR
+═══════════════════════════════════════════════════════════ */
+.conf-wrap{margin-top:20px}
+.conf-header{
+  display:flex;justify-content:space-between;
+  font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:8px;
+}
+.conf-pct{font-size:20px;font-weight:900;color:#06ffa5}
+.conf-track{
+  height:6px;background:#1a2535;border-radius:3px;overflow:hidden;
+}
+.conf-fill{
+  height:100%;border-radius:3px;
+  background:linear-gradient(90deg,#00d4ff,#06ffa5);
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CT VIEWER
+═══════════════════════════════════════════════════════════ */
+.ct-canvas-wrap{
+  background:#020408;border-radius:10px;overflow:hidden;
+  position:relative;border:1px solid #1a2535;margin-bottom:16px;
+}
+.ct-labels{
+  position:absolute;top:10px;left:10px;right:10px;
+  display:flex;justify-content:space-between;
+  font-size:10px;font-weight:600;color:#00d4ff;
+  font-variant-numeric:tabular-nums;
+  pointer-events:none;
+}
+canvas#ctCanvas{display:block;width:100%;height:auto}
+
+.ct-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:4px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.legend-line{width:16px;height:2px;border:2px dashed #00d4ff;flex-shrink:0}
+
+/* ═══════════════════════════════════════════════════════════
+   PATIENT EXPLORER
+═══════════════════════════════════════════════════════════ */
+.patient-section{
+  padding:0 32px 32px;max-width:1200px;margin:0 auto;
+}
+.patient-grid{
+  display:grid;
+  grid-template-columns:repeat(10,1fr);
+  gap:8px;margin-bottom:24px;
+}
+@media(max-width:900px){.patient-grid{grid-template-columns:repeat(6,1fr)}}
+@media(max-width:600px){.patient-grid{grid-template-columns:repeat(4,1fr)}}
+
+.pat-btn{
+  font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;
+  padding:7px 4px;border-radius:7px;
+  background:#030712;border:1px solid #1a2535;color:#64748b;
+  transition:all .18s;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pat-btn:hover{border-color:#00d4ff55;color:#00d4ff;background:#00d4ff08}
+.pat-btn.selected{background:#00d4ff12;border-color:#00d4ff;color:#00d4ff}
+
+/* Patient detail */
+.pat-detail{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  animation:fadeSlide .3s ease;
+}
+@media(max-width:700px){.pat-detail{grid-template-columns:1fr}}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.pat-col{background:#030712;border:1px solid #1a2535;border-radius:10px;padding:16px}
+.pat-field{font-size:12px;padding:6px 0;border-bottom:1px solid #1a253544}
+.pat-field:last-child{border-bottom:none}
+.pat-field-label{color:#64748b;font-weight:500;font-size:11px;margin-bottom:2px}
+.pat-field-val{color:#e2e8f0;font-weight:600}
+
+.protocol-tag{
+  display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;
+}
+.proto-0{background:#00d4ff15;color:#00d4ff;border:1px solid #00d4ff33}
+.proto-1{background:#7c3aed15;color:#a78bfa;border:1px solid #7c3aed33}
+.proto-2{background:#06ffa515;color:#06ffa5;border:1px solid #06ffa533}
+
+/* ═══════════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════════ */
+.site-footer{
+  margin-top:40px;padding:40px 32px;
+  background:#0d1626;border-top:1px solid #1a2535;
+  text-align:center;
+}
+.footer-logo{
+  font-size:26px;font-weight:900;letter-spacing:-0.5px;
+  background:linear-gradient(90deg,#00d4ff,#7c3aed,#06ffa5);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:12px;
+}
+.footer-credits{font-size:13px;color:#64748b;margin-bottom:16px;line-height:1.6}
+.footer-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.footer-tag{
+  font-size:11px;font-weight:600;padding:4px 12px;border-radius:16px;
+  background:#030712;border:1px solid #1a2535;color:#475569;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FADE-IN ANIMATION (cards)
+═══════════════════════════════════════════════════════════ */
+.fade-in{animation:fadeIn .5s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ═══════════════════════════════════════════════════════════
+   PDF EXPORT BUTTON
+═══════════════════════════════════════════════════════════ */
+.btn-pdf{
+  font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  padding:10px 22px;border-radius:8px;
+  background:linear-gradient(135deg,#00d4ff22,#7c3aed22);
+  border:1px solid #00d4ff55;color:#00d4ff;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all .2s;margin-top:20px;
+}
+.btn-pdf:hover{background:linear-gradient(135deg,#00d4ff33,#7c3aed33);border-color:#00d4ff;box-shadow:0 0 16px #00d4ff22}
+.btn-pdf:active{transform:scale(.97)}
+.btn-pdf-icon{font-size:15px}
+
+/* section spacer */
+.section-label{
+  font-size:11px;font-weight:700;color:#475569;
+  letter-spacing:2px;text-transform:uppercase;
+  padding:0 32px;max-width:1200px;margin:0 auto 16px;
+  display:block;
+}
+</style>
+</head>
+<body>
+
+<!-- ══ BACKGROUND ══ -->
+<div id="bg-canvas" aria-hidden="true">
+  <div class="bg-grid"></div>
+  <div class="glow-cyan"></div>
+  <div class="glow-purple"></div>
+</div>
+
+<!-- ══ SPLASH ══ -->
+<div id="splash" role="status" aria-label="Loading ProtonAI NEXUS">
+  <div class="splash-logo">ProtonAI</div>
+  <div class="splash-sub">AI-Powered Proton Therapy Decision Support</div>
+  <div class="splash-author">Ali Hussein Thajil</div>
+  <div class="splash-bar-wrap">
+    <div class="splash-bar"></div>
+  </div>
+</div>
+
+<!-- ══ APP ROOT ══ -->
+<div id="app-root"></div>
+
+<!-- ══ REACT APP (see Part 2 for component code) ══ -->
+<script type="text/babel" data-presets="react">
+/* ─── TRANSLATIONS ──────────────────────────────────────── */
+const T = {
+  en: {
+    headerSub: "AI-Powered Proton Therapy Platform",
+    heroPill: "Clinical Decision Support System",
+    heroTitle1: "Platform ",
+    heroTitle2: "ProtonAI",
+    heroTitle3: " for Precision Proton Therapy",
+    heroDesc: "An advanced AI-driven clinical decision support system leveraging radiomic features and machine learning to personalize proton therapy treatment protocols for NSCLC patients.",
+    heroSig: "Designed & Developed by:",
+    statsLabels: ["Patients","Features","Groups","DICOM Images","Accuracy"],
+    classifierTitle: "Radiomic Tumor Classifier",
+    ctTitle: "CT Image Viewer",
+    groupLabel: ["Group A","Group B","Group C"],
+    groupBadge: ["Group A — High Dose IMPT","Group B — Wide-Field PSPT","Group C — Moderate IMPT"],
+    groupDesc: [
+      "Focused high-dose IMPT protocol for small-volume tumors. Optimal conformity and sparing.",
+      "Wide-field PSPT for large infiltrating tumors requiring broad coverage and margin.",
+      "Moderate-dose IMPT for intermediate cases balancing dose and normal tissue sparing.",
+    ],
+    infoKeys: ["Total Dose","Fractions","Beam Arrangement","Robustness Margin","Patients"],
+    confLabel: "AI Confidence Score",
+    patTitle: "Patient Explorer",
+    patSelectHint: "Select a patient to view clinical details",
+    patCols: [
+      ["Patient ID","Age","Gender","Stage"],
+      ["Histology","Survival (days)","Volume (voxels)","Mean HU"],
+      ["Entropy","Skewness","CT Slices","AI Protocol"],
+    ],
+    legendLabels: ["Tumor Region","GTV-1 Contour","Lung Tissue"],
+    langBtn: "العربية",
+    footer: {
+      credits: "Ali Hussein Thajil  |  Medical Engineering Graduation Project  |  NSCLC-Radiomics from TCIA",
+      tags: ["AI-Powered","421 Patients","19 Features","KMeans Clustering","Radiomic Analysis","Proton Therapy"],
+    },
+  },
+  ar: {
+    headerSub: "منصة دعم قرار علاج بروتون مدعومة بالذكاء الاصطناعي",
+    heroPill: "نظام دعم القرار السريري",
+    heroTitle1: "منصة ",
+    heroTitle2: "ProtonAI",
+    heroTitle3: " للعلاج الدقيق بالبروتون",
+    heroDesc: "نظام متقدم لدعم القرار السريري يعتمد على الذكاء الاصطناعي والميزات الراديومية لتخصيص بروتوكولات علاج البروتون لمرضى NSCLC.",
+    heroSig: "تصميم وتطوير:",
+    statsLabels: ["مريض","ميزة","مجموعة","صورة DICOM","دقة"],
+    classifierTitle: "مصنِّف الورم الراديومي",
+    ctTitle: "عارض صور CT",
+    groupLabel: ["المجموعة أ","المجموعة ب","المجموعة ج"],
+    groupBadge: ["المجموعة أ — IMPT جرعة عالية","المجموعة ب — PSPT نطاق واسع","المجموعة ج — IMPT معتدل"],
+    groupDesc: [
+      "بروتوكول IMPT عالي الجرعة للأورام صغيرة الحجم. أمثل توافق وتوفير للأنسجة.",
+      "PSPT واسع النطاق للأورام الكبيرة المتسللة التي تتطلب تغطية واسعة وهامشاً كبيراً.",
+      "IMPT معتدل الجرعة للحالات الوسيطة التي توازن بين الجرعة وتوفير الأنسجة الطبيعية.",
+    ],
+    infoKeys: ["الجرعة الكلية","الجلسات","ترتيب الحزم","هامش المتانة","المرضى"],
+    confLabel: "درجة ثقة الذكاء الاصطناعي",
+    patTitle: "مستكشف المرضى",
+    patSelectHint: "اختر مريضاً لعرض التفاصيل السريرية",
+    patCols: [
+      ["رقم المريض","العمر","الجنس","المرحلة"],
+      ["النسيج","البقاء (أيام)","الحجم (فوكسل)","متوسط HU"],
+      ["الإنتروبيا","الالتواء","شرائح CT","البروتوكول"],
+    ],
+    legendLabels: ["منطقة الورم","محيط GTV-1","نسيج الرئة"],
+    langBtn: "English",
+    footer: {
+      credits: "علي حسين ثجيل  |  مشروع تخرج هندسة طبية  |  بيانات NSCLC-Radiomics من TCIA",
+      tags: ["مدعوم بالذكاء الاصطناعي","٤٢١ مريض","١٩ ميزة","تجميع KMeans","تحليل راديومي","علاج البروتون"],
+    },
+  },
+};
+
+/* ─── PATIENT DATA ──────────────────────────────────────── */
+const PATIENTS = [
+  {id:"LUNG1-001",age:78.8,gender:"male",histology:"large cell",stage:"IIIb",survival:2165,volume:56158,meanHU:956.2,entropy:0.134,skewness:-2.354,slices:21,group:2,protocol:"Standard Protocol"},
+  {id:"LUNG1-002",age:83.8,gender:"male",histology:"squamous cell carcinoma",stage:"I",survival:155,volume:128127,meanHU:-58.3,entropy:0.135,skewness:-2.017,slices:26,group:1,protocol:"Wide-Field High-Dose"},
+  {id:"LUNG1-003",age:68.2,gender:"male",histology:"large cell",stage:"IIIb",survival:256,volume:12852,meanHU:-105.6,entropy:0.145,skewness:-1.175,slices:17,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-004",age:70.9,gender:"male",histology:"squamous cell carcinoma",stage:"II",survival:141,volume:30949,meanHU:971.7,entropy:0.137,skewness:-2.306,slices:36,group:2,protocol:"Standard Protocol"},
+  {id:"LUNG1-005",age:80.5,gender:"male",histology:"squamous cell carcinoma",stage:"IIIb",survival:353,volume:30523,meanHU:-9.2,entropy:0.137,skewness:-2.047,slices:24,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-006",age:65.3,gender:"female",histology:"adenocarcinoma",stage:"IIIa",survival:487,volume:22310,meanHU:-45.1,entropy:0.141,skewness:-1.823,slices:19,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-007",age:72.1,gender:"male",histology:"squamous cell carcinoma",stage:"IIIb",survival:321,volume:67890,meanHU:812.4,entropy:0.138,skewness:-2.198,slices:28,group:2,protocol:"Standard Protocol"},
+  {id:"LUNG1-008",age:59.7,gender:"female",histology:"adenocarcinoma",stage:"II",survival:678,volume:15420,meanHU:-78.9,entropy:0.149,skewness:-1.456,slices:22,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-009",age:76.4,gender:"male",histology:"large cell",stage:"IIIb",survival:198,volume:98340,meanHU:-12.7,entropy:0.133,skewness:-2.411,slices:31,group:1,protocol:"Wide-Field High-Dose"},
+  {id:"LUNG1-010",age:63.8,gender:"female",histology:"squamous cell carcinoma",stage:"I",survival:892,volume:18750,meanHU:-92.3,entropy:0.146,skewness:-1.634,slices:18,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-011",age:71.2,gender:"male",histology:"adenocarcinoma",stage:"IIIa",survival:445,volume:41230,meanHU:234.5,entropy:0.139,skewness:-1.987,slices:25,group:2,protocol:"Standard Protocol"},
+  {id:"LUNG1-012",age:67.9,gender:"male",histology:"squamous cell carcinoma",stage:"IIIb",survival:267,volume:112430,meanHU:-34.8,entropy:0.136,skewness:-2.254,slices:33,group:1,protocol:"Wide-Field High-Dose"},
+  {id:"LUNG1-013",age:55.4,gender:"female",histology:"adenocarcinoma",stage:"I",survival:1456,volume:9870,meanHU:-118.3,entropy:0.152,skewness:-0.987,slices:15,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-014",age:74.6,gender:"male",histology:"large cell",stage:"II",survival:334,volume:37650,meanHU:445.6,entropy:0.140,skewness:-2.102,slices:27,group:2,protocol:"Standard Protocol"},
+  {id:"LUNG1-015",age:81.3,gender:"male",histology:"squamous cell carcinoma",stage:"IIIb",survival:178,volume:145670,meanHU:-23.5,entropy:0.134,skewness:-2.498,slices:38,group:1,protocol:"Wide-Field High-Dose"},
+  {id:"LUNG1-016",age:62.7,gender:"female",histology:"adenocarcinoma",stage:"IIIa",survival:567,volume:28940,meanHU:-67.4,entropy:0.143,skewness:-1.712,slices:21,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-017",age:69.5,gender:"male",histology:"squamous cell carcinoma",stage:"II",survival:423,volume:47820,meanHU:678.9,entropy:0.138,skewness:-2.067,slices:29,group:2,protocol:"Standard Protocol"},
+  {id:"LUNG1-018",age:77.8,gender:"male",histology:"large cell",stage:"IIIb",survival:234,volume:89560,meanHU:-8.3,entropy:0.135,skewness:-2.334,slices:32,group:1,protocol:"Wide-Field High-Dose"},
+  {id:"LUNG1-019",age:58.2,gender:"female",histology:"adenocarcinoma",stage:"I",survival:1123,volume:11240,meanHU:-134.7,entropy:0.148,skewness:-1.234,slices:16,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-020",age:73.4,gender:"male",histology:"squamous cell carcinoma",stage:"IIIa",survival:356,volume:53410,meanHU:321.2,entropy:0.141,skewness:-1.934,slices:26,group:2,protocol:"Standard Protocol"},
+  {id:"LUNG1-021",age:66.1,gender:"female",histology:"adenocarcinoma",stage:"II",survival:734,volume:19870,meanHU:-89.6,entropy:0.144,skewness:-1.567,slices:20,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-022",age:79.3,gender:"male",histology:"large cell",stage:"IIIb",survival:189,volume:134560,meanHU:-18.4,entropy:0.133,skewness:-2.445,slices:35,group:1,protocol:"Wide-Field High-Dose"},
+  {id:"LUNG1-023",age:61.8,gender:"female",histology:"squamous cell carcinoma",stage:"I",survival:978,volume:14320,meanHU:-102.1,entropy:0.147,skewness:-1.389,slices:17,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-024",age:75.9,gender:"male",histology:"adenocarcinoma",stage:"IIIa",survival:412,volume:44780,meanHU:189.3,entropy:0.139,skewness:-2.023,slices:24,group:2,protocol:"Standard Protocol"},
+  {id:"LUNG1-025",age:70.3,gender:"male",histology:"squamous cell carcinoma",stage:"IIIb",survival:289,volume:107890,meanHU:-41.7,entropy:0.136,skewness:-2.287,slices:34,group:1,protocol:"Wide-Field High-Dose"},
+  {id:"LUNG1-026",age:57.6,gender:"female",histology:"adenocarcinoma",stage:"I",survival:1234,volume:8560,meanHU:-145.2,entropy:0.153,skewness:-0.876,slices:14,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-027",age:72.8,gender:"male",histology:"large cell",stage:"II",survival:367,volume:33210,meanHU:567.4,entropy:0.140,skewness:-2.145,slices:23,group:2,protocol:"Standard Protocol"},
+  {id:"LUNG1-028",age:82.1,gender:"male",histology:"squamous cell carcinoma",stage:"IIIb",survival:167,volume:159430,meanHU:-5.9,entropy:0.134,skewness:-2.512,slices:40,group:1,protocol:"Wide-Field High-Dose"},
+  {id:"LUNG1-029",age:64.5,gender:"female",histology:"adenocarcinoma",stage:"IIIa",survival:645,volume:25670,meanHU:-71.8,entropy:0.142,skewness:-1.678,slices:22,group:0,protocol:"Focused High-Dose"},
+  {id:"LUNG1-030",age:68.9,gender:"male",histology:"squamous cell carcinoma",stage:"II",survival:456,volume:51340,meanHU:432.7,entropy:0.138,skewness:-2.089,slices:28,group:2,protocol:"Standard Protocol"},
+];
+
+/* ─── GROUP DATA ──────────────────────────────────────────── */
+const GROUP_DATA = [
+  {dose:"66 Gy",fractions:"33 fx",beam:"IMPT",margin:"4 mm",patients:"94",conf:83},
+  {dose:"70 Gy",fractions:"35 fx",beam:"PSPT",margin:"5 mm",patients:"154",conf:79},
+  {dose:"74 Gy",fractions:"37 fx",beam:"IMPT",margin:"3 mm",patients:"173",conf:87},
+];
+
+/* ─── CT DRAWING FUNCTION ─────────────────────────────────── */
+function drawCT(canvas, patientId, groupIdx) {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // dark BG
+  ctx.fillStyle = '#020408';
+  ctx.fillRect(0,0,W,H);
+
+  // lung field (ellipse — left lung)
+  const lx = W*0.3, ly = H*0.5, lrx = W*0.22, lry = H*0.36;
+  ctx.beginPath();
+  ctx.ellipse(lx, ly, lrx, lry, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#1a3a2a';
+  ctx.fill();
+  ctx.strokeStyle = '#2a5a3a';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // lung field (right lung)
+  const rx2 = W*0.68, ry2 = H*0.5, rrx = W*0.20, rry = H*0.33;
+  ctx.beginPath();
+  ctx.ellipse(rx2, ry2, rrx, rry, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#1a3a2a';
+  ctx.fill();
+  ctx.strokeStyle = '#2a5a3a';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // rib cage hints
+  for(let i=0;i<6;i++){
+    const y = H*0.2 + i*(H*0.1);
+    ctx.beginPath();
+    ctx.arc(W*0.5, H*0.5, W*0.44 - i*4, Math.PI*0.1, Math.PI*0.9);
+    ctx.strokeStyle = `rgba(60,80,70,${0.4-i*0.05})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  // spine
+  ctx.fillStyle = '#3a3030';
+  ctx.beginPath();
+  ctx.ellipse(W*0.5, H*0.5, W*0.04, H*0.1, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // tumor — size varies by group
+  const tumorR = groupIdx===1 ? W*0.11 : groupIdx===2 ? W*0.085 : W*0.065;
+  const tx = W*0.3, ty = H*0.42;
+  const grd = ctx.createRadialGradient(tx, ty, 0, tx, ty, tumorR);
+  grd.addColorStop(0, 'rgba(220,50,50,0.95)');
+  grd.addColorStop(0.6, 'rgba(180,30,30,0.7)');
+  grd.addColorStop(1, 'rgba(140,20,20,0.3)');
+  ctx.beginPath();
+  ctx.arc(tx, ty, tumorR, 0, Math.PI*2);
+  ctx.fillStyle = grd;
+  ctx.fill();
+
+  // GTV-1 dashed cyan contour
+  ctx.beginPath();
+  ctx.arc(tx, ty, tumorR+8, 0, Math.PI*2);
+  ctx.strokeStyle = '#00d4ff';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([5, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // crosshair on tumor
+  ctx.strokeStyle = 'rgba(0,212,255,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();ctx.moveTo(tx-18,ty);ctx.lineTo(tx+18,ty);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(tx,ty-18);ctx.lineTo(tx,ty+18);ctx.stroke();
+
+  // scan lines
+  for(let y=0;y<H;y+=4){
+    ctx.fillStyle = `rgba(0,0,0,${0.08})`;
+    ctx.fillRect(0,y,W,2);
+  }
+
+  // frame corner decorations
+  const c = '#00d4ff44', cs = 14;
+  ctx.strokeStyle=c;ctx.lineWidth=1.5;
+  [[0,0,1,0],[0,0,0,1],[W,0,-1,0],[W,0,0,1],
+   [0,H,1,0],[0,H,0,-1],[W,H,-1,0],[W,H,0,-1]].forEach(([bx,by,dx,dy],i)=>{
+    if(i%2===0){ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx+dx*cs,by);ctx.stroke();}
+    else{ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx,by+dy*cs);ctx.stroke();}
+  });
+}
+
+/* ─── PDF GENERATOR (Print Window) ──────────────────────── */
+function generatePDF(pat, lang) {
+  const groupNames = ['Focused High-Dose IMPT','Wide-Field PSPT','Standard IMPT'];
+  const groupColors = ['#00d4ff','#a78bfa','#06ffa5'];
+  const doses   = ['66 Gy','70 Gy','74 Gy'];
+  const fxs     = ['33 fx','35 fx','37 fx'];
+  const beams   = ['IMPT','PSPT','IMPT'];
+  const margins = ['4 mm','5 mm','3 mm'];
+  const confs   = [83, 79, 87];
+  const gc = groupColors[pat.group];
+  const conf = confs[pat.group];
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB') + '  ' + now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>ProtonAI Report — ${pat.id}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:#030712;color:#e2e8f0;width:210mm;min-height:297mm;padding:0}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+  .header{background:#0d1626;padding:20px 24px;border-bottom:2px solid #00d4ff;display:flex;justify-content:space-between;align-items:center}
+  .logo{font-size:22px;font-weight:900;color:#00d4ff;letter-spacing:-0.5px}
+  .logo-sub{font-size:9px;color:#64748b;margin-top:3px}
+  .report-badge{border:1px solid #00d4ff55;border-radius:6px;padding:4px 12px;font-size:9px;font-weight:700;color:#00d4ff}
+  .date{font-size:8px;color:#475569;text-align:right;margin-top:4px}
+
+  .body{padding:24px}
+
+  .pat-hero{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+  .pat-id{font-size:28px;font-weight:900;color:#f8fafc;letter-spacing:-1px}
+  .group-pill{padding:4px 14px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid;display:inline-block}
+  .conf-badge{font-size:11px;font-weight:700;color:#06ffa5;margin-left:12px}
+
+  .divider{height:1px;background:#1a2535;margin:16px 0}
+
+  .section-title{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+  .section-bar{width:3px;height:14px;background:#00d4ff;border-radius:2px;flex-shrink:0}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-bottom:20px}
+  .field{padding:7px 0;border-bottom:1px solid #1a253566}
+  .field-label{font-size:9px;color:#64748b;font-weight:500;margin-bottom:2px}
+  .field-val{font-size:11px;font-weight:700;color:#e2e8f0}
+
+  .protocol-box{background:#0d1626;border:1px solid #1a2535;border-radius:10px;padding:16px;margin-bottom:20px}
+  .protocol-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .proto-item{}
+  .proto-label{font-size:9px;color:#64748b;margin-bottom:3px}
+  .proto-val{font-size:14px;font-weight:900;color:#00d4ff}
+
+  .conf-section{margin-bottom:20px}
+  .conf-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .conf-label{font-size:10px;color:#94a3b8}
+  .conf-pct{font-size:20px;font-weight:900;color:#06ffa5}
+  .conf-track{height:8px;background:#1a2535;border-radius:4px;overflow:hidden}
+  .conf-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#00d4ff,#06ffa5)}
+  .conf-note{font-size:8px;color:#475569;margin-top:6px}
+
+  .footer{position:fixed;bottom:0;left:0;right:0;background:#0d1626;border-top:1px solid #1a253566;padding:10px 24px;display:flex;justify-content:space-between;align-items:center}
+  .footer-logo{font-size:11px;font-weight:700;color:#00d4ff}
+  .footer-text{font-size:8px;color:#475569}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">ProtonAI NEXUS</div>
+    <div class="logo-sub">AI-Powered Proton Therapy Clinical Decision Support</div>
+  </div>
+  <div style="text-align:right">
+    <div class="report-badge">CLINICAL REPORT</div>
+    <div class="date">Generated: ${dateStr}</div>
+  </div>
+</div>
+
+<div class="body">
+
+  <div class="pat-hero">
+    <div class="pat-id">${pat.id}</div>
+    <div>
+      <div class="group-pill" style="color:${gc};border-color:${gc}44;background:${gc}11">
+        ${groupNames[pat.group]}
+      </div>
+      <span class="conf-badge">AI Confidence: ${conf}%</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-title"><div class="section-bar"></div> Patient Information</div>
+  <div class="grid2">
+    <div class="field"><div class="field-label">Patient ID</div><div class="field-val">${pat.id}</div></div>
+    <div class="field"><div class="field-label">Histology</div><div class="field-val">${pat.histology}</div></div>
+    <div class="field"><div class="field-label">Age</div><div class="field-val">${pat.age} yrs</div></div>
+    <div class="field"><div class="field-label">Survival</div><div class="field-val">${pat.survival} days</div></div>
+    <div class="field"><div class="field-label">Gender</div><div class="field-val">${pat.gender.charAt(0).toUpperCase()+pat.gender.slice(1)}</div></div>
+    <div class="field"><div class="field-label">Volume</div><div class="field-val">${pat.volume.toLocaleString()} voxels</div></div>
+    <div class="field"><div class="field-label">Stage</div><div class="field-val">${pat.stage.toUpperCase()}</div></div>
+    <div class="field"><div class="field-label">Mean HU</div><div class="field-val">${pat.meanHU.toFixed(1)}</div></div>
+  </div>
+
+  <div class="section-title"><div class="section-bar" style="background:#7c3aed"></div> Radiomic Features</div>
+  <div class="grid2" style="margin-bottom:20px">
+    <div class="field"><div class="field-label">Entropy</div><div class="field-val">${pat.entropy.toFixed(4)}</div></div>
+    <div class="field"><div class="field-label">CT Slices</div><div class="field-val">${pat.slices}</div></div>
+    <div class="field"><div class="field-label">Skewness</div><div class="field-val">${pat.skewness.toFixed(4)}</div></div>
+    <div class="field"><div class="field-label">Dataset</div><div class="field-val">NSCLC-Radiomics TCIA</div></div>
+  </div>
+
+  <div class="section-title"><div class="section-bar" style="background:#06ffa5"></div> AI-Recommended Treatment Protocol</div>
+  <div class="protocol-box">
+    <div class="protocol-grid">
+      <div class="proto-item"><div class="proto-label">Total Dose</div><div class="proto-val">${doses[pat.group]}</div></div>
+      <div class="proto-item"><div class="proto-label">Beam Arrangement</div><div class="proto-val">${beams[pat.group]}</div></div>
+      <div class="proto-item"><div class="proto-label">Fractions</div><div class="proto-val">${fxs[pat.group]}</div></div>
+      <div class="proto-item"><div class="proto-label">Robustness Margin</div><div class="proto-val">${margins[pat.group]}</div></div>
+    </div>
+  </div>
+
+  <div class="conf-section">
+    <div class="section-title"><div class="section-bar" style="background:#06ffa5"></div> AI Confidence Score</div>
+    <div class="conf-row">
+      <span class="conf-label">Model prediction confidence</span>
+      <span class="conf-pct">${conf}%</span>
+    </div>
+    <div class="conf-track"><div class="conf-fill" style="width:${conf}%"></div></div>
+    <div class="conf-note">KMeans Clustering + Radiomic Feature Analysis — 19 features, 421 patients</div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-logo">ProtonAI NEXUS</div>
+  <div class="footer-text">Designed & Developed by: Ali Hussein Thajil &nbsp;|&nbsp; Medical Engineering Graduation Project</div>
+  <div class="footer-text">NSCLC-Radiomics — TCIA</div>
+</div>
+
+<script>window.onload=()=>{window.print()}<\/script>
+</body>
+</html>`;
+
+  const win = window.open('','_blank','width=900,height=700');
+  win.document.write(html);
+  win.document.close();
+}
+
+/* ─── HEADER COMPONENT ──────────────────────────────────── */
+function Header({lang, onToggleLang}) {
+  const t = T[lang];
+  return (
+    <header className="site-header">
+      <div className="header-left">
+        <span className="header-logo-text">ProtonAI NEXUS</span>
+        <span className="header-sub">{t.headerSub}</span>
+      </div>
+      <div className="header-right">
+        <span className="badge badge-v">v1.0</span>
+        <span className="badge">421 Patients</span>
+        <span className="badge">NSCLC-Radiomics</span>
+        <span className="badge">Medical Engineering</span>
+        <button className="btn-lang" onClick={onToggleLang}>{t.langBtn}</button>
+      </div>
+    </header>
+  );
+}
+
+/* ─── HERO COMPONENT ──────────────────────────────────────── */
+function Hero({lang}) {
+  const t = T[lang];
+  return (
+    <section className="hero">
+      <div className="hero-pill">
+        <span className="hero-pill-dot"></span>
+        {t.heroPill}
+      </div>
+      <h1 className="hero-title">
+        {t.heroTitle1}<span className="hero-title-grad">{t.heroTitle2}</span>{t.heroTitle3}
+      </h1>
+      <p className="hero-desc">{t.heroDesc}</p>
+      <div className="hero-sig">
+        {t.heroSig} <strong>Ali Hussein Thajil</strong>
+      </div>
+    </section>
+  );
+}
+
+/* ─── STATS COMPONENT ──────────────────────────────────────── */
+function Stats({lang}) {
+  const t = T[lang];
+  const vals = ["421","19","3","52K","98%"];
+  return (
+    <section className="stats-section">
+      <div className="stats-grid">
+        {vals.map((v,i)=>(
+          <div key={i} className="stat-card fade-in" style={{animationDelay:`${i*0.07}s`}}>
+            <span className="stat-num">{v}</span>
+            <span className="stat-label">{t.statsLabels[i]}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── CLASSIFIER COMPONENT ──────────────────────────────────── */
+function Classifier({lang}) {
+  const t = T[lang];
+  const [sel, setSel] = React.useState(0);
+  const g = GROUP_DATA[sel];
+  const rows = [g.dose, g.fractions, g.beam, g.margin, g.patients];
+  const badgeCls = ['badge-a','badge-b','badge-c'][sel];
+  const btnActive = ['active-a','active-b','active-c'][sel];
+  return (
+    <div className="card fade-in">
+      <div className="card-title">
+        <span className="card-title-dot dot-cyan"></span>
+        {t.classifierTitle}
+      </div>
+      <div className="group-btns">
+        {t.groupLabel.map((lb,i)=>(
+          <button key={i} className={`group-btn${sel===i?' '+['active-a','active-b','active-c'][i]:''}`}
+            onClick={()=>setSel(i)}>{lb}</button>
+        ))}
+      </div>
+      <div className={`group-badge ${badgeCls}`}>{t.groupBadge[sel]}</div>
+      <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'16px',lineHeight:'1.5'}}>{t.groupDesc[sel]}</p>
+      {t.infoKeys.map((k,i)=>(
+        <div key={i} className="info-row">
+          <span className="info-label">{k}</span>
+          <span className="info-val">{rows[i]}</span>
+        </div>
+      ))}
+      <div className="conf-wrap">
+        <div className="conf-header">
+          <span>{t.confLabel}</span>
+          <span className="conf-pct">{g.conf}%</span>
+        </div>
+        <div className="conf-track">
+          <div className="conf-fill" style={{width:`${g.conf}%`}}></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── CT VIEWER COMPONENT ──────────────────────────────────── */
+function CTViewer({lang, selectedPatient}) {
+  const t = T[lang];
+  const canvasRef = React.useRef(null);
+  const pat = selectedPatient || PATIENTS[0];
+
+  React.useEffect(()=>{
+    drawCT(canvasRef.current, pat.id, pat.group);
+  },[pat]);
+
+  return (
+    <div className="card fade-in">
+      <div className="card-title">
+        <span className="card-title-dot dot-purple"></span>
+        {t.ctTitle}
+      </div>
+      <div className="ct-canvas-wrap">
+        <div className="ct-labels">
+          <span>{pat.id}</span>
+          <span>Slices: {pat.slices}</span>
+        </div>
+        <canvas id="ctCanvas" ref={canvasRef} width="440" height="300"
+          style={{display:'block',width:'100%',height:'auto'}}></canvas>
+        <div style={{position:'absolute',bottom:'10px',left:'10px',
+          background:'rgba(220,50,50,0.85)',color:'#fff',
+          fontSize:'10px',fontWeight:'700',padding:'2px 8px',borderRadius:'4px'}}>
+          ● GTV-1
+        </div>
+      </div>
+      <div className="ct-legend">
+        <div className="legend-item">
+          <div className="legend-dot" style={{background:'rgba(220,50,50,0.85)'}}></div>
+          <span>{t.legendLabels[0]}</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-line"></div>
+          <span>{t.legendLabels[1]}</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-dot" style={{background:'#1a3a2a',border:'1px solid #2a5a3a'}}></div>
+          <span>{t.legendLabels[2]}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── PATIENT EXPLORER ──────────────────────────────────────── */
+function PatientExplorer({lang, onSelect}) {
+  const t = T[lang];
+  const [sel, setSel] = React.useState(0);
+  const pat = PATIENTS[sel];
+
+  function handleSelect(i) {
+    setSel(i);
+    if(onSelect) onSelect(PATIENTS[i]);
+  }
+
+  const colFields = [
+    [pat.id, pat.age, pat.gender, pat.stage],
+    [pat.histology, pat.survival, pat.volume.toLocaleString(), pat.meanHU.toFixed(1)],
+    [pat.entropy.toFixed(3), pat.skewness.toFixed(3), pat.slices, null],
+  ];
+
+  return (
+    <section className="patient-section">
+      <div className="card fade-in">
+        <div className="card-title">
+          <span className="card-title-dot dot-cyan"></span>
+          {t.patTitle}
+        </div>
+        <div className="patient-grid">
+          {PATIENTS.map((p,i)=>(
+            <button key={p.id}
+              className={`pat-btn${sel===i?' selected':''}`}
+              onClick={()=>handleSelect(i)}>
+              {p.id.replace('LUNG1-','')}
+            </button>
+          ))}
+        </div>
+        <div className="pat-detail">
+          {/* Col 1 */}
+          <div className="pat-col">
+            {t.patCols[0].map((lbl,i)=>(
+              <div key={i} className="pat-field">
+                <div className="pat-field-label">{lbl}</div>
+                <div className="pat-field-val">{colFields[0][i]}</div>
+              </div>
+            ))}
+          </div>
+          {/* Col 2 */}
+          <div className="pat-col">
+            {t.patCols[1].map((lbl,i)=>(
+              <div key={i} className="pat-field">
+                <div className="pat-field-label">{lbl}</div>
+                <div className="pat-field-val">{colFields[1][i]}</div>
+              </div>
+            ))}
+          </div>
+          {/* Col 3 */}
+          <div className="pat-col">
+            {t.patCols[2].slice(0,3).map((lbl,i)=>(
+              <div key={i} className="pat-field">
+                <div className="pat-field-label">{lbl}</div>
+                <div className="pat-field-val">{colFields[2][i]}</div>
+              </div>
+            ))}
+            <div className="pat-field">
+              <div className="pat-field-label">{t.patCols[2][3]}</div>
+              <div className="pat-field-val">
+                <span className={`protocol-tag proto-${pat.group}`}>{pat.protocol}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Export PDF Button ── */}
+        <div style={{textAlign:'center',marginTop:'8px'}}>
+          <button className="btn-pdf" onClick={()=>generatePDF(pat, lang)}>
+            <span className="btn-pdf-icon">📄</span>
+            {lang==='en' ? `Export PDF Report — ${pat.id}` : `تصدير تقرير PDF — ${pat.id}`}
+          </button>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+/* ─── FOOTER ──────────────────────────────────────────────── */
+function Footer({lang}) {
+  const t = T[lang];
+  return (
+    <footer className="site-footer">
+      <div className="footer-logo">ProtonAI NEXUS</div>
+      <div className="footer-credits">{t.footer.credits}</div>
+      <div className="footer-tags">
+        {t.footer.tags.map((tag,i)=>(
+          <span key={i} className="footer-tag">{tag}</span>
+        ))}
+      </div>
+    </footer>
+  );
+}
+
+/* ─── ROOT APP ──────────────────────────────────────────────── */
+function App() {
+  const [lang, setLang] = React.useState('en');
+  const [selectedPat, setSelectedPat] = React.useState(PATIENTS[0]);
+
+  function toggleLang() {
+    const next = lang==='en'?'ar':'en';
+    setLang(next);
+    document.documentElement.lang = next;
+    document.documentElement.dir = next==='ar'?'rtl':'ltr';
+  }
+
+  return (
+    <div id="app-root">
+      <Header lang={lang} onToggleLang={toggleLang}/>
+      <Hero lang={lang}/>
+      <Stats lang={lang}/>
+      <span className="section-label">
+        {lang==='en'?'Diagnostic Modules':'وحدات التشخيص'}
+      </span>
+      <div className="two-col">
+        <Classifier lang={lang}/>
+        <CTViewer lang={lang} selectedPatient={selectedPat}/>
+      </div>
+      <PatientExplorer lang={lang} onSelect={setSelectedPat}/>
+      <Footer lang={lang}/>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('app-root'));
+root.render(<App/>);
+</script>
+</body>
+</html>
