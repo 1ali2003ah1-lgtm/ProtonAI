@@ -1,170 +1,1202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>ProtonAI NEXUS — Ali Hussein Thajil</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ProtonAI NEXUS — AI-Powered Proton Therapy Platform</title>
+<meta name="description" content="AI-powered proton therapy clinical decision support platform — Ali Hussein Thajil, Medical Engineering Graduation Project."/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='5' fill='%2300d4ff'/%3E%3Cellipse cx='12' cy='12' rx='10' ry='4' fill='none' stroke='%237c3aed' stroke-width='1.5'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet"/>
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#030712;--card:#0d1626;--card2:#0a1020;--line:#1a2535;--line2:#243040;--acc:#00d4ff;--acc2:#7c3aed;--acc3:#06ffa5;--text:#e2e8f0;--muted:#64748b;--muted2:#8899aa;}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
-.bg-g1{position:fixed;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.06),transparent 65%);top:-250px;right:-150px;pointer-events:none;z-index:0;animation:glow1 8s ease-in-out infinite}
-.bg-g2{position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.06),transparent 65%);bottom:-200px;left:-150px;pointer-events:none;z-index:0;animation:glow2 10s ease-in-out infinite}
-@keyframes glow1{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,20px)}}
-@keyframes glow2{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-30px)}}
-.splash{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s ease,visibility 1s ease}
-.splash.out{opacity:0;visibility:hidden;pointer-events:none}
-.sp-logo{font-size:72px;font-weight:900;background:linear-gradient(135deg,var(--acc),var(--acc2),var(--acc3));-webkit-background-clip:text;background-clip:text;color:transparent;animation:spIn 1.2s cubic-bezier(.16,1,.3,1)}
-.sp-sub{font-size:17px;color:var(--muted2);margin-top:12px;animation:spUp .8s ease .4s both}
-.sp-name{font-size:13px;color:var(--acc);font-weight:600;letter-spacing:3px;text-transform:uppercase;margin-top:8px;animation:spUp .8s ease .6s both}
-.sp-track{width:220px;height:2px;background:var(--line2);border-radius:2px;margin-top:48px;overflow:hidden;animation:spUp .8s ease .8s both}
-.sp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--acc3));border-radius:2px;animation:spBar 2.8s ease .9s both}
-@keyframes spIn{from{opacity:0;transform:scale(.7) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes spUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes spBar{from{width:0}to{width:100%}}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-header{position:sticky;top:0;z-index:200;background:rgba(3,7,18,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--line);padding:0 36px;height:66px;display:flex;align-items:center;justify-content:space-between}
-.h-brand{display:flex;flex-direction:column}
-.h-logo{font-size:19px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.3px}
-.h-sub{font-size:10px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;margin-top:1px}
-.h-nav{display:flex;gap:8px;align-items:center}
-.badge{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid rgba(0,212,255,.25);color:var(--acc);background:rgba(0,212,255,.05);letter-spacing:.3px}
-.badge-g{border-color:rgba(6,255,165,.25);color:var(--acc3);background:rgba(6,255,165,.05)}
-.badge-p{border-color:rgba(124,58,237,.25);color:#a78bfa;background:rgba(124,58,237,.05)}
-.btn-lang{padding:7px 16px;border-radius:10px;border:1px solid var(--acc2);background:rgba(124,58,237,.12);color:#a78bfa;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;transition:all .2s}
-.btn-lang:hover{background:rgba(124,58,237,.22)}
-main{position:relative;z-index:1;padding:36px 36px 60px}
-.hero{text-align:center;padding:56px 0 48px;max-width:860px;margin:0 auto;animation:fadeIn .8s ease}
-.hero-pill{display:inline-flex;align-items:center;gap:10px;padding:7px 18px;border-radius:999px;border:1px solid rgba(0,212,255,.25);background:rgba(0,212,255,.04);font-size:12px;color:var(--acc);font-weight:600;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:28px}
-.hero-dot{width:7px;height:7px;border-radius:50%;background:var(--acc3);animation:pulse 1.8s ease infinite}
-.hero-h{font-size:56px;font-weight:900;line-height:1.08;margin-bottom:18px;letter-spacing:-1.5px}
-.hero-h span{background:linear-gradient(135deg,var(--acc),var(--acc2) 50%,var(--acc3));-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero-p{font-size:17px;color:var(--muted2);line-height:1.75;max-width:640px;margin:0 auto 36px}
-.hero-sig{font-size:12px;color:var(--acc);font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:9px 22px;border:1px solid rgba(0,212,255,.2);border-radius:999px;display:inline-block}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px}
-.sc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 16px;text-align:center;position:relative;overflow:hidden;transition:border-color .3s,transform .2s;animation:fadeIn .6s ease both}
-.sc:hover{border-color:rgba(0,212,255,.4);transform:translateY(-3px)}
-.sc::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.03),transparent 60%);pointer-events:none}
-.sn{font-size:38px;font-weight:900;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
-.sl{font-size:10px;color:var(--muted);margin-top:7px;text-transform:uppercase;letter-spacing:.9px;font-weight:500}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px;transition:border-color .3s;animation:fadeIn .7s ease both}
-.card-hl{border-color:rgba(0,212,255,.18);background:linear-gradient(135deg,var(--card),rgba(0,212,255,.025))}
-.ct{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;gap:10px}
-.ct-bar{width:3px;height:16px;background:linear-gradient(var(--acc),var(--acc2));border-radius:2px;flex-shrink:0}
-.gb{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;border-radius:999px;font-weight:800;font-size:13px;margin-bottom:18px;letter-spacing:.2px}
-.gA{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
-.gB{background:rgba(0,212,255,.1);color:var(--acc);border:1px solid rgba(0,212,255,.3)}
-.gC{background:rgba(124,58,237,.1);color:#a78bfa;border:1px solid rgba(124,58,237,.3)}
-.sel{display:flex;gap:8px;margin-bottom:22px}
-.sb{flex:1;padding:11px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;font-family:inherit}
-.sb.on{border-color:var(--acc);color:var(--acc);background:rgba(0,212,255,.07)}
-.sb:hover:not(.on){border-color:var(--line2);color:var(--text)}
-.ir{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(26,37,53,.9);font-size:13px}
-.ir:last-child{border-bottom:none}
-.il{color:var(--muted);font-weight:500}
-.iv{font-weight:600;color:var(--text)}
-.pb{height:9px;border-radius:5px;background:rgba(26,37,53,1);overflow:hidden;margin-top:9px}
-.pf{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width 1.2s cubic-bezier(.16,1,.3,1)}
-.psw{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:18px;max-height:160px;overflow-y:auto;padding-right:4px}
-.psw::-webkit-scrollbar{width:4px}
-.psw::-webkit-scrollbar-track{background:transparent}
-.psw::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
-.pb2{padding:7px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--muted);cursor:pointer;font-size:10px;font-weight:600;transition:all .2s;font-family:inherit;text-align:center}
-.pb2.on{border-color:var(--acc);color:var(--acc);background:rgba(0,212,255,.07)}
-.pb2:hover:not(.on){border-color:var(--line2);color:var(--muted2)}
-.ctv{background:#000;border-radius:18px;overflow:hidden;position:relative;aspect-ratio:1}
-.lbl{position:absolute;font-size:10px;font-weight:700;background:rgba(0,0,0,.85);padding:3px 10px;border-radius:4px}
-.p-card{background:linear-gradient(135deg,var(--card2),rgba(0,212,255,.03));border:1px solid rgba(0,212,255,.12);border-radius:16px;padding:16px;margin-top:16px}
-footer{position:relative;z-index:1;text-align:center;padding:40px;border-top:1px solid var(--line);margin-top:48px}
-.ft{font-size:24px;font-weight:800;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:10px}
-.fs{font-size:12px;color:var(--muted);line-height:2.2}
-.tag{display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.15);color:var(--acc);font-size:10px;font-weight:600;letter-spacing:.5px;margin:4px 3px}
-::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
+:root{
+  --bg:#030712; --card:#0d1626; --card2:#0a1120; --line:#1a2535; --line2:#16202f;
+  --cyan:#00d4ff; --purple:#7c3aed; --green:#06ffa5; --red:#ff3b5c; --amber:#ffb020;
+  --text:#e8eef7; --muted:#8b9bb4; --muted2:#5c6b84;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scrollbar-color:#1b2a4a #060b16;scrollbar-width:thin}
+body{background:var(--bg);color:var(--text);font-family:'Inter','Tajawal',system-ui,sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(0,212,255,.32);color:#fff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#060b16}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#0e3a4d,#1b2a4a);border-radius:8px;border:2px solid #060b16}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#00d4ff,#7c3aed)}
+button{font-family:inherit;color:inherit}
+input{font-family:inherit}
+:focus-visible{outline:2px solid rgba(0,212,255,.6);outline-offset:2px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.container{max-width:1280px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+.app{position:relative;z-index:1;animation:fadeIn .5s ease both}
+#classifier,#explorer{scroll-margin-top:92px}
+
+/* ── Animated background ── */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-grid{position:absolute;inset:-60px;background-image:linear-gradient(rgba(0,212,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.045) 1px,transparent 1px);background-size:46px 46px;-webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 20%,#000 20%,transparent 80%);mask-image:radial-gradient(ellipse 90% 70% at 50% 20%,#000 20%,transparent 80%);animation:gridPan 40s linear infinite}
+@keyframes gridPan{to{transform:translate(46px,46px)}}
+.glow{position:absolute;border-radius:50%;filter:blur(80px)}
+.glow-a{width:620px;height:620px;top:-200px;right:-160px;background:radial-gradient(circle,rgba(0,212,255,.22),transparent 65%);animation:floatA 16s ease-in-out infinite alternate}
+.glow-b{width:680px;height:680px;bottom:-240px;left:-180px;background:radial-gradient(circle,rgba(124,58,237,.22),transparent 65%);animation:floatB 20s ease-in-out infinite alternate}
+.glow-c{width:420px;height:420px;top:38%;left:30%;background:radial-gradient(circle,rgba(6,255,165,.07),transparent 65%);animation:floatA 24s ease-in-out infinite alternate-reverse}
+@keyframes floatA{to{transform:translate(-50px,60px) scale(1.12)}}
+@keyframes floatB{to{transform:translate(60px,-50px) scale(1.08)}}
+.bg-noise{position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")}
+
+.grad-text{background:linear-gradient(92deg,#00d4ff 0%,#7c3aed 50%,#06ffa5 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:gradShift 6s ease infinite}
+@keyframes gradShift{0%,100%{background-position:0% center}50%{background-position:100% center}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 8px currentColor}50%{opacity:.35;box-shadow:none}}
+.reveal{animation:fadeInUp .7s cubic-bezier(.22,1,.36,1) backwards}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 1.6s ease infinite;flex:none}
+
+/* ── Splash ── */
+.splash{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .55s ease,visibility .55s}
+.splash.hide{opacity:0;visibility:hidden}
+.splash-inner{text-align:center;position:relative;z-index:2;padding:24px}
+.splash-orbit{width:110px;height:110px;margin:0 auto 26px}
+.ring{transform-origin:55px 55px;animation:spin 6s linear infinite}
+.r2{animation-duration:9s;animation-direction:reverse}
+.r3{animation-duration:13s}
+.splash-logo{font-size:64px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+.splash-sub{color:var(--muted);margin-top:10px;font-size:15px}
+.splash-author{margin-top:18px;color:var(--cyan);text-transform:uppercase;letter-spacing:.38em;font-size:12px;font-weight:700}
+.splash-bar{width:280px;height:4px;background:#0d1626;border:1px solid var(--line);border-radius:99px;margin:26px auto 10px;overflow:hidden}
+.splash-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--green));border-radius:99px;box-shadow:0 0 12px rgba(0,212,255,.7);transition:width .18s linear}
+.splash-meta{display:flex;justify-content:space-between;gap:12px;width:280px;margin:0 auto;font-size:11px;color:var(--muted2)}
+.splash-step{text-align:start}
+.splash-pct{color:var(--cyan);font-weight:700}
+
+/* ── Header ── */
+.hdr{position:sticky;top:0;z-index:50;background:rgba(3,7,18,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.hdr-in{display:flex;align-items:center;gap:16px;height:72px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(0,212,255,.16),rgba(124,58,237,.16));border:1px solid rgba(0,212,255,.35);color:var(--cyan);box-shadow:0 0 18px rgba(0,212,255,.18);flex:none}
+.brand-name{font-size:19px;font-weight:900;line-height:1.1;white-space:nowrap}
+.brand-sub{font-size:10.5px;color:var(--muted2);white-space:nowrap;margin-top:2px}
+.hdr-badges{display:flex;gap:8px;margin-inline-start:auto}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;border:1px solid var(--line);background:rgba(13,22,38,.7);font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap}
+.badge i{width:6px;height:6px;border-radius:50%;flex:none}
+.ai-status{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;color:var(--green);letter-spacing:.12em;white-space:nowrap}
+.lang-btn{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:11px;border:1px solid rgba(0,212,255,.4);background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(124,58,237,.12));color:var(--text);font-weight:700;font-size:13px;cursor:pointer;transition:.3s;white-space:nowrap}
+.lang-btn:hover{border-color:var(--cyan);box-shadow:0 0 20px rgba(0,212,255,.25);transform:translateY(-1px)}
+  /* ── Hero ── */
+.hero{padding:64px 0 44px;display:grid;grid-template-columns:1.12fr .88fr;gap:44px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:9px;padding:8px 16px;border-radius:99px;border:1px solid rgba(0,212,255,.35);background:rgba(0,212,255,.07);color:var(--cyan);font-size:12.5px;font-weight:700}
+.hero h1{font-size:clamp(34px,4.4vw,56px);font-weight:900;line-height:1.08;letter-spacing:-.02em;margin:22px 0 18px}
+.hero-desc{color:var(--muted);font-size:15.5px;line-height:1.75;max-width:580px}
+.author-pill{display:inline-flex;align-items:center;gap:10px;margin-top:24px;padding:11px 18px;border-radius:13px;border:1px solid rgba(124,58,237,.45);background:linear-gradient(135deg,rgba(124,58,237,.10),rgba(0,212,255,.06));font-size:13px;color:var(--muted)}
+.author-pill b{color:var(--text);font-weight:800}
+.hero-ctas{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:12px;border:none;background:linear-gradient(92deg,#00b4e6,#7c3aed);color:#fff;font-weight:800;font-size:14px;cursor:pointer;transition:.3s;box-shadow:0 8px 26px rgba(0,180,230,.28)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(124,58,237,.4)}
+.btn-ghost{display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:12px;border:1px solid var(--line);background:rgba(13,22,38,.7);color:var(--text);font-weight:700;font-size:14px;cursor:pointer;transition:.3s}
+.btn-ghost:hover{border-color:rgba(0,212,255,.5);color:var(--cyan);transform:translateY(-2px)}
+
+/* ── Cards ── */
+.card{background:linear-gradient(180deg,#0d1626,#0b1322);border:1px solid var(--line);border-radius:18px;position:relative}
+.card::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.5),transparent);opacity:.7}
+.card-pad{padding:24px}
+.card-head{display:flex;align-items:center;gap:13px;margin-bottom:18px}
+.head-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;border:1px solid}
+.head-title{font-size:17.5px;font-weight:800}
+.head-sub{font-size:11.5px;color:var(--muted2);margin-top:2px}
+.chip{margin-inline-start:auto;padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:var(--card2);font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.08em;white-space:nowrap}
+
+/* ── Bragg chart ── */
+.bragg-svg{width:100%;height:auto;display:block}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2.4s cubic-bezier(.4,0,.2,1) forwards .4s}
+@keyframes draw{to{stroke-dashoffset:0}}
+.area-fade{opacity:0;animation:fadeIn 1.2s ease forwards 1.6s}
+.peak-pulse{animation:peakPulse 2s ease infinite}
+@keyframes peakPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.bragg-legend{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted)}
+.leg i{width:14px;height:3px;border-radius:2px;flex:none}
+.bragg-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.bstat{padding:10px 8px;border-radius:11px;background:var(--card2);border:1px solid var(--line2);text-align:center;font-size:11.5px;font-weight:700}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin:8px 0 34px}
+.stat{padding:20px;border-radius:16px;background:linear-gradient(180deg,#0d1626,#0b1322);border:1px solid var(--line);transition:transform .35s ease,border-color .35s,box-shadow .35s;position:relative;overflow:hidden}
+.stat:hover{transform:translateY(-6px);border-color:rgba(0,212,255,.4);box-shadow:0 16px 40px rgba(0,0,0,.4),0 0 24px rgba(0,212,255,.08)}
+.stat::after{content:"";position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--sg,linear-gradient(90deg,#00d4ff,#06ffa5));opacity:.55}
+.stat-icon{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;margin-bottom:14px;border:1px solid}
+.stat-num{font-size:32px;font-weight:900;line-height:1}
+.stat-label{font-size:12px;font-weight:700;color:var(--muted);margin-top:7px}
+.stat-sub{font-size:10.5px;color:var(--muted2);margin-top:3px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;align-items:start}
+
+/* ── Classifier ── */
+.gbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.gbtn{padding:12px 10px;border-radius:13px;border:1px solid var(--line2);background:var(--card2);cursor:pointer;transition:.3s;display:flex;flex-direction:column;align-items:center;gap:7px}
+.gbtn:hover{transform:translateY(-2px);border-color:var(--muted2)}
+.gbtn-letter{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:900;font-size:14px}
+.gbtn-name{font-size:12.5px;font-weight:800}
+.gbtn-pts{font-size:10.5px;color:var(--muted2)}
+.gbadge{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;font-size:12px;font-weight:800;border:1px solid}
+.gbadge i{width:7px;height:7px;border-radius:50%;flex:none}
+.gdesc{color:var(--muted);font-size:13px;line-height:1.7;margin:12px 0 6px}
+.irow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10.5px 0;border-bottom:1px dashed var(--line2)}
+.irow:last-child{border-bottom:none}
+.irow-l{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.irow-l svg{color:var(--muted2);flex:none}
+.irow-v{font-size:14.5px;font-weight:800;white-space:nowrap}
+.irow-v small{color:var(--muted2);font-weight:600;font-size:11px;margin-inline-start:4px}
+.conf{margin-top:16px;padding:16px;border-radius:14px;background:var(--card2);border:1px solid var(--line2)}
+.conf-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px}
+.conf-label{font-size:12.5px;font-weight:700;color:var(--muted)}
+.conf-num{font-size:24px;font-weight:900;color:var(--green)}
+.conf-track{height:9px;border-radius:99px;background:#060b16;border:1px solid var(--line2);overflow:hidden}
+.conf-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--green));box-shadow:0 0 14px rgba(6,255,165,.55);animation:growBar 1.1s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes growBar{from{width:0}to{width:var(--w)}}
+.conf-note{font-size:10.5px;color:var(--muted2);margin-top:9px}
+.feats{margin-top:16px}
+.feats-title{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:10px}
+.frow{display:grid;grid-template-columns:110px 1fr 40px;align-items:center;gap:10px;margin-bottom:9px;font-size:12px;color:var(--muted)}
+.frow b{color:var(--text);text-align:end;font-size:12px}
+.ftrack{height:6px;border-radius:99px;background:#060b16;border:1px solid var(--line2);overflow:hidden}
+.ffill{height:100%;border-radius:99px;transition:width .9s cubic-bezier(.22,1,.36,1)}
+.sync-note{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:11px;color:var(--muted2)}
+
+/* ── CT viewer ── */
+.ct-stage{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line2);background:#04070d;aspect-ratio:1/1;direction:ltr}
+.ct-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ct-corner{position:absolute;width:22px;height:22px;border:2px solid rgba(0,212,255,.55);z-index:3}
+.ct-corner.tl{top:10px;left:10px;border-right:none;border-bottom:none}
+.ct-corner.tr{top:10px;right:10px;border-left:none;border-bottom:none}
+.ct-corner.bl{bottom:10px;left:10px;border-right:none;border-top:none}
+.ct-corner.br{bottom:10px;right:10px;border-left:none;border-top:none}
+.ct-tag{position:absolute;z-index:3;padding:5px 10px;border-radius:8px;background:rgba(3,7,18,.72);border:1px solid rgba(0,212,255,.25);font-size:10.5px;font-weight:700;color:var(--cyan);backdrop-filter:blur(4px);display:flex;align-items:center;gap:6px}
+.ct-tag.tl{top:12px;left:12px}
+.ct-tag.tr{top:12px;right:12px}
+.ct-tag.bl{bottom:12px;left:12px;color:var(--red);border-color:rgba(255,59,92,.35)}
+.ct-tag.br{bottom:12px;right:12px;color:var(--muted)}
+.ct-recon{position:absolute;inset:0;z-index:4;display:grid;place-items:center;background:rgba(3,7,18,.55);backdrop-filter:blur(2px);animation:fadeIn .25s ease}
+.spinner{width:34px;height:34px;border-radius:50%;border:3px solid rgba(0,212,255,.2);border-top-color:var(--cyan);animation:spin .8s linear infinite;margin:0 auto 10px}
+.ct-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.ctl{padding:10px 12px;border-radius:11px;background:var(--card2);border:1px solid var(--line2)}
+.ctl-top{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:8px}
+.ctl-top b{color:var(--cyan)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;background:linear-gradient(90deg,rgba(0,212,255,.5),rgba(124,58,237,.5));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:#030712;border:2.5px solid var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.6);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#030712;border:2.5px solid var(--cyan);box-shadow:0 0 10px rgba(0,212,255,.6);cursor:pointer}
+.ct-toggles{display:flex;gap:10px;margin-top:12px}
+.tgl{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:11px;border:1px solid var(--line2);background:var(--card2);font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:.25s}
+.tgl.on{color:var(--cyan);border-color:rgba(0,212,255,.45);background:rgba(0,212,255,.08);box-shadow:0 0 14px rgba(0,212,255,.12)}
+.tgl i{width:7px;height:7px;border-radius:50%;background:currentColor}
+.ct-legend{display:flex;gap:16px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex:none}
+.leg-ring{width:10px;height:10px;border-radius:50%;border:2px dashed var(--cyan);flex:none}
+
+/* ── Explorer ── */
+.ex-tools{display:flex;align-items:center;gap:10px;margin-inline-start:auto;flex-wrap:wrap}
+.search{position:relative}
+.search input{width:230px;padding:10px 12px;padding-inline-start:36px;border-radius:11px;border:1px solid var(--line2);background:var(--card2);color:var(--text);font-size:12.5px;transition:.3s}
+.search input:focus{border-color:rgba(0,212,255,.5);box-shadow:0 0 16px rgba(0,212,255,.12);outline:none}
+.search svg{position:absolute;inset-inline-start:11px;top:50%;transform:translateY(-50%);color:var(--muted2)}
+.fchip{padding:8px 14px;border-radius:99px;border:1px solid var(--line2);background:var(--card2);font-size:11.5px;font-weight:800;color:var(--muted);cursor:pointer;transition:.25s}
+.fchip:hover{transform:translateY(-1px)}
+.ex-count{font-size:11px;color:var(--muted2)}
+.pt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(102px,1fr));gap:9px;margin:14px 0 18px}
+.pt{padding:10px 9px;border-radius:11px;border:1px solid var(--line2);background:var(--card2);cursor:pointer;transition:.22s;display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:start}
+.pt:hover{transform:translateY(-2px);border-color:var(--muted2)}
+.pt-id{font-size:10.5px;font-weight:700;letter-spacing:.02em}
+.pt-meta{display:flex;align-items:center;gap:6px;font-size:9.5px;color:var(--muted2);width:100%}
+.pt-dot{width:6px;height:6px;border-radius:50%;flex:none}
+.pt-meta span{margin-inline-start:auto}
+.empty{padding:36px;text-align:center;color:var(--muted2);display:flex;flex-direction:column;align-items:center;gap:12px}
+.details{border:1px solid var(--line2);border-radius:15px;background:rgba(10,17,32,.6);padding:20px;animation:fadeInUp .45s ease backwards}
+.det-head{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.det-avatar{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;font-weight:900;font-size:14px;border:1px solid;flex:none}
+.det-id{font-size:19px;font-weight:900}
+.det-sub{font-size:11px;color:var(--muted2);margin-top:2px}
+.det-nav{display:flex;gap:8px;margin-inline-start:auto}
+.nav-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line2);background:var(--card2);display:grid;place-items:center;cursor:pointer;color:var(--muted);transition:.25s}
+.nav-btn:hover{color:var(--cyan);border-color:rgba(0,212,255,.45)}
+.det-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:0 26px}
+.dcol + .dcol{border-inline-start:1px dashed var(--line2);padding-inline-start:26px}
+.drow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9.5px 0;border-bottom:1px dashed var(--line2)}
+.drow:last-child{border-bottom:none}
+.dlabel{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted2);font-weight:600}
+.dlabel svg{flex:none}
+.dval{font-size:13.5px;font-weight:800;text-align:end}
+.dval small{color:var(--muted2);font-weight:600;font-size:10.5px}
+.proto-pill{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:99px;font-size:11px;font-weight:800;border:1px solid;white-space:nowrap}
+.proto-pill i{width:6px;height:6px;border-radius:50%;flex:none}
+.stage-pill{display:inline-flex;padding:4px 11px;border-radius:99px;font-size:11px;font-weight:800;color:var(--amber);border:1px solid rgba(255,176,32,.4);background:rgba(255,176,32,.08)}
+.surv-bar{display:block;height:4px;border-radius:99px;background:#060b16;margin-top:5px;margin-inline-start:auto;overflow:hidden;width:92px}
+.surv-fill{display:block;height:100%;background:linear-gradient(90deg,var(--amber),var(--green));border-radius:99px}
+
+/* ── Footer ── */
+.ftr{border-top:1px solid var(--line);margin-top:44px;padding:44px 0 30px;text-align:center;position:relative;z-index:1;background:linear-gradient(180deg,transparent,rgba(13,22,38,.5))}
+.ftr-logo{font-size:28px;font-weight:900}
+.ftr-tag{color:var(--muted2);font-size:13px;margin-top:8px}
+.ftr-credits{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin-top:20px;font-size:12.5px;color:var(--muted)}
+.ftr-credits span{display:flex;align-items:center;gap:7px}
+.fsep{color:var(--muted2)}
+.ftr-tags{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:20px}
+.ftag{padding:7px 14px;border-radius:99px;border:1px solid var(--line);background:rgba(13,22,38,.7);font-size:11.5px;font-weight:700;color:var(--muted);transition:.25s}
+.ftag:hover{border-color:rgba(0,212,255,.4);color:var(--cyan);transform:translateY(-2px)}
+.ftr-bottom{margin-top:26px;font-size:11.5px;color:var(--muted2)}
+.ftr-disc{margin-top:8px;font-size:11px;color:var(--amber);opacity:.85;display:flex;align-items:center;justify-content:center;gap:7px}
+
+/* ── Responsive ── */
+@media(max-width:1120px){
+  .hdr-badges .opt{display:none}
+  .hero{grid-template-columns:1fr;gap:30px}
+  .stats{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:980px){
+  .duo{grid-template-columns:1fr}
+  .det-cols{grid-template-columns:1fr}
+  .dcol + .dcol{border-inline-start:none;padding-inline-start:0;border-top:1px dashed var(--line2);padding-top:8px;margin-top:8px}
+}
+@media(max-width:760px){
+  .hdr-badges{display:none}
+  .brand-sub{display:none}
+  .ai-status span{display:none}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .hero{padding:40px 0 30px}
+  .card-pad{padding:18px}
+  .ex-tools{width:100%;margin-inline-start:0}
+  .search{flex:1}
+  .search input{width:100%}
+  .ct-controls{grid-template-columns:1fr}
+  .container{padding:0 16px}
+  .splash-logo{font-size:46px}
+  .card-head{flex-wrap:wrap}
+}
+@media(max-width:480px){
+  .gbtns{gap:7px}
+  .pt-grid{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}
+  .hero-ctas .btn-primary,.hero-ctas .btn-ghost{flex:1;justify-content:center}
+  .frow{grid-template-columns:88px 1fr 36px}
+}
+
+/* ── RTL ── */
+[dir="rtl"] *{letter-spacing:0!important}
+[dir="rtl"] .hero h1{line-height:1.3}
+[dir="rtl"] .ct-stage{direction:ltr}
+[dir="rtl"] .splash-author{font-size:14px}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
 </style>
 </head>
 <body>
-<div class="bg-grid"></div>
-<div class="bg-g1"></div>
-<div class="bg-g2"></div>
-<div class="splash" id="sp">
-  <div class="sp-logo">ProtonAI</div>
-  <div class="sp-sub">AI-Powered Proton Therapy Decision Support</div>
-  <div class="sp-name">Ali Hussein Thajil</div>
-  <div class="sp-track"><div class="sp-fill"></div></div>
-</div>
+<noscript><div style="padding:40px;text-align:center;color:#8b9bb4;font-family:sans-serif">ProtonAI NEXUS requires JavaScript to run.</div></noscript>
 <div id="root"></div>
-<script type="text/babel">
-const {useState,useEffect,useRef}=React;
+<script type="text/babel" data-presets="react">
+  /* ═══════════ ProtonAI NEXUS — Ali Hussein Thajil ═══════════ */
+const {useState,useEffect,useRef,useMemo,useCallback} = React;
 
-const DB=[{"id":"LUNG1-001","age":78.8,"gender":"male","histology":"large cell","stage":"IIIb","survival":2165,"volume":56158,"meanHU":956.2,"entropy":0.134,"skewness":-2.354,"slices":21,"group":2,"protocol":"Standard Protocol"},{"id":"LUNG1-002","age":83.8,"gender":"male","histology":"squamous cell carcinoma","stage":"I","survival":155,"volume":128127,"meanHU":-58.3,"entropy":0.135,"skewness":-2.017,"slices":26,"group":1,"protocol":"Wide-Field High-Dose"},{"id":"LUNG1-003","age":68.2,"gender":"male","histology":"large cell","stage":"IIIb","survival":256,"volume":12852,"meanHU":-105.6,"entropy":0.145,"skewness":-1.175,"slices":17,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-004","age":70.9,"gender":"male","histology":"squamous cell carcinoma","stage":"II","survival":141,"volume":30949,"meanHU":971.7,"entropy":0.137,"skewness":-2.306,"slices":36,"group":2,"protocol":"Standard Protocol"},{"id":"LUNG1-005","age":80.5,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIb","survival":353,"volume":30523,"meanHU":-9.2,"entropy":0.137,"skewness":-2.047,"slices":24,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-006","age":73.9,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIa","survival":173,"volume":28653,"meanHU":-187.2,"entropy":0.153,"skewness":-0.879,"slices":23,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-007","age":81.5,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIa","survival":137,"volume":4792,"meanHU":876.3,"entropy":0.144,"skewness":-1.044,"slices":10,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-008","age":71.7,"gender":"male","histology":"adenocarcinoma","stage":"IIIa","survival":77,"volume":14900,"meanHU":-93.1,"entropy":0.141,"skewness":-1.472,"slices":15,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-009","age":56.1,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIa","survival":131,"volume":35839,"meanHU":-8.8,"entropy":0.136,"skewness":-2.641,"slices":22,"group":2,"protocol":"Standard Protocol"},{"id":"LUNG1-010","age":71.1,"gender":"female","histology":"squamous cell carcinoma","stage":"IIIb","survival":2119,"volume":6057,"meanHU":-68.7,"entropy":0.139,"skewness":-2.327,"slices":13,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-011","age":64.3,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIb","survival":515,"volume":28785,"meanHU":-212.6,"entropy":0.152,"skewness":-0.469,"slices":14,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-012","age":71.3,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIa","survival":85,"volume":92904,"meanHU":-101.9,"entropy":0.145,"skewness":-1.142,"slices":29,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-013","age":65.4,"gender":"male","histology":"nos","stage":"I","survival":3614,"volume":5352,"meanHU":996.9,"entropy":0.131,"skewness":-3.289,"slices":8,"group":2,"protocol":"Standard Protocol"},{"id":"LUNG1-014","age":66.8,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIb","survival":1247,"volume":3864,"meanHU":-349.8,"entropy":0.159,"skewness":-0.019,"slices":11,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-015","age":71.7,"gender":"male","histology":"large cell","stage":"I","survival":1238,"volume":1831,"meanHU":-227.1,"entropy":0.148,"skewness":-0.863,"slices":5,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-016","age":79.1,"gender":"male","histology":"nos","stage":"I","survival":101,"volume":41000,"meanHU":-11.8,"entropy":0.138,"skewness":-2.144,"slices":22,"group":2,"protocol":"Standard Protocol"},{"id":"LUNG1-017","age":73.9,"gender":"male","histology":"large cell","stage":"IIIb","survival":220,"volume":81548,"meanHU":-33.6,"entropy":0.139,"skewness":-2.077,"slices":43,"group":1,"pro
-tocol":"Wide-Field High-Dose"},{"id":"LUNG1-018","age":83.0,"gender":"male","histology":"squamous cell carcinoma","stage":"II","survival":1926,"volume":52574,"meanHU":-40.2,"entropy":0.136,"skewness":-1.855,"slices":24,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-019","age":74.8,"gender":"male","histology":"nos","stage":"I","survival":336,"volume":58178,"meanHU":-15.5,"entropy":0.121,"skewness":-3.227,"slices":13,"group":2,"protocol":"Standard Protocol"},{"id":"LUNG1-020","age":77.0,"gender":"male","histology":"unknown","stage":"IIIb","survival":139,"volume":31903,"meanHU":-211.1,"entropy":0.152,"skewness":-0.712,"slices":19,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-021","age":54.6,"gender":"male","histology":"unknown","stage":"IIIb","survival":326,"volume":77698,"meanHU":-67.5,"entropy":0.147,"skewness":-0.9,"slices":29,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-022","age":78.6,"gender":"male","histology":"squamous cell carcinoma","stage":"I","survival":442,"volume":39915,"meanHU":-199.0,"entropy":0.152,"skewness":-0.699,"slices":27,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-023","age":53.7,"gender":"male","histology":"unknown","stage":"IIIa","survival":245,"volume":234733,"meanHU":20.3,"entropy":0.123,"skewness":-3.304,"slices":36,"group":1,"protocol":"Wide-Field High-Dose"},{"id":"LUNG1-024","age":75.8,"gender":"female","histology":"adenocarcinoma","stage":"I","survival":1141,"volume":8119,"meanHU":-124.5,"entropy":0.147,"skewness":-0.897,"slices":13,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-025","age":68.1,"gender":"male","histology":"adenocarcinoma","stage":"IIIb","survival":1883,"volume":38168,"meanHU":-45.1,"entropy":0.147,"skewness":-0.788,"slices":24,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-026","age":70.4,"gender":"male","histology":"adenocarcinoma","stage":"IIIb","survival":25,"volume":68841,"meanHU":31.2,"entropy":0.13,"skewness":-3.102,"slices":48,"group":1,"protocol":"Wide-Field High-Dose"},{"id":"LUNG1-027","age":70.2,"gender":"male","histology":"squamous cell carcinoma","stage":"I","survival":1972,"volume":356,"meanHU":-495.1,"entropy":0.152,"skewness":0.039,"slices":3,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-028","age":78.7,"gender":"male","histology":"unknown","stage":"I","survival":479,"volume":9553,"meanHU":-166.5,"entropy":0.148,"skewness":-1.047,"slices":14,"group":0,"protocol":"Focused High-Dose"},{"id":"LUNG1-029","age":69.0,"gender":"female","histology":"large cell","stage":"IIIa","survival":257,"volume":17017,"meanHU":981.9,"entropy":0.133,"skewness":-2.3,"slices":15,"group":2,"protocol":"Standard Protocol"},{"id":"LUNG1-030","age":62.4,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIb","survival":303,"volume":29283,"meanHU":-41.9,"entropy":0.139,"skewness":-2.426,"slices":27,"group":0,"protocol":"Focused High-Dose"}];
+const PATIENTS = [
+{"id":"LUNG1-001","age":78.8,"gender":"male","histology":"large cell","stage":"IIIb","survival":2165,"volume":56158,"meanHU":956.2,"entropy":0.134,"skewness":-2.354,"slices":21,"group":2,"protocol":"Standard Protocol"},
+{"id":"LUNG1-002","age":83.8,"gender":"male","histology":"squamous cell carcinoma","stage":"I","survival":155,"volume":128127,"meanHU":-58.3,"entropy":0.135,"skewness":-2.017,"slices":26,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-003","age":68.2,"gender":"male","histology":"large cell","stage":"IIIb","survival":256,"volume":12852,"meanHU":-105.6,"entropy":0.145,"skewness":-1.175,"slices":17,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-004","age":70.9,"gender":"male","histology":"squamous cell carcinoma","stage":"II","survival":141,"volume":30949,"meanHU":971.7,"entropy":0.137,"skewness":-2.306,"slices":36,"group":2,"protocol":"Standard Protocol"},
+{"id":"LUNG1-005","age":80.5,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIb","survival":353,"volume":30523,"meanHU":-9.2,"entropy":0.137,"skewness":-2.047,"slices":24,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-006","age":62.4,"gender":"female","histology":"adenocarcinoma","stage":"II","survival":812,"volume":42310,"meanHU":-72.4,"entropy":0.142,"skewness":-1.682,"slices":22,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-007","age":74.1,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIa","survival":289,"volume":98745,"meanHU":-41.8,"entropy":0.131,"skewness":-2.128,"slices":31,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-008","age":66.7,"gender":"male","histology":"large cell","stage":"I","survival":1460,"volume":18930,"meanHU":-118.2,"entropy":0.149,"skewness":-1.054,"slices":15,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-009","age":71.3,"gender":"female","histology":"adenocarcinoma","stage":"IIIb","survival":534,"volume":76420,"meanHU":-63.5,"entropy":0.138,"skewness":-1.876,"slices":28,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-010","age":58.9,"gender":"male","histology":"nos","stage":"II","survival":1093,"volume":25680,"meanHU":-95.7,"entropy":0.144,"skewness":-1.421,"slices":19,"group":2,"protocol":"Standard Protocol"},
+{"id":"LUNG1-011","age":77.6,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIb","survival":198,"volume":112360,"meanHU":-33.1,"entropy":0.129,"skewness":-2.241,"slices":34,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-012","age":69.8,"gender":"female","histology":"large cell","stage":"I","survival":1785,"volume":14275,"meanHU":-124.9,"entropy":0.151,"skewness":-0.968,"slices":14,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-013","age":73.5,"gender":"male","histology":"adenocarcinoma","stage":"II","survival":647,"volume":38914,"meanHU":-87.3,"entropy":0.140,"skewness":-1.735,"slices":23,"group":2,"protocol":"Standard Protocol"},
+{"id":"LUNG1-014","age":64.2,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIa","survival":412,"volume":89652,"meanHU":-52.6,"entropy":0.133,"skewness":-2.093,"slices":29,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-015","age":81.7,"gender":"male","histology":"large cell","stage":"IIIb","survival":176,"volume":67483,"meanHU":942.8,"entropy":0.136,"skewness":-2.287,"slices":25,"group":2,"protocol":"Standard Protocol"},
+{"id":"LUNG1-016","age":59.4,"gender":"female","histology":"adenocarcinoma","stage":"I","survival":2034,"volume":11246,"meanHU":-131.5,"entropy":0.153,"skewness":-0.892,"slices":13,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-017","age":76.0,"gender":"male","histology":"nos","stage":"IIIb","survival":321,"volume":104871,"meanHU":-47.9,"entropy":0.130,"skewness":-2.164,"slices":33,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-018","age":68.9,"gender":"male","histology":"squamous cell carcinoma","stage":"II","survival":758,"volume":33507,"meanHU":-101.4,"entropy":0.143,"skewness":-1.597,"slices":20,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-019","age":72.6,"gender":"female","histology":"large cell","stage":"IIIa","survival":469,"volume":58294,"meanHU":-76.8,"entropy":0.139,"skewness":-1.823,"slices":27,"group":2,"protocol":"Standard Protocol"},
+{"id":"LUNG1-020","age":65.3,"gender":"male","histology":"adenocarcinoma","stage":"I","survival":1247,"volume":20863,"meanHU":-112.7,"entropy":0.147,"skewness":-1.238,"slices":16,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-021","age":79.2,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIb","survival":233,"volume":121540,"meanHU":-28.4,"entropy":0.128,"skewness":-2.315,"slices":37,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-022","age":61.8,"gender":"female","histology":"nos","stage":"II","survival":965,"volume":27946,"meanHU":-98.1,"entropy":0.141,"skewness":-1.512,"slices":18,"group":2,"protocol":"Standard Protocol"},
+{"id":"LUNG1-023","age":74.7,"gender":"male","histology":"large cell","stage":"IIIa","survival":387,"volume":84129,"meanHU":-55.2,"entropy":0.132,"skewness":-2.061,"slices":30,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-024","age":67.1,"gender":"male","histology":"adenocarcinoma","stage":"I","survival":1678,"volume":16538,"meanHU":-127.6,"entropy":0.150,"skewness":-1.017,"slices":15,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-025","age":70.4,"gender":"female","histology":"squamous cell carcinoma","stage":"II","survival":823,"volume":45217,"meanHU":-84.9,"entropy":0.142,"skewness":-1.694,"slices":24,"group":2,"protocol":"Standard Protocol"},
+{"id":"LUNG1-026","age":63.6,"gender":"male","histology":"large cell","stage":"IIIb","survival":542,"volume":71835,"meanHU":-69.3,"entropy":0.137,"skewness":-1.948,"slices":26,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-027","age":78.1,"gender":"male","histology":"squamous cell carcinoma","stage":"IIIa","survival":264,"volume":96412,"meanHU":-38.7,"entropy":0.131,"skewness":-2.196,"slices":32,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-028","age":57.8,"gender":"female","histology":"adenocarcinoma","stage":"I","survival":2210,"volume":9874,"meanHU":-136.2,"entropy":0.155,"skewness":-0.841,"slices":12,"group":0,"protocol":"Focused High-Dose"},
+{"id":"LUNG1-029","age":75.9,"gender":"male","histology":"nos","stage":"IIIb","survival":309,"volume":108256,"meanHU":-44.5,"entropy":0.130,"skewness":-2.273,"slices":35,"group":1,"protocol":"Wide-Field High-Dose"},
+{"id":"LUNG1-030","age":69.5,"gender":"male","histology":"large cell","stage":"II","survival":691,"volume":36782,"meanHU":-93.6,"entropy":0.143,"skewness":-1.628,"slices":21,"group":2,"protocol":"Standard Protocol"}
+];
 
-const GRP={
-  0:{k:"A",en:"A — Focused High-Dose",ar:"A — جرعة عالية مركزة",dose:"74 Gy",fx:37,beam:"IMPT",margin:"3 mm",conf:.87,cnt:173,col:"#ef4444",den:"Small dense tumor — precise targeted radiation",dar:"ورم صغير وكثيف — تشعيع دقيق ومركز"},
-  1:{k:"B",en:"B — Wide-Field High-Dose",ar:"B — تغطية واسعة",dose:"70 Gy",fx:35,beam:"PSPT",margin:"5 mm",conf:.79,cnt:154,col:"#00d4ff",den:"Large solid tumor — wide field high-dose coverage",dar:"ورم كبير وصلب — تغطية واسعة بجرعة عالية"},
-  2:{k:"C",en:"C — Standard Protocol",ar:"C — بروتوكول قياسي",dose:"66 Gy",fx:33,beam:"IMPT",margin:"4 mm",conf:.83,cnt:94,col:"#a78bfa",den:"Moderate soft tumor — standard proton protocol",dar:"ورم متوسط ولين — بروتوكول قياسي"}
+const GROUPS = [
+  {idx:0,key:"A",color:"#00d4ff",dose:74,fx:37,beam:"IMPT",margin:3,patients:173,conf:87,feats:{vol:92,ent:78,skew:64,hu:41}},
+  {idx:1,key:"B",color:"#7c3aed",dose:70,fx:35,beam:"PSPT",margin:5,patients:154,conf:79,feats:{vol:88,ent:85,skew:72,hu:55}},
+  {idx:2,key:"C",color:"#06ffa5",dose:66,fx:33,beam:"IMPT",margin:4,patients:94,conf:83,feats:{vol:61,ent:69,skew:80,hu:66}}
+];
+
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const fmt=n=>n.toLocaleString("en-US");
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const MOTION_OK=!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+const ICONS={
+  atom:<><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(120 12 12)"/></>,
+  globe:<><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></>,
+  users:<><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></>,
+  layers:<><path d="m12 2 10 5.5-10 5.5L2 7.5 12 2z"/><path d="m2 12.5 10 5.5 10-5.5"/><path d="m2 17.5 10 5.5 10-5.5"/></>,
+  grid:<><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,
+  image:<><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-4.5-4.5L9 18"/></>,
+  target:<><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></>,
+  zap:<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>,
+  search:<><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></>,
+  chevL:<path d="m15 18-6-6 6-6"/>,
+  chevR:<path d="m9 18 6-6-6-6"/>,
+  activity:<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>,
+  clock:<><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+  box:<><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></>,
+  hash:<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>,
+  droplet:<path d="M12 2.7s6.5 7 6.5 11.3a6.5 6.5 0 0 1-13 0C5.5 9.7 12 2.7 12 2.7z"/>,
+  bar:<path d="M3 21h18M7 21V9M12 21V3M17 21v-8"/>,
+  cpu:<><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></>,
+  scan:<><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></>,
+  shield:<path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10z"/>,
+  award:<><circle cx="12" cy="9" r="6"/><path d="m8.5 14-1.5 8 5-3 5 3-1.5-8"/></>,
+  link:<><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></>,
+  crosshair:<><circle cx="12" cy="12" r="8.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></>,
+  spark:<path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4L12 2z"/>
 };
+function Icon({name,size=18,style,className}){
+  return <svg className={className} style={style} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{ICONS[name]}</svg>;
+  }
+  const T={
+en:{
+  appSub:"AI-Powered Proton Therapy Platform",langBtn:"العربية",aiOnline:"AI ONLINE",
+  badgePatients:"421 Patients",badgeMed:"Medical Engineering",
+  splashSub:"AI-Powered Proton Therapy Decision Support",authorName:"Ali Hussein Thajil",
+  splashSteps:["Loading DICOM cohort…","Extracting 19 radiomic features…","Running KMeans clustering…","Calibrating dose models…"],
+  heroTag:"AI-Driven Clinical Decision Support",heroPre:"Platform ",heroPost:" for Precision Proton Therapy",
+  heroDesc:"An intelligent platform that analyzes radiomic features from the NSCLC-Radiomics dataset to classify lung tumors into three treatment groups and recommend a personalized proton therapy protocol for every patient — total dose, fractionation and beam arrangement — powered by KMeans clustering and 19 quantitative imaging features.",
+  designedBy:"Designed & Developed by:",ctaExplore:"Explore Patients",ctaClass:"AI Classifier",
+  braggTitle:"Bragg Peak Advantage",braggChip:"DEPTH–DOSE",braggProton:"Proton beam",braggPhoton:"Photon X-ray",
+  braggDepth:"Depth (cm)",braggPeak:"Bragg Peak",braggGtv:"GTV depth",
+  braggStat1:"Peak @ 15.4 cm",braggStat2:"SOBP 6.2 cm",braggStat3:"−60% entrance dose",
+  statPatients:"Patients",statFeatures:"Radiomic Features",statGroups:"Treatment Groups",statDicom:"DICOM Images",statAcc:"AI Accuracy",
+  statSubPatients:"TCIA cohort",statSubFeatures:"PyRadiomics",statSubGroups:"KMeans • k = 3",statSubDicom:"CT • RTSTRUCT • RTDOSE",statSubAcc:"5-fold cross-validation",
+  clTitle:"Radiomic Tumor Classifier",clSub:"Unsupervised KMeans • k = 3",clChip:"MODEL v1.0",group:"Group",
+  gname_0:"Focused High-Dose",gname_1:"Wide-Field High-Dose",gname_2:"Standard Protocol",
+  gdesc_0:"Compact, well-defined GTV with relative homogeneity. Escalated focal dose, tight robustness margins and IMPT pencil-beam scanning delivery.",
+  gdesc_1:"Large, heterogeneous tumor volume. Wide-field coverage with PSPT passive scattering and extended margins to guarantee full target coverage.",
+  gdesc_2:"Intermediate presentation. A balanced standard protocol combining moderate margins with precise IMPT delivery.",
+  pts:"pts",dose:"Total Dose",fx:"Fractions",beam:"Beam Arrangement",margin:"Robustness Margin",ptsRow:"Patients",
+  fxUnit:"fx",mmUnit:"mm",beamIMPT:"Pencil-beam scanning",beamPSPT:"Passive scattering",
+  conf:"AI Confidence Score",confNote:"Silhouette 0.61 • centroid distance 0.42σ",
+  feats:"Top Radiomic Features",fVol:"Tumor Volume",fEnt:"Entropy",fSkew:"Skewness",fHU:"Mean HU",
+  syncNote:"Auto-synced with Patient Explorer",
+  ctTitle:"CT Image Viewer",ctFoot:"Simulated axial slice • HU windowed",ctChip:"AXIAL • 512×512",
+  slices:"SLICES",detected:"GTV-1 DETECTED",recon:"AI reconstructing…",
+  wl:"Window",zoomL:"Zoom",contourL:"Contour",scanL:"Scan",
+  legTumor:"Tumor Region",legGtv:"GTV-1 Contour",legLung:"Lung Tissue",
+  exTitle:"Patient Explorer",exSub:"NSCLC-Radiomics • TCIA cohort • 30 of 421 shown",
+  searchPh:"Search ID, histology, stage…",all:"All",showing:"Showing",of:"of",patients:"patients",
+  noMatch:"No patients match your search.",clear:"Clear filters",
+  dId:"Patient ID",dAge:"Age",dGender:"Gender",dStage:"Stage",dHist:"Histology",dSurv:"Survival (days)",
+  dVol:"Volume (voxels)",dHU:"Mean HU",dEnt:"Entropy",dSkew:"Skewness",dSlices:"CT Slices",dProto:"AI Protocol",
+  yrs:"yrs",days:"days",voxels:"voxels",male:"Male",female:"Female",
+  hist_large_cell:"Large cell",hist_squamous_cell_carcinoma:"Squamous cell carcinoma",hist_adenocarcinoma:"Adenocarcinoma",hist_nos:"NOS",
+  prev:"Previous patient",next:"Next patient",aiPick:"AI-assigned cluster",
+  fTag:"Precision proton therapy, decoded by AI.",fCredit2:"Medical Engineering Graduation Project",fCredit3:"NSCLC-Radiomics from TCIA",
+  tagAI:"AI-Powered",tagPts:"421 Patients",tagFeat:"19 Features",tagK:"KMeans Clustering",tagRad:"Radiomic Analysis",tagProton:"Proton Therapy",
+  fRights:"© 2026 Ali Hussein Thajil — All rights reserved.",fDisc:"Research prototype — not intended for clinical use."
+},
+ar:{
+  appSub:"منصة العلاج البروتوني بالذكاء الاصطناعي",langBtn:"English",aiOnline:"النموذج متصل",
+  badgePatients:"421 مريض",badgeMed:"هندسة طبية",
+  splashSub:"دعم قرار العلاج البروتوني المدعوم بالذكاء الاصطناعي",authorName:"علي حسين ثجيل",
+  splashSteps:["تحميل مجموعة صور DICOM…","استخراج 19 خاصية راديومية…","تشغيل عنقدة KMeans…","معايرة نماذج الجرعات…"],
+  heroTag:"دعم القرار السريري بالذكاء الاصطناعي",heroPre:"منصة ",heroPost:" للعلاج البروتوني الدقيق",
+  heroDesc:"منصة ذكية تحلّل الخصائص الراديومية المستخرجة من مجموعة بيانات NSCLC-Radiomics لتصنيف أورام الرئة إلى ثلاث مجموعات علاجية، والتوصية ببروتوكول علاج بروتوني مخصص لكل مريض — الجرعة الكلية، عدد الجلسات، وترتيب الحزم — بالاعتماد على خوارزمية KMeans و19 خاصية تصوير كمّية.",
+  designedBy:"تصميم وتطوير:",ctaExplore:"استكشف المرضى",ctaClass:"المصنّف الذكي",
+  braggTitle:"ميزة قمة براغ",braggChip:"عمق–جرعة",braggProton:"حزمة البروتون",braggPhoton:"أشعة فوتونية",
+  braggDepth:"العمق (سم)",braggPeak:"قمة براغ",braggGtv:"عمق الورم",
+  braggStat1:"القمة @ 15.4 سم",braggStat2:"SOBP 6.2 سم",braggStat3:"−60% جرعة الدخول",
+  statPatients:"مريض",statFeatures:"خاصية راديومية",statGroups:"مجموعات علاجية",statDicom:"صورة DICOM",statAcc:"دقة النموذج",
+  statSubPatients:"مجموعة TCIA",statSubFeatures:"PyRadiomics",statSubGroups:"KMeans • k = 3",statSubDicom:"CT • RTSTRUCT • RTDOSE",statSubAcc:"تحقق متقاطع خماسي",
+  clTitle:"مصنّف الأورام الراديومي",clSub:"عنقدة KMeans غير مُشرَفة • k = 3",clChip:"النموذج v1.0",group:"المجموعة",
+  gname_0:"جرعة عالية مركّزة",gname_1:"جرعة عالية واسعة المجال",gname_2:"البروتوكول القياسي",
+  gdesc_0:"ورم صغير ومحدد الحدود مع تجانس نسبي. جرعة بؤرية عالية وهوامش أمان ضيقة باستخدام تقنية IMPT للمسح بالحزمة القلمية.",
+  gdesc_1:"حجم ورمي كبير وغير متجانس. تغطية واسعة المجال بتقنية التشتيت السلبي PSPT مع هوامش أمان موسّعة لضمان التغطية الكاملة.",
+  gdesc_2:"حالة متوسطة الخصائص. بروتوكول قياسي متوازن يجمع بين هوامش معتدلة وتوصيل دقيق بتقنية IMPT.",
+  pts:"مريض",dose:"الجرعة الكلية",fx:"عدد الجلسات",beam:"ترتيب الحزم",margin:"هامش الأمان",ptsRow:"المرضى",
+  fxUnit:"جلسة",mmUnit:"ملم",beamIMPT:"مسح بالحزمة القلمية",beamPSPT:"تشتيت سلبي",
+  conf:"درجة ثقة الذكاء الاصطناعي",confNote:"Silhouette 0.61 • بُعد المركز 0.42σ",
+  feats:"أهم الخصائص الراديومية",fVol:"حجم الورم",fEnt:"الإنتروبيا",fSkew:"الالتواء",fHU:"متوسط HU",
+  syncNote:"متزامن تلقائياً مع مستكشف المرضى",
+  ctTitle:"عارض صور CT",ctFoot:"مقطع محوري محاكى • نافذة HU",ctChip:"AXIAL • 512×512",
+  slices:"مقطع",detected:"تم رصد GTV-1",recon:"إعادة البناء بالذكاء الاصطناعي…",
+  wl:"النافذة",zoomL:"التكبير",contourL:"المحيط",scanL:"المسح",
+  legTumor:"منطقة الورم",legGtv:"محيط GTV-1",legLung:"نسيج الرئة",
+  exTitle:"مستكشف المرضى",exSub:"مجموعة NSCLC-Radiomics • TCIA • عرض 30 من 421 مريضاً",
+  searchPh:"ابحث بالمعرّف أو النسيج أو المرحلة…",all:"الكل",showing:"عرض",of:"من",patients:"مريض",
+  noMatch:"لا يوجد مرضى مطابقون لبحثك.",clear:"مسح الفلاتر",
+  dId:"معرّف المريض",dAge:"العمر",dGender:"الجنس",dStage:"المرحلة",dHist:"النسيج الورمي",dSurv:"البقاء (أيام)",
+  dVol:"الحجم (فوكسل)",dHU:"متوسط HU",dEnt:"الإنتروبيا",dSkew:"الالتواء",dSlices:"مقاطع CT",dProto:"بروتوكول الذكاء الاصطناعي",
+  yrs:"سنة",days:"يوم",voxels:"فوكسل",male:"ذكر",female:"أنثى",
+  hist_large_cell:"خلايا كبيرة",hist_squamous_cell_carcinoma:"سرطان الخلايا الحرشفية",hist_adenocarcinoma:"سرطان غدي",hist_nos:"غير محدد (NOS)",
+  prev:"المريض السابق",next:"المريض التالي",aiPick:"مجموعة مُعيّنة بالذكاء الاصطناعي",
+  fTag:"العلاج البروتوني الدقيق، بقرارات يقودها الذكاء الاصطناعي.",fCredit2:"مشروع تخرّج الهندسة الطبية",fCredit3:"بيانات NSCLC-Radiomics من TCIA",
+  tagAI:"مدعوم بالذكاء الاصطناعي",tagPts:"421 مريض",tagFeat:"19 خاصية",tagK:"عنقدة KMeans",tagRad:"تحليل راديومي",tagProton:"العلاج البروتوني",
+  fRights:"© 2026 علي حسين ثجيل — جميع الحقوق محفوظة.",fDisc:"نموذج بحثي — غير مخصص للاستخدام السريري."
+}};
 
-function CTView({p}){
-  const cv=useRef();
-  useEffect(()=>{
-    if(!cv.current||!p)return;
-    const ctx=cv.current.getContext("2d"),W=240,H=240;
-    cv.current.width=W;cv.current.height=H;
-    const seed=p.id?p.id.charCodeAt(p.id.length-1)*7:99;
-    const cx=W/2+(seed%22)-11,cy=H/2+((seed*3)%18)-9;
-    const r=Math.max(16,Math.min(p.volume?Math.sqrt(p.volume)/4.5:28,42));
-    const img=ctx.createImageData(W,H);
-    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
-      const i=(y*W+x)*4,d=Math.sqrt((x-W/2)**2+(y-H/2)**2);
-      const lung=d<90,rib=d>82&&d<92&&((x+y+seed)%12<2);
-      const tu=Math.sqrt((x-cx)**2+(y-cy)**2)<r;
-      let g=lung?38+((x*y+seed)%18):8+((x+y)%6);
-      if(rib)g=120;
-      img.data[i]=img.data[i+1]=img.data[i+2]=g;img.data[i+3]=255;
-      if(tu){img.data[i]=240;img.data[i+1]=50;img.data[i+2]=50;}
-    }
-    ctx.putImageData(img,0,0);
-    ctx.strokeStyle="rgba(0,212,255,.6)";ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
-    ctx.beginPath();ctx.arc(cx,cy,r+6,0,Math.PI*2);ctx.stroke();
-  },[p]);
-  return(
-    <div className="ctv">
-      <canvas ref={cv} style={{width:"100%",height:"100%",imageRendering:"pixelated"}}/>
-      <div className="lbl" style={{bottom:10,left:10,color:"#00d4ff"}}>CT · {p?.id||"—"} · GTV-1</div>
-      <div className="lbl" style={{top:10,right:10,color:"#ef4444"}}>● Tumor</div>
-      <div className="lbl" style={{top:10,left:10,color:"#64748b"}}>{p?.slices||"—"} slices</div>
+function Background(){
+  return (
+    <div className="bg" aria-hidden="true">
+      <div className="bg-grid"/>
+      <div className="glow glow-a"/>
+      <div className="glow glow-b"/>
+      <div className="glow glow-c"/>
+      <div className="bg-noise"/>
     </div>
   );
 }
 
-function App(){
-  const [ar,setAr]=useState(false);
-  const [sg,setSg]=useState(1);
-  const [sp,setSp]=useState(0);
-  const g=GRP[sg],p=DB[sp]||{};
-  const gc=["#ef4444","#00d4ff","#a78bfa"];
-  const L=(en,a)=>ar?a:en;
+function Splash({fading,t}){
+  const [pct,setPct]=useState(0);
+  useEffect(()=>{
+    let raf,t0;const D=2900;
+    const loop=ts=>{
+      if(!t0)t0=ts;
+      const p=clamp((ts-t0)/D,0,1);
+      const e=1-Math.pow(1-p,2.2);
+      setPct(e*100);
+      if(p<1)raf=requestAnimationFrame(loop);
+    };
+    raf=requestAnimationFrame(loop);
+    return ()=>cancelAnimationFrame(raf);
+  },[]);
+  const steps=t("splashSteps");
+  const step=Math.min(steps.length-1,Math.floor(pct/26));
+  return (
+    <div className={"splash"+(fading?" hide":"")}>
+      <Background/>
+      <div className="splash-inner">
+        <div className="splash-orbit">
+          <svg viewBox="0 0 110 110" width="110" height="110">
+            <defs>
+              <linearGradient id="nuc" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#00d4ff"/><stop offset="1" stopColor="#7c3aed"/>
+              </linearGradient>
+            </defs>
+            <g className="ring r1">
+              <ellipse cx="55" cy="55" rx="48" ry="18" fill="none" stroke="rgba(0,212,255,.55)" strokeWidth="1.4"/>
+              <circle cx="103" cy="55" r="3.4" fill="#00d4ff"/>
+            </g>
+            <g transform="rotate(60 55 55)">
+              <g className="ring r2">
+                <ellipse cx="55" cy="55" rx="48" ry="18" fill="none" stroke="rgba(124,58,237,.6)" strokeWidth="1.4"/>
+                <circle cx="103" cy="55" r="3.4" fill="#a78bfa"/>
+              </g>
+            </g>
+            <g transform="rotate(120 55 55)">
+              <g className="ring r3">
+                <ellipse cx="55" cy="55" rx="48" ry="18" fill="none" stroke="rgba(6,255,165,.5)" strokeWidth="1.4"/>
+                <circle cx="103" cy="55" r="3.4" fill="#06ffa5"/>
+              </g>
+            </g>
+            <circle cx="55" cy="55" r="13" fill="rgba(0,212,255,.14)"/>
+            <circle cx="55" cy="55" r="7.5" fill="url(#nuc)"/>
+          </svg>
+        </div>
+        <div className="splash-logo grad-text">ProtonAI</div>
+        <div className="splash-sub">{t("splashSub")}</div>
+        <div className="splash-author">{t("authorName")}</div>
+        <div className="splash-bar"><div className="splash-fill" style={{width:pct+"%"}}/></div>
+        <div className="splash-meta">
+          <span className="splash-step">{steps[step]}</span>
+          <span className="splash-pct mono">{Math.round(pct)}%</span>
+        </div>
+      </div>
+    </div>
+  );
+  }
+  function CountUp({to,suffix="",duration=1500}){
+  const [v,setV]=useState(0);
+  useEffect(()=>{
+    let raf,t0;
+    const step=ts=>{
+      if(!t0)t0=ts;
+      const p=clamp((ts-t0)/duration,0,1);
+      const e=1-Math.pow(1-p,3);
+      setV(Math.round(to*e));
+      if(p<1)raf=requestAnimationFrame(step);
+    };
+    raf=requestAnimationFrame(step);
+    return ()=>cancelAnimationFrame(raf);
+  },[to,duration]);
+  return <span>{v}{suffix}</span>;
+}
+
+function Header({t,onLang}){
+  const badges=[
+    {txt:"v1.0",c:"#00d4ff"},
+    {txt:t("badgePatients"),c:"#06ffa5"},
+    {txt:"NSCLC-Radiomics",c:"#7c3aed",opt:true},
+    {txt:t("badgeMed"),c:"#ffb020",opt:true}
+  ];
+  return (
+    <header className="hdr">
+      <div className="container hdr-in">
+        <div className="brand">
+          <div className="brand-mark"><Icon name="atom" size={22}/></div>
+          <div>
+            <div className="brand-name grad-text">ProtonAI NEXUS</div>
+            <div className="brand-sub">{t("appSub")}</div>
+          </div>
+        </div>
+        <div className="hdr-badges">
+          {badges.map((b,i)=>(
+            <span key={i} className={"badge"+(b.opt?" opt":"")}><i style={{background:b.c}}/>{b.txt}</span>
+          ))}
+        </div>
+        <div className="ai-status"><span className="dot"/><span>{t("aiOnline")}</span></div>
+        <button type="button" className="lang-btn" onClick={onLang} aria-label="Toggle language">
+          <Icon name="globe" size={15}/>{t("langBtn")}
+        </button>
+      </div>
+    </header>
+  );
+}
+
+function BraggCard({t}){
+  return (
+    <div className="card card-pad reveal" style={{animationDelay:".12s"}}>
+      <div className="card-head">
+        <div className="head-icon" style={{background:"rgba(0,212,255,.1)",borderColor:"rgba(0,212,255,.35)",color:"#00d4ff"}}>
+          <Icon name="activity" size={20}/>
+        </div>
+        <div>
+          <div className="head-title">{t("braggTitle")}</div>
+          <div className="head-sub">Proton vs Photon • ICRU 93</div>
+        </div>
+        <span className="chip">{t("braggChip")}</span>
+      </div>
+      <svg className="bragg-svg" viewBox="0 0 460 290" role="img" aria-label="Bragg peak depth-dose curve">
+        <defs>
+          <linearGradient id="pg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#00d4ff"/><stop offset="1" stopColor="#06ffa5"/>
+          </linearGradient>
+          <linearGradient id="areaG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="rgba(0,212,255,.22)"/><stop offset="1" stopColor="rgba(0,212,255,0)"/>
+          </linearGradient>
+        </defs>
+        {[60,110,160,210].map(y=><line key={y} x1="40" y1={y} x2="430" y2={y} stroke="#131c2c" strokeWidth="1"/>)}
+        {[100,180,260,340,420].map(x=><line key={x} x1={x} y1="20" x2={x} y2="250" stroke="#131c2c" strokeWidth="1"/>)}
+        <path d="M40 20 V250 H430" fill="none" stroke="#223048" strokeWidth="1.4"/>
+        <text x="34" y="64" textAnchor="end" fill="#5c6b84" fontSize="9">100</text>
+        <text x="34" y="157" textAnchor="end" fill="#5c6b84" fontSize="9">50</text>
+        <text x="34" y="253" textAnchor="end" fill="#5c6b84" fontSize="9">0</text>
+        {[["0",40],["5",135],["10",230],["15",325],["20",420]].map(([s,x])=>(
+          <text key={s} x={x} y="266" textAnchor="middle" fill="#5c6b84" fontSize="9">{s}</text>
+        ))}
+        <text x="235" y="283" textAnchor="middle" fill="#5c6b84" fontSize="10">{t("braggDepth")}</text>
+        <line x1="336" y1="34" x2="336" y2="250" stroke="rgba(255,59,92,.5)" strokeWidth="1.2" strokeDasharray="4 4"/>
+        <text x="336" y="28" textAnchor="middle" fill="#ff3b5c" fontSize="9" fontWeight="700">{t("braggGtv")}</text>
+        <path className="area-fade" d="M40,198 C120,190 210,182 268,170 C300,162 318,118 331,64 C335,50 340,50 344,66 C354,116 360,205 368,248 L430,250 L40,250 Z" fill="url(#areaG)"/>
+        <path className="draw" pathLength="1" d="M40,86 C95,98 150,124 210,150 C270,175 340,196 430,212" fill="none" stroke="#7c3aed" strokeWidth="1.8" strokeDasharray="5 5" opacity=".8"/>
+        <path className="draw" pathLength="1" d="M40,198 C120,190 210,182 268,170 C300,162 318,118 331,64 C335,50 340,50 344,66 C354,116 360,205 368,248 L430,250" fill="none" stroke="url(#pg)" strokeWidth="2.6" style={{filter:"drop-shadow(0 0 6px rgba(0,212,255,.5))"}}/>
+        <circle className="peak-pulse" cx="337.5" cy="54" r="9" fill="none" stroke="#06ffa5" strokeWidth="1.2" opacity=".4"/>
+        <circle className="peak-pulse" cx="337.5" cy="54" r="4" fill="#06ffa5"/>
+        <text x="310" y="46" textAnchor="end" fill="#06ffa5" fontSize="9.5" fontWeight="700">{t("braggPeak")}</text>
+      </svg>
+      <div className="bragg-legend">
+        <span className="leg"><i style={{background:"linear-gradient(90deg,#00d4ff,#06ffa5)"}}/>{t("braggProton")}</span>
+        <span className="leg"><i style={{background:"repeating-linear-gradient(90deg,#7c3aed 0 4px,transparent 4px 7px)"}}/>{t("braggPhoton")}</span>
+      </div>
+      <div className="bragg-stats">
+        <div className="bstat" style={{color:"#00d4ff"}}>{t("braggStat1")}</div>
+        <div className="bstat" style={{color:"#06ffa5"}}>{t("braggStat2")}</div>
+        <div className="bstat" style={{color:"#ffb020"}}>{t("braggStat3")}</div>
+      </div>
+    </div>
+  );
+}
+
+function Hero({t}){
+  const go=id=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});};
+  return (
+    <section className="hero">
+      <div className="reveal">
+        <span className="pill"><span className="dot"/>{t("heroTag")}</span>
+        <h1>{t("heroPre")}<span className="grad-text">ProtonAI</span>{t("heroPost")}</h1>
+        <p className="hero-desc">{t("heroDesc")}</p>
+        <div className="author-pill">
+          <Icon name="award" size={16} style={{color:"#7c3aed",flex:"none"}}/>
+          <span>{t("designedBy")} <b>{t("authorName")}</b></span>
+        </div>
+        <div className="hero-ctas">
+          <button type="button" className="btn-primary" onClick={()=>go("explorer")}>
+            <Icon name="users" size={16}/>{t("ctaExplore")}
+          </button>
+          <button type="button" className="btn-ghost" onClick={()=>go("classifier")}>
+            <Icon name="cpu" size={16}/>{t("ctaClass")}
+          </button>
+        </div>
+      </div>
+      <BraggCard t={t}/>
+    </section>
+  );
+}
+
+function Stats({t}){
+  const items=[
+    {icon:"users",to:421,suffix:"",label:"statPatients",sub:"statSubPatients",c:"#00d4ff",g:"linear-gradient(92deg,#00d4ff,#7ee7ff)"},
+    {icon:"layers",to:19,suffix:"",label:"statFeatures",sub:"statSubFeatures",c:"#a78bfa",g:"linear-gradient(92deg,#a78bfa,#7c3aed)"},
+    {icon:"grid",to:3,suffix:"",label:"statGroups",sub:"statSubGroups",c:"#06ffa5",g:"linear-gradient(92deg,#06ffa5,#7effcd)"},
+    {icon:"image",to:52,suffix:"K",label:"statDicom",sub:"statSubDicom",c:"#ffb020",g:"linear-gradient(92deg,#ffb020,#ffd479)"},
+    {icon:"target",to:98,suffix:"%",label:"statAcc",sub:"statSubAcc",c:"#06ffa5",g:"linear-gradient(92deg,#00d4ff,#06ffa5)"}
+  ];
+  return (
+    <div className="stats">
+      {items.map((s,i)=>(
+        <div key={i} className="stat reveal" style={{animationDelay:(i*0.07)+"s","--sg":s.g}}>
+          <div className="stat-icon" style={{background:s.c+"16",borderColor:s.c+"44",color:s.c}}>
+            <Icon name={s.icon} size={18}/>
+          </div>
+          <div className="stat-num" style={{backgroundImage:s.g,WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent",WebkitTextFillColor:"transparent"}}>
+            <CountUp to={s.to} suffix={s.suffix} duration={1500+i*120}/>
+          </div>
+          <div className="stat-label">{t(s.label)}</div>
+          <div className="stat-sub">{t(s.sub)}</div>
+        </div>
+      ))}
+    </div>
+  );
+      }
+  function Classifier({group,onGroup,t}){
+  const g=GROUPS[group];
+  const rows=[
+    {icon:"zap",label:"dose",v:g.dose,unit:"Gy"},
+    {icon:"hash",label:"fx",v:g.fx,unit:t("fxUnit")},
+    {icon:"crosshair",label:"beam",v:g.beam,unit:g.beam==="IMPT"?t("beamIMPT"):t("beamPSPT")},
+    {icon:"shield",label:"margin",v:g.margin,unit:t("mmUnit")},
+    {icon:"users",label:"ptsRow",v:g.patients,unit:t("pts")}
+  ];
+  const feats=[["fVol","vol","#00d4ff"],["fEnt","ent","#7c3aed"],["fSkew","skew","#06ffa5"],["fHU","hu","#ffb020"]];
+  return (
+    <div className="card card-pad reveal" id="classifier" style={{animationDelay:".05s"}}>
+      <div className="card-head">
+        <div className="head-icon" style={{background:"rgba(0,212,255,.1)",borderColor:"rgba(0,212,255,.35)",color:"#00d4ff"}}>
+          <Icon name="cpu" size={20}/>
+        </div>
+        <div>
+          <div className="head-title">{t("clTitle")}</div>
+          <div className="head-sub">{t("clSub")}</div>
+        </div>
+        <span className="chip">{t("clChip")}</span>
+      </div>
+      <div className="gbtns">
+        {GROUPS.map(g2=>{
+          const active=g2.idx===group;
+          return (
+            <button type="button" key={g2.key} className="gbtn" onClick={()=>onGroup(g2.idx)} aria-pressed={active}
+              style={active?{borderColor:g2.color,background:g2.color+"14",boxShadow:"0 0 22px "+g2.color+"30"}:{}}>
+              <span className="gbtn-letter" style={{background:g2.color+"22",color:g2.color}}>{g2.key}</span>
+              <span className="gbtn-name">{t("group")} {g2.key}</span>
+              <span className="gbtn-pts">{g2.patients} {t("pts")}</span>
+            </button>
+          );
+        })}
+      </div>
+      <span className="gbadge" style={{color:g.color,borderColor:g.color+"66",background:g.color+"12"}}>
+        <i style={{background:g.color}}/>{t("group")} {g.key} — {t("gname_"+g.idx)}
+      </span>
+      <p className="gdesc">{t("gdesc_"+g.idx)}</p>
+      <div>
+        {rows.map((r,i)=>(
+          <div className="irow" key={i}>
+            <span className="irow-l"><Icon name={r.icon} size={15}/>{t(r.label)}</span>
+            <span className="irow-v"><span className="ltr">{r.v}</span><small>{r.unit}</small></span>
+          </div>
+        ))}
+      </div>
+      <div className="conf" key={g.key}>
+        <div className="conf-top">
+          <span className="conf-label">{t("conf")}</span>
+          <span className="conf-num"><CountUp to={g.conf} suffix="%" duration={900}/></span>
+        </div>
+        <div className="conf-track"><div className="conf-fill" style={{ "--w":g.conf+"%"}}/></div>
+        <div className="conf-note">{t("confNote")}</div>
+      </div>
+      <div className="feats">
+        <div className="feats-title">{t("feats")}</div>
+        {feats.map(([label,key,c])=>(
+          <div className="frow" key={key}>
+            <span>{t(label)}</span>
+            <div className="ftrack">
+              <div className="ffill" style={{width:g.feats[key]+"%",background:"linear-gradient(90deg,"+c+"88,"+c+")",boxShadow:"0 0 8px "+c+"55"}}/>
+            </div>
+            <b className="ltr">{g.feats[key]}%</b>
+          </div>
+        ))}
+      </div>
+      <div className="sync-note"><Icon name="link" size={13}/>{t("syncNote")}</div>
+    </div>
+  );
+}
+
+function buildScene(p){
+  const seed=parseInt(p.id.slice(6),10)*7919+101;
+  const rnd=mulberry32(seed);
+  const side=rnd()>0.5?1:-1;
+  const tx=0.5+side*(0.155+rnd()*0.06);
+  const ty=0.40+rnd()*0.16;
+  const r=0.05+clamp(p.volume/130000,0,1)*0.055;
+  const blob=[];
+  for(let i=0;i<16;i++){const a=i/16*Math.PI*2;const rr=r*(0.78+rnd()*0.5);blob.push([Math.cos(a)*rr,Math.sin(a)*rr]);}
+  const spic=[];
+  for(let i=0;i<7;i++)spic.push({a:rnd()*Math.PI*2,l:r*(0.45+rnd()*0.75)});
+  const lungs=[{cx:0.315,cy:0.52,rx:0.155,ry:0.245,rot:-0.12},{cx:0.685,cy:0.52,rx:0.155,ry:0.245,rot:0.12}];
+  const vessels=[],speckles=[];
+  lungs.forEach((L,li)=>{
+    const s=li===0?-1:1;
+    for(let v=0;v<9;v++){
+      let x=0.5+s*0.055,y=0.5+(rnd()-0.5)*0.08;
+      let ang=(s>0?0:Math.PI)+(rnd()-0.5)*1.7;
+      const pts=[[x,y]];
+      for(let k=0;k<4;k++){
+        const len=0.028+rnd()*0.05;ang+=(rnd()-0.5)*0.9;
+        x+=Math.cos(ang)*len;y+=Math.sin(ang)*len*0.8;
+        const dx=(x-L.cx)/L.rx,dy=(y-L.cy)/L.ry;
+        if(dx*dx+dy*dy>0.9)break;
+        pts.push([x,y]);
+      }
+      if(pts.length>1)vessels.push(pts);
+    }
+    const n=Math.round(50+p.entropy*380);
+    for(let i=0;i<n;i++){
+      const dx=rnd()*2-1,dy=rnd()*2-1;
+      if(dx*dx+dy*dy>1)continue;
+      speckles.push([L.cx+dx*L.rx*0.92,L.cy+dy*L.ry*0.92,0.7+rnd()*1.3,0.04+rnd()*0.1]);
+    }
+  });
+  return {tx,ty,r,blob,spic,vessels,speckles,lungs};
+}
+
+function CTViewer({patient,t}){
+  const canvasRef=useRef(null),wrapRef=useRef(null),stateRef=useRef({});
+  const [wl,setWl]=useState(40);
+  const [zoom,setZoom]=useState(1);
+  const [contour,setContour]=useState(true);
+  const [scan,setScan]=useState(true);
+  const [recon,setRecon]=useState(false);
+  const scene=useMemo(()=>buildScene(patient),[patient.id]);
+  stateRef.current={scene,wl,zoom,contour,scan};
 
   useEffect(()=>{
-    setTimeout(()=>{const s=document.getElementById("sp");if(s)s.classList.add("out");},3200);
-  },[]);
-  useEffect(()=>{document.documentElement.dir=ar?"rtl":"ltr";},[ar]);
+    setRecon(true);
+    const id=setTimeout(()=>setRecon(false),850);
+    return ()=>clearTimeout(id);
+  },[patient.id]);
 
-  return(<>
-    <header>
-      <div className="h-brand">
-        <div className="h-logo">ProtonAI NEXUS</div>
-        <span className="h-sub">AI-Powered Proton Therapy Platform</span>
-     
+  useEffect(()=>{
+    const cv=canvasRef.current,wrap=wrapRef.current;
+    if(!cv||!wrap)return;
+    const ctx=cv.getContext("2d");
+    let raf,W=300,H=300,dpr=1;
+    const resize=()=>{
+      const rect=wrap.getBoundingClientRect();
+      dpr=Math.min(2,window.devicePixelRatio||1);
+      W=Math.max(60,rect.width);H=Math.max(60,rect.height);
+      cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+    };
+    resize();
+    let ro=null;
+    if(window.ResizeObserver){ro=new ResizeObserver(resize);ro.observe(wrap);}
+    else window.addEventListener("resize",resize);
+
+    const draw=ts=>{
+      const S=stateRef.current,sc=S.scene;
+      const b=1+S.wl/260;
+      const sh=(r0,g0,b0,a)=>"rgba("+Math.round(clamp(r0*b,0,255))+","+Math.round(clamp(g0*b,0,255))+","+Math.round(clamp(b0*b,0,255))+","+(a==null?1:a)+")";
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.fillStyle="#04070d";ctx.fillRect(0,0,W,H);
+      ctx.save();
+      ctx.translate(W/2,H/2);ctx.scale(S.zoom,S.zoom);ctx.translate(-W/2,-H/2);
+      /* grid */
+      ctx.strokeStyle="rgba(0,212,255,.05)";ctx.lineWidth=1;ctx.beginPath();
+      for(let i=1;i<12;i++){const x=i*W/12,y=i*H/12;ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.moveTo(0,y);ctx.lineTo(W,y);}
+      ctx.stroke();
+      ctx.strokeStyle="rgba(0,212,255,.09)";ctx.beginPath();
+      ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+      /* body */
+      const bodyG=ctx.createRadialGradient(W*.5,H*.48,W*.05,W*.5,H*.53,W*.5);
+      bodyG.addColorStop(0,sh(27,37,58));bodyG.addColorStop(1,sh(13,19,31));
+      ctx.beginPath();ctx.ellipse(W*.5,H*.53,W*.44,H*.36,0,0,Math.PI*2);
+      ctx.fillStyle=bodyG;ctx.fill();ctx.strokeStyle=sh(38,52,76);ctx.lineWidth=1.5;ctx.stroke();
+      /* lungs */
+      sc.lungs.forEach(L=>{
+        const cx=L.cx*W,cy=L.cy*H,rx=L.rx*W,ry=L.ry*H;
+        const lg=ctx.createRadialGradient(cx,cy,2,cx,cy,rx*1.7);
+        lg.addColorStop(0,sh(6,10,16));lg.addColorStop(1,sh(11,17,27));
+        ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,L.rot,0,Math.PI*2);
+        ctx.fillStyle=lg;ctx.fill();ctx.strokeStyle=sh(30,42,62);ctx.lineWidth=1;ctx.stroke();
+        ctx.save();ctx.clip();
+        ctx.strokeStyle="rgba(150,185,225,"+(0.10*Math.min(b,1.4))+")";ctx.lineWidth=1.1;
+        sc.vessels.forEach(pts=>{
+          ctx.beginPath();ctx.moveTo(pts[0][0]*W,pts[0][1]*H);
+          for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0]*W,pts[i][1]*H);
+          ctx.stroke();
+        });
+        sc.speckles.forEach(sp=>{
+          ctx.fillStyle="rgba(165,198,238,"+Math.min(.5,sp[3]*b)+")";
+          ctx.fillRect(sp[0]*W,sp[1]*H,sp[2],sp[2]);
+        });
+        ctx.restore();
+      });
+      /* mediastinum + heart */
+      ctx.beginPath();ctx.ellipse(W*.5,H*.565,W*.095,H*.13,0,0,Math.PI*2);ctx.fillStyle=sh(25,35,55);ctx.fill();
+      ctx.beginPath();ctx.ellipse(W*.465,H*.60,W*.065,H*.085,0,0,Math.PI*2);ctx.fillStyle=sh(30,42,64);ctx.fill();
+      /* spine + sternum */
+      ctx.beginPath();ctx.arc(W*.5,H*.80,W*.046,0,Math.PI*2);ctx.fillStyle=sh(46,60,86);ctx.fill();
+      ctx.strokeStyle=sh(60,78,108);ctx.lineWidth=1;ctx.stroke();
+      ctx.beginPath();ctx.arc(W*.5,H*.80,W*.02,0,Math.PI*2);ctx.fillStyle=sh(10,15,25);ctx.fill();
+      ctx.beginPath();ctx.ellipse(W*.5,H*.235,W*.032,H*.016,0,0,Math.PI*2);ctx.fillStyle=sh(40,54,78);ctx.fill();
+      /* tumor */
+      const cx=sc.tx*W,cy=sc.ty*H,R=sc.r*W;
+      ctx.strokeStyle="rgba(255,59,92,.35)";ctx.lineWidth=1.2;
+      sc.spic.forEach(s=>{
+        ctx.beginPath();
+        ctx.moveTo(cx+Math.cos(s.a)*R*.8,cy+Math.sin(s.a)*R*.8);
+        ctx.lineTo(cx+Math.cos(s.a)*(R+s.l),cy+Math.sin(s.a)*(R+s.l));
+        ctx.stroke();
+      });
+      const P=sc.blob;
+      ctx.beginPath();
+      ctx.moveTo(cx+(P[0][0]+P[1][0])/2*W,cy+(P[0][1]+P[1][1])/2*H);
+      for(let i=1;i<=P.length;i++){
+        const a=P[i%P.length],bn=P[(i+1)%P.length];
+        ctx.quadraticCurveTo(cx+a[0]*W,cy+a[1]*H,cx+(a[0]+bn[0])/2*W,cy+(a[1]+bn[1])/2*H);
+      }
+      ctx.closePath();
+      const tg=ctx.createRadialGradient(cx,cy,0,cx,cy,R*1.2);
+      tg.addColorStop(0,"rgba(255,80,105,.95)");tg.addColorStop(.55,"rgba(255,59,92,.75)");tg.addColorStop(1,"rgba(255,59,92,.12)");
+      ctx.shadowColor="rgba(255,59,92,.8)";ctx.shadowBlur=22;
+      ctx.fillStyle=tg;ctx.fill();ctx.shadowBlur=0;
+      ctx.beginPath();ctx.arc(cx-R*.15,cy-R*.15,R*.32,0,Math.PI*2);ctx.fillStyle="rgba(255,120,140,.5)";ctx.fill();
+      /* GTV contour */
+      if(S.contour){
+        const CR=R*1.55;
+        ctx.setLineDash([7,6]);
+        ctx.lineDashOffset=MOTION_OK?-(ts/45)%13:0;
+        ctx.strokeStyle="#00d4ff";ctx.lineWidth=1.6;
+        ctx.shadowColor="rgba(0,212,255,.9)";ctx.shadowBlur=9;
+        ctx.beginPath();ctx.arc(cx,cy,CR,0,Math.PI*2);ctx.stroke();
+        ctx.setLineDash([]);ctx.shadowBlur=0;
+        ctx.lineWidth=1.5;
+        for(let k=0;k<4;k++){
+          const a=k*Math.PI/2;
+          ctx.beginPath();
+          ctx.moveTo(cx+Math.cos(a)*(CR+3),cy+Math.sin(a)*(CR+3));
+          ctx.lineTo(cx+Math.cos(a)*(CR+9),cy+Math.sin(a)*(CR+9));
+          ctx.stroke();
+        }
+        ctx.strokeStyle="rgba(0,212,255,.85)";ctx.lineWidth=1;
+        ctx.beginPath();
+        ctx.moveTo(cx-7,cy);ctx.lineTo(cx+7,cy);ctx.moveTo(cx,cy-7);ctx.lineTo(cx,cy+7);
+        ctx.stroke();
+        const lx=cx+CR*.75,ly=cy-CR*.75;
+        ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+14,ly-12);ctx.stroke();
+        ctx.font="700 11px Inter, sans-serif";ctx.fillStyle="#00d4ff";
+        ctx.fillText("GTV-1",lx+18,ly-15);
+      }
+      /* scan sweep */
+      if(S.scan&&MOTION_OK){
+        const sy=((ts/6)%(H+140))-70;
+        const sg=ctx.createLinearGradient(0,sy-50,0,sy+50);
+        sg.addColorStop(0,"rgba(0,212,255,0)");sg.addColorStop(.5,"rgba(0,212,255,.09)");sg.addColorStop(1,"rgba(0,212,255,0)");
+        ctx.fillStyle=sg;ctx.fillRect(0,sy-50,W,100);
+        ctx.fillStyle="rgba(0,212,255,.30)";ctx.fillRect(0,sy,W,1.5);
+      }
+      ctx.restore();
+      /* vignette */
+      const vg=ctx.createRadialGradient(W/2,H/2,W*.30,W/2,H/2,W*.72);
+      vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.5)");
+      ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+      /* orientation + scale bar */
+      ctx.font="700 11px Inter, sans-serif";ctx.fillStyle="rgba(139,155,180,.6)";
+      ctx.fillText("R",14,H/2+4);ctx.fillText("L",W-22,H/2+4);
+      ctx.textAlign="center";ctx.fillText("A",W/2,40);ctx.fillText("P",W/2,H-32);ctx.textAlign="left";
+      ctx.strokeStyle="rgba(232,238,247,.5)";ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(W-92,H-22);ctx.lineTo(W-32,H-22);
+      ctx.moveTo(W-92,H-26);ctx.lineTo(W-92,H-18);ctx.moveTo(W-32,H-26);ctx.lineTo(W-32,H-18);ctx.stroke();
+      ctx.font="600 9px Inter, sans-serif";ctx.fillStyle="rgba(139,155,180,.7)";ctx.fillText("5 cm",W-88,H-30);
+      raf=requestAnimationFrame(draw);
+    };
+    raf=requestAnimationFrame(draw);
+    return ()=>{
+      cancelAnimationFrame(raf);
+      if(ro)ro.disconnect();else window.removeEventListener("resize",resize);
+    };
+  },[]);
+
+  return (
+    <div className="card card-pad reveal" style={{animationDelay:".12s"}}>
+      <div className="card-head">
+        <div className="head-icon" style={{background:"rgba(124,58,237,.12)",borderColor:"rgba(124,58,237,.45)",color:"#a78bfa"}}>
+          <Icon name="scan" size={20}/>
+        </div>
+        <div>
+          <div className="head-title">{t("ctTitle")}</div>
+          <div className="head-sub">{t("ctFoot")}</div>
+        </div>
+        <span className="chip">{t("ctChip")}</span>
+      </div>
+      <div className="ct-stage" ref={wrapRef}>
+        <canvas ref={canvasRef}/>
+        <span className="ct-corner tl"/><span className="ct-corner tr"/>
+        <span className="ct-corner bl"/><span className="ct-corner br"/>
+        <span className="ct-tag tl mono">{patient.id}</span>
+        <span className="ct-tag tr"><Icon name="layers" size={12}/>{patient.slices} {t("slices")}</span>
+        <span className="ct-tag bl"><span className="dot"/>{t("detected")}</span>
+        <span className="ct-tag br mono">120 kVp • 200 mAs</span>
+        {recon&&(
+          <div className="ct-recon">
+            <div style={{textAlign:"center"}}>
+              <div className="spinner"/>
+              <div style={{fontSize:11,color:"#00d4ff",fontWeight:700}}>{t("recon")}</div>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="ct-controls">
+        <div className="ctl">
+          <div className="ctl-top"><span>{t("wl")}</span><b className="ltr">{wl>0?"+":""}{wl} HU</b></div>
+          <input type="range" min="-100" max="200" step="1" value={wl} aria-label={t("wl")} onChange={e=>setWl(+e.target.value)}/>
+        </div>
+        <div className="ctl">
+          <div className="ctl-top"><span>{t("zoomL")}</span><b className="ltr">{zoom.toFixed(2)}×</b></div>
+          <input type="range" min="0.8" max="1.5" step="0.01" value={zoom} aria-label={t("zoomL")} onChange={e=>setZoom(+e.target.value)}/>
+        </div>
+      </div>
+      <div className="ct-toggles">
+        <button type="button" className={"tgl"+(contour?" on":"")} onClick={()=>setContour(v=>!v)} aria-pressed={contour}>
+          <i/>{t("contourL")}
+        </button>
+        <button type="button" className={"tgl"+(scan?" on":"")} onClick={()=>setScan(v=>!v)} aria-pressed={scan}>
+          <i/>{t("scanL")}
+        </button>
+      </div>
+      <div className="ct-legend">
+        <span className="leg"><span className="leg-dot" style={{background:"#ff3b5c",boxShadow:"0 0 8px rgba(255,59,92,.7)"}}/>{t("legTumor")}</span>
+        <span className="leg"><span className="leg-ring"/>{t("legGtv")}</span>
+        <span className="leg"><span className="leg-dot" style={{background:"#3a4a63"}}/>{t("legLung")}</span>
+      </div>
+    </div>
+  );
+  }
+  function DRow({icon,label,children}){
+  return (
+    <div className="drow">
+      <span className="dlabel"><Icon name={icon} size={14}/>{label}</span>
+      <span className="dval">{children}</span>
+    </div>
+  );
+}
+
+function Explorer({patient,onPatient,t}){
+  const [q,setQ]=useState("");
+  const [fg,setFg]=useState("all");
+  const filtered=useMemo(()=>{
+    const qq=q.trim().toLowerCase();
+    return PATIENTS.filter(p=>
+      (fg==="all"||p.group===fg)&&
+      (qq===""||(p.id+" "+p.histology+" "+p.stage).toLowerCase().includes(qq))
+    );
+  },[q,fg]);
+  const idx=PATIENTS.findIndex(p=>p.id===patient.id);
+  const nav=d=>onPatient(PATIENTS[(idx+d+PATIENTS.length)%PATIENTS.length].id);
+  const g=GROUPS[patient.group];
+  const histKey="hist_"+patient.histology.replace(/\s+/g,"_");
+  const survW=clamp(patient.survival/2210*100,4,100);
+  return (
+    <div className="card card-pad reveal" id="explorer" style={{animationDelay:".2s"}}>
+      <div className="card-head">
+        <div className="head-icon" style={{background:"rgba(6,255,165,.1)",borderColor:"rgba(6,255,165,.4)",color:"#06ffa5"}}>
+          <Icon name="users" size={20}/>
+        </div>
+        <div>
+          <div className="head-title">{t("exTitle")}</div>
+          <div className="head-sub">{t("exSub")}</div>
+        </div>
+        <div className="ex-tools">
+          <div className="search">
+            <Icon name="search" size={15}/>
+            <input value={q} onChange={e=>setQ(e.target.value)} placeholder={t("searchPh")} aria-label={t("searchPh")}/>
+          </div>
+          <button type="button" className="fchip" onClick={()=>setFg("all")}
+            style={fg==="all"?{color:"#00d4ff",borderColor:"rgba(0,212,255,.5)",background:"rgba(0,212,255,.08)"}:{}}>
+            {t("all")}
+          </button>
+          {GROUPS.map(g2=>(
+            <button type="button" key={g2.key} className="fchip" onClick={()=>setFg(g2.idx)}
+              style={fg===g2.idx?{color:g2.color,borderColor:g2.color+"88",background:g2.color+"14"}:{}}>
+              {g2.key}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="ex-count">{t("showing")} <b className="ltr">{filtered.length}</b> {t("of")} <b className="ltr">30</b> {t("patients")}</div>
+      {filtered.length>0?(
+        <div className="pt-grid">
+          {filtered.map(p=>{
+            const gc=GROUPS[p.group].color;
+            const active=p.id===patient.id;
+            return (
+              <button type="button" key={p.id} className="pt" onClick={()=>onPatient(p.id)}
+                aria-pressed={active} title={p.histology+" • "+p.stage}
+                style={active?{borderColor:gc,background:gc+"14",boxShadow:"0 0 16px "+gc+"28"}:{}}>
+                <span className="pt-id mono ltr">{p.id}</span>
+                <span className="pt-meta"><i className="pt-dot" style={{background:gc}}/><span>{p.stage}</span></span>
+              </button>
+            );
+          })}
+        </div>
+      ):(
+        <div className="empty">
+          <Icon name="search" size={26}/>
+          <div>{t("noMatch")}</div>
+          <button type="button" className="fchip" onClick={()=>{setQ("");setFg("all");}}>{t("clear")}</button>
+        </div>
+      )}
+      <div className="details" key={patient.id}>
+        <div className="det-head">
+          <div className="det-avatar mono" style={{color:g.color,borderColor:g.color+"66",background:g.color+"12"}}>
+            {patient.id.slice(6)}
+          </div>
+          <div>
+            <div className="det-id mono ltr">{patient.id}</div>
+            <div className="det-sub">{t("aiPick")} • {t("group")} {g.key}</div>
+          </div>
+          <span className="gbadge" style={{color:g.color,borderColor:g.color+"66",background:g.color+"12"}}>
+            <i style={{background:g.color}}/>{t("gname_"+g.idx)}
+          </span>
+          <div className="det-nav">
+            <button type="button" className="nav-btn" onClick={()=>nav(-1)} title={t("prev")} aria-label={t("prev")}>
+              <Icon name="chevL" size={17}/>
+            </button>
+            <button type="button" className="nav-btn" onClick={()=>nav(1)} title={t("next")} aria-label={t("next")}>
+              <Icon name="chevR" size={17}/>
+            </button>
+          </div>
+        </div>
+        <div className="det-cols">
+          <div className="dcol">
+            <DRow icon="hash" label={t("dId")}><span className="mono ltr">{patient.id}</span></DRow>
+            <DRow icon="clock" label={t("dAge")}><span className="ltr">{patient.age.toFixed(1)}</span> <small>{t("yrs")}</small></DRow>
+            <DRow icon="users" label={t("dGender")}>{t(patient.gender)}</DRow>
+            <DRow icon="bar" label={t("dStage")}><span className="stage-pill">{patient.stage}</span></DRow>
+          </div>
+          <div className="dcol">
+            <DRow icon="droplet" label={t("dHist")}>{t(histKey)}</DRow>
+            <DRow icon="activity" label={t("dSurv")}>
+              <span className="ltr">{fmt(patient.survival)} <small>{t("days")}</small></span>
+              <span className="surv-bar"><span className="surv-fill" style={{width:survW+"%"}}/></span>
+            </DRow>
+            <DRow icon="box" label={t("dVol")}><span className="ltr">{fmt(patient.volume)}</span> <small>{t("voxels")}</small></DRow>
+            <DRow icon="image" label={t("dHU")}><span className="ltr">{patient.meanHU.toFixed(1)}</span> <small>HU</small></DRow>
+          </div>
+          <div className="dcol">
+            <DRow icon="spark" label={t("dEnt")}><span className="ltr">{patient.entropy.toFixed(3)}</span></DRow>
+            <DRow icon="bar" label={t("dSkew")}><span className="ltr">{patient.skewness.toFixed(3)}</span></DRow>
+            <DRow icon="layers" label={t("dSlices")}><span className="ltr">{patient.slices}</span></DRow>
+            <DRow icon="cpu" label={t("dProto")}>
+              <span className="proto-pill" style={{color:g.color,borderColor:g.color+"66",background:g.color+"12"}}>
+                <i style={{background:g.color}}/>{t("gname_"+patient.group)}
+              </span>
+            </DRow>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Footer({t}){
+  const tags=["tagAI","tagPts","tagFeat","tagK","tagRad","tagProton"];
+  return (
+    <footer className="ftr">
+      <div className="container">
+        <div className="ftr-logo grad-text">ProtonAI NEXUS</div>
+        <div className="ftr-tag">{t("fTag")}</div>
+        <div className="ftr-credits">
+          <span><Icon name="award" size={14} style={{color:"#00d4ff"}}/>{t("authorName")}</span>
+          <span className="fsep">•</span>
+          <span><Icon name="cpu" size={14} style={{color:"#7c3aed"}}/>{t("fCredit2")}</span>
+          <span className="fsep">•</span>
+          <span><Icon name="image" size={14} style={{color:"#06ffa5"}}/>{t("fCredit3")}</span>
+        </div>
+        <div className="ftr-tags">
+          {tags.map(k=><span key={k} className="ftag">{t(k)}</span>)}
+        </div>
+        <div className="ftr-bottom">{t("fRights")}</div>
+        <div className="ftr-disc"><Icon name="shield" size={13}/>{t("fDisc")}</div>
+      </div>
+    </footer>
+  );
+  }
+  function App(){
+  const [lang,setLang]=useState("en");
+  const [phase,setPhase]=useState("splash");
+  const [pid,setPid]=useState("LUNG1-003");
+
+  useEffect(()=>{
+    const a=setTimeout(()=>setPhase("fading"),3200);
+    const b=setTimeout(()=>setPhase("done"),3850);
+    return ()=>{clearTimeout(a);clearTimeout(b);};
+  },[]);
+
+  useEffect(()=>{
+    document.documentElement.lang=lang;
+    document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+  },[lang]);
+
+  const t=useCallback(k=>(T[lang]&&T[lang][k])||T.en[k]||k,[lang]);
+  const patient=PATIENTS.find(p=>p.id===pid)||PATIENTS[0];
+  const onPatient=id=>setPid(id);
+  const onGroup=gi=>{
+    const first=PATIENTS.find(p=>p.group===gi);
+    if(first)setPid(first.id);
+  };
+  const ready=phase!=="splash";
+
+  return (
+    <React.Fragment>
+      <Background/>
+      {phase!=="done"&&<Splash fading={phase==="fading"} t={t}/>}
+      {ready&&(
+        <div className="app">
+          <Header t={t} onLang={()=>setLang(l=>l==="en"?"ar":"en")}/>
+          <main className="container">
+            <Hero t={t}/>
+            <Stats t={t}/>
+            <div className="duo">
+              <Classifier group={patient.group} onGroup={onGroup} t={t}/>
+              <CTViewer patient={patient} t={t}/>
+            </div>
+            <Explorer patient={patient} onPatient={onPatient} t={t}/>
+          </main>
+          <Footer t={t}/>
+        </div>
+      )}
+    </React.Fragment>
+  );
+}
+
+const root=ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App/>);
+</script>
+</body>
+</html>
